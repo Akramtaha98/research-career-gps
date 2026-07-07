@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 import client from '../api/client';
-import { demoResearcher, demoPapers, demoHistory } from '../data/demoData';
+import { demoResearcher, demoPapers, demoHistory, demoCollaborators } from '../data/demoData';
 
 const ResearcherContext = createContext(null);
 
@@ -61,6 +61,14 @@ export function ResearcherProvider({ children }) {
     }
   }, []);
 
+  /** Top collaborators ranked by h-index (real data for 'live', canned example for 'demo'). */
+  const getCollaborators = useCallback(async () => {
+    if (source === 'demo') return demoCollaborators;
+    if (!researcher?.id) return [];
+    const { data } = await client.get(`/researchers/${researcher.id}/collaborators`);
+    return data.collaborators;
+  }, [source, researcher]);
+
   const refreshResearcher = useCallback(async () => {
     if (source !== 'live' || !researcher?.id) return;
     setLoading(true);
@@ -88,6 +96,7 @@ export function ResearcherProvider({ children }) {
         searchByName,
         lookupResearcher,
         refreshResearcher,
+        getCollaborators,
       }}
     >
       {children}

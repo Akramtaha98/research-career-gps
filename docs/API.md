@@ -42,7 +42,7 @@ No auth required. Searches Semantic Scholar by name and returns lightweight cand
 400 if `q` is missing or under 2 characters.
 
 ### POST /api/researchers
-Auth required. Body: `{ semanticScholarId }`
+Auth required, no Pro plan needed. Body: `{ semanticScholarId }`
 Fetches the author from Semantic Scholar, recalculates H-index from raw citation counts, stores/updates the researcher + full paper snapshot, and appends an H-index history point.
 201 → `{ researcher }`
 404 if the Semantic Scholar ID doesn't exist. 429 if Semantic Scholar's rate limit is hit (auto-retried once internally).
@@ -59,27 +59,50 @@ Auth required, must own the researcher.
 Auth required, must own the researcher.
 200 → `{ actionItems: [{ type, priority, title, description }, ...] }`, sorted by priority (high → info).
 
+### GET /api/researchers/:id/collaborators
+Auth required, must own the researcher. Pro plan required (see billing section).
+Aggregates the researcher's co-authors across their tracked papers, batch-fetches each co-author's own stats from Semantic Scholar, and returns the top 5 by h-index.
+200 → `{ collaborators: [{ semanticScholarId, name, paperCount, citationCount, hIndex, papersCoAuthored }, ...] }`
+
 ---
 
 ## Predictions
 
 ### POST /api/predictions
-Auth required. Body:
+Auth required. **Pro plan required** — returns 402 with `{ error, upgradeRequired: true }` for free-plan users.
+Body:
 ```json
 {
   "researcherId": "uuid",
   "targetH": 20,
   "monthlyCitationRate": 0.5,
-  "papersPerYear": 2
+  "papersPerYear": 2,
+  "venueTier": "average"
 }
 ```
-- `monthlyCitationRate` — average citations gained per paper per month
+- `monthlyCitationRate` — average citations gained per existing paper per month
 - `papersPerYear` — rate of new papers published
+- `venueTier` — optional, one of `top` | `strong` | `average` | `emerging` (see `backend/utils/venueTiers.js`); scales how fast *new* papers accumulate citations. Defaults to `average` (1x, no effect).
 
 201 → `{ prediction, projection }`. `projection.estimatedMonths` is `null` if the target isn't reached within the 20-year simulation cap; `projection.path` is a month-by-month array of `{ month, hIndex, totalCitations }` for charting.
 
 ---
 
+## Billing (Stripe)
+
+### POST /api/billing/create-checkout-session
+Auth required. Creates (or reuses) a Stripe Customer for the user and a subscription Checkout Session for the Pro plan.
+200 → `{ url }` — redirect the browser here; Stripe hosts the actual payment form. Returns 501 if `STRIPE_SECRET_KEY`/`STRIPE_PRICE_ID` aren't configured.
+
+### GET /api/billing/status
+Auth required.
+200 → `{ plan, subscriptionStatus }`
+
+### POST /api/billing/webhook
+Called by Stripe directly (not by the frontend) — no auth, verified instead via the `Stripe-Signature` header against `STRIPE_WEBHOOK_SECRET`. Handles `checkout.session.completed`, `customer.subscription.updated`, and `customer.subscription.deleted` to keep `users.plan`/`users.subscription_status` in sync.
+
+---
+
 ## Errors
 
-All errors return `{ "error": "message" }` with an appropriate HTTP status (400 validation, 401 auth, 403 ownership, 404 not found, 429 rate limited, 500 server error).
+All errors return `{ "error": "message" }` with an appropriate HTTP status (400 validation, 401 auth, 402 payment/Pro plan required, 403 ownership, 404 not found, 429 rate limited, 500 server error).

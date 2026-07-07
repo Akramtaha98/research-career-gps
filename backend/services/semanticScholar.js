@@ -111,4 +111,59 @@ async function searchAuthors(query, { retry = true } = {}) {
   }
 }
 
-module.exports = { fetchAuthorProfile, searchAuthors };
+/**
+ * Collaboration advisor: finds the researcher's most frequent co-authors and
+ * ranks them by h-index, so the app can suggest "these are your strongest
+ * existing collaborators — consider more joint work with them" rather than
+ * inventing connections that don't exist. Two Semantic Scholar calls: one for
+ * the author's papers + co-authors, one batched call for the co-authors'
+ * stats (paperCount/citationCount/hIndex).
+ */
+async function fetchTopCollaborators(semanticScholarId, { limit = 5 } = {}) {
+  const { data } = await client.get(`/author/${encodeURIComponent(semanticScholarId)}`, {
+    params: { fields: 'papers.authors' },
+  });
+
+  const frequency = new Map(); // coAuthorId -> { name, count }
+  for (const paper of data.papers || []) {
+    for (const author of paper.authors || []) {
+      if (!author.authorId || author.authorId === semanticScholarId) continue;
+      const existing = frequency.get(author.authorId);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        frequency.set(author.authorId, { name: author.name, count: 1 });
+      }
+    }
+  }
+
+  if (frequency.size === 0) return [];
+
+  // Only look up stats for the most frequent co-authors to keep this to one
+  // batch request regardless of how many total co-authors there are.
+  const candidateIds = [...frequency.entries()]
+    .sort((a, b) => b[1].count - a[1].count)
+    .slice(0, 15)
+    .map(([id]) => id);
+
+  const { data: stats } = await client.post(
+    '/author/batch',
+    { ids: candidateIds },
+    { params: { fields: 'name,paperCount,citationCount,hIndex' } }
+  );
+
+  return stats
+    .filter(Boolean)
+    .map((s) => ({
+      semanticScholarId: s.authorId,
+      name: s.name,
+      paperCount: s.paperCount || 0,
+      citationCount: s.citationCount || 0,
+      hIndex: s.hIndex || 0,
+      papersCoAuthored: frequency.get(s.authorId)?.count || 0,
+    }))
+    .sort((a, b) => b.hIndex - a.hIndex)
+    .slice(0, limit);
+}
+
+module.exports = { fetchAuthorProfile, searchAuthors, fetchTopCollaborators };

@@ -31,6 +31,9 @@ const memoryStore = {
       name,
       password_hash: passwordHash,
       auth_provider: authProvider,
+      stripe_customer_id: null,
+      plan: 'free',
+      subscription_status: 'inactive',
       created_at: new Date().toISOString(),
     };
     memory.users.push(user);
@@ -43,6 +46,19 @@ const memoryStore = {
 
   async findUserById(id) {
     return memory.users.find((u) => u.id === id) || null;
+  },
+
+  async findUserByStripeCustomerId(stripeCustomerId) {
+    return memory.users.find((u) => u.stripe_customer_id === stripeCustomerId) || null;
+  },
+
+  async updateUserBilling(userId, { stripeCustomerId, plan, subscriptionStatus }) {
+    const user = memory.users.find((u) => u.id === userId);
+    if (!user) return null;
+    if (stripeCustomerId !== undefined) user.stripe_customer_id = stripeCustomerId;
+    if (plan !== undefined) user.plan = plan;
+    if (subscriptionStatus !== undefined) user.subscription_status = subscriptionStatus;
+    return user;
   },
 
   async upsertResearcher({ userId, semanticScholarId, name, hIndex, totalCitations, paperCount }) {
@@ -148,6 +164,24 @@ const pgStore = {
 
   async findUserById(id) {
     const { rows } = await query(`SELECT * FROM users WHERE id = $1`, [id]);
+    return rows[0] || null;
+  },
+
+  async findUserByStripeCustomerId(stripeCustomerId) {
+    const { rows } = await query(`SELECT * FROM users WHERE stripe_customer_id = $1`, [stripeCustomerId]);
+    return rows[0] || null;
+  },
+
+  async updateUserBilling(userId, { stripeCustomerId, plan, subscriptionStatus }) {
+    const { rows } = await query(
+      `UPDATE users SET
+         stripe_customer_id = COALESCE($2, stripe_customer_id),
+         plan = COALESCE($3, plan),
+         subscription_status = COALESCE($4, subscription_status)
+       WHERE id = $1
+       RETURNING *`,
+      [userId, stripeCustomerId ?? null, plan ?? null, subscriptionStatus ?? null]
+    );
     return rows[0] || null;
   },
 

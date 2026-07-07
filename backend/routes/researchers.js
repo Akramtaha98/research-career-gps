@@ -5,8 +5,10 @@ const {
   getResearcher,
   listPapers,
   getActionItems,
+  getCollaborators,
 } = require('../controllers/researcherController');
 const { requireAuth } = require('../middleware/auth');
+const { requirePro } = require('../middleware/requirePro');
 
 const router = express.Router();
 
@@ -19,5 +21,6 @@ router.post('/', addResearcher);
 router.get('/:id', getResearcher);
 router.get('/:id/papers', listPapers);
 router.get('/:id/actions', getActionItems);
+router.get('/:id/collaborators', requirePro, getCollaborators);
 
 module.exports = router;

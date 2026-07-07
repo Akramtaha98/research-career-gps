@@ -1,6 +1,7 @@
 import { useResearcher } from '../context/ResearcherContext';
 import MetricCard from '../components/MetricCard';
 import HIndexChart from '../components/HIndexChart';
+import EmptyState from '../components/EmptyState';
 
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short' });
@@ -15,6 +16,27 @@ export default function Dashboard() {
   }));
 
   const topPapers = [...papers].sort((a, b) => (b.citations || 0) - (a.citations || 0)).slice(0, 8);
+
+  if (papers.length === 0) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-10">
+        <div className="card">
+          <EmptyState
+            icon="🌱"
+            title={`No papers tracked yet for ${researcher.name}`}
+            description="Semantic Scholar doesn't have any papers indexed for this profile yet, or this is a brand-new researcher ID. Metrics and charts will populate once papers with citations are indexed."
+            action={
+              source === 'live' ? (
+                <button onClick={refreshResearcher} disabled={loading} className="btn-secondary">
+                  {loading ? 'Refreshing...' : 'Try refreshing from Semantic Scholar'}
+                </button>
+              ) : null
+            }
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-8">
@@ -45,7 +67,15 @@ export default function Dashboard() {
 
       <div className="card">
         <h2 className="text-lg font-semibold text-slate-900 mb-4">H-index growth over time</h2>
-        <HIndexChart history={chartHistory} />
+        {chartHistory.length > 1 ? (
+          <HIndexChart history={chartHistory} />
+        ) : (
+          <EmptyState
+            icon="📈"
+            title="Not enough history yet"
+            description="We only have one snapshot so far. Come back after refreshing this researcher a few times over the coming weeks/months to see a growth trend here."
+          />
+        )}
       </div>
 
       <div className="card">

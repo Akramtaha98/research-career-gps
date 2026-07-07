@@ -12,6 +12,12 @@ CREATE TABLE IF NOT EXISTS users (
   -- 'local' (email+password) or 'google'. Social accounts get an unusable
   -- random password_hash placeholder — see authController.js.
   auth_provider VARCHAR(20) NOT NULL DEFAULT 'local',
+  -- Billing (Stripe). plan is 'free' or 'pro'; subscription_status mirrors
+  -- Stripe's subscription status ('inactive', 'active', 'past_due',
+  -- 'canceled', ...). See services/stripeService.js + controllers/billingController.js.
+  stripe_customer_id  VARCHAR(255),
+  plan                VARCHAR(20) NOT NULL DEFAULT 'free',
+  subscription_status VARCHAR(20) NOT NULL DEFAULT 'inactive',
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -61,3 +67,4 @@ CREATE INDEX IF NOT EXISTS idx_researchers_user_id ON researchers(user_id);
 CREATE INDEX IF NOT EXISTS idx_papers_researcher_id ON papers(researcher_id);
 CREATE INDEX IF NOT EXISTS idx_predictions_researcher_id ON predictions(researcher_id);
 CREATE INDEX IF NOT EXISTS idx_history_researcher_id ON h_index_history(researcher_id);
+CREATE INDEX IF NOT EXISTS idx_users_stripe_customer_id ON users(stripe_customer_id);

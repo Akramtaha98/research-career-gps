@@ -36,6 +36,12 @@ export const demoPapers = [
   { id: 'p22', title: 'Position Paper on Reproducibility', year: 2012, citations: 1, venue: 'Workshop' },
 ];
 
+export const demoCollaborators = [
+  { semanticScholarId: 'demo-c1', name: 'Dr. Priya Nair', paperCount: 210, citationCount: 18500, hIndex: 62, papersCoAuthored: 6 },
+  { semanticScholarId: 'demo-c2', name: 'Dr. Marcus Feldman', paperCount: 175, citationCount: 14200, hIndex: 54, papersCoAuthored: 4 },
+  { semanticScholarId: 'demo-c3', name: 'Dr. Lian Zhou', paperCount: 140, citationCount: 9800, hIndex: 41, papersCoAuthored: 8 },
+];
+
 export const demoHistory = [
   { recorded_at: '2021-01-01', h_index: 8, total_citations: 900 },
   { recorded_at: '2021-07-01', h_index: 9, total_citations: 1150 },

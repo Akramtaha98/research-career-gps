@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 const { calculateHIndex } = require('../utils/hIndex');
 const { projectHIndex } = require('../utils/prediction');
+const { getMultiplier, getTierForVenue } = require('../utils/venueTiers');
 
 test('calculateHIndex: standard example', () => {
   // 3 papers with >=3 citations, 4th has only 1 -> h=3
@@ -55,4 +56,36 @@ test('projectHIndex: no growth never reaches unreachable target within cap', () 
   });
   assert.strictEqual(result.reached, false);
   assert.strictEqual(result.estimatedMonths, null);
+});
+
+test('projectHIndex: higher venue multiplier reaches target no slower than baseline', () => {
+  const params = {
+    currentCitations: [1, 1],
+    targetH: 6,
+    monthlyCitationRate: 1,
+    papersPerYear: 6,
+    maxMonths: 60,
+  };
+  const baseline = projectHIndex(params);
+  const boosted = projectHIndex({ ...params, newPaperCitationMultiplier: 3 });
+  assert.strictEqual(baseline.reached, true);
+  assert.strictEqual(boosted.reached, true);
+  assert.ok(boosted.estimatedMonths <= baseline.estimatedMonths);
+});
+
+test('venueTiers: getMultiplier returns 1 for unknown/average tier', () => {
+  assert.strictEqual(getMultiplier('average'), 1.0);
+  assert.strictEqual(getMultiplier('nonexistent'), 1.0);
+});
+
+test('venueTiers: getMultiplier returns higher value for top tier', () => {
+  assert.ok(getMultiplier('top') > getMultiplier('average'));
+});
+
+test('venueTiers: getTierForVenue matches known venues', () => {
+  assert.strictEqual(getTierForVenue('Nature Communications'), 'top');
+  assert.strictEqual(getTierForVenue('NeurIPS'), 'top');
+  assert.strictEqual(getTierForVenue('KDD'), 'strong');
+  assert.strictEqual(getTierForVenue('Some Random Workshop'), 'emerging');
+  assert.strictEqual(getTierForVenue('Totally Unknown Venue'), null);
 });

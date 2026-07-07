@@ -8,7 +8,7 @@ cd backend
 cp .env.example .env
 npm install
 npm start          # http://localhost:4000
-npm test           # 7 unit tests for H-index + prediction logic
+npm test           # unit tests for H-index, prediction, and venue-tier logic
 ```
 `DEMO_MODE=true` (the default) runs entirely in memory — no database needed. Data resets every time you restart the server. This is the fastest way to develop and test.
 
@@ -72,6 +72,47 @@ Email/password auth works without this configured — the Google button shows as
    - `GOOGLE_CLIENT_ID` in `backend/.env`
    - `VITE_GOOGLE_CLIENT_ID` in `frontend/.env`
 6. Restart both servers. No client secret is needed — the frontend gets an ID token directly from Google and the backend verifies its signature.
+
+---
+
+## Stripe paywall (Pro plan)
+
+Predictions and the collaboration advisor are gated behind a Pro subscription. This is real payment-processing code, but **I cannot create your Stripe account or process real payments for you** — you own that account and its funds. Everything below is one-time setup you do yourself.
+
+### 1. Create your Stripe account and a Product
+1. Sign up at dashboard.stripe.com (free).
+2. Stay in **Test mode** (toggle top-right) while developing — test mode uses fake cards, no real money moves.
+3. Products → Add a product, e.g. "Research Career GPS Pro", recurring price $4.99/month. Copy the **Price ID** (starts `price_...`).
+
+### 2. Get your API keys
+1. Developers → API keys → copy the **Secret key** (test mode: starts `sk_test_...`).
+2. Set in `backend/.env`:
+   ```
+   STRIPE_SECRET_KEY=sk_test_...
+   STRIPE_PRICE_ID=price_...
+   FRONTEND_URL=http://localhost:5173
+   ```
+
+### 3. Set up the webhook (keeps plan status in sync)
+Stripe needs to tell your backend when a payment succeeds or a subscription cancels.
+
+**Local development** — use the Stripe CLI:
+```bash
+stripe login
+stripe listen --forward-to localhost:4000/api/billing/webhook
+```
+This prints a webhook signing secret (`whsec_...`) — put it in `backend/.env` as `STRIPE_WEBHOOK_SECRET`. Keep `stripe listen` running while you test checkout locally.
+
+**Production** — in the Stripe Dashboard: Developers → Webhooks → Add endpoint → URL `https://your-backend-url/api/billing/webhook` → select events `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`. Copy the signing secret it gives you into your production `STRIPE_WEBHOOK_SECRET`.
+
+### 4. Test the full flow
+1. Restart the backend so it picks up the new env vars.
+2. Log in, go to the Predictor or Actions page with a real (non-demo) researcher — you'll see the "Upgrade to Pro" paywall.
+3. Click it — you're redirected to Stripe's hosted checkout. Use a [Stripe test card](https://docs.stripe.com/testing#cards) like `4242 4242 4242 4242`, any future expiry, any CVC.
+4. After paying, you're redirected back and the feature unlocks (may take a few seconds for the webhook to land).
+
+### 5. Going live
+Switch the Dashboard out of Test mode, create a live-mode Product/Price, and swap in your live `sk_live_...` key, live Price ID, and a webhook endpoint pointed at your production webhook secret. Stripe requires business verification (bank details, tax info) before you can accept real payments — that's between you and Stripe, not something this app can do for you.
 
 ## Beta testing
 

@@ -1,5 +1,5 @@
 const store = require('../services/store');
-const { fetchAuthorProfile, searchAuthors } = require('../services/semanticScholar');
+const { fetchAuthorProfile, searchAuthors, fetchTopCollaborators } = require('../services/semanticScholar');
 const { generateActionItems } = require('../utils/actionItems');
 
 /**
@@ -120,4 +120,32 @@ async function getActionItems(req, res) {
   }
 }
 
-module.exports = { searchResearchers, addResearcher, getResearcher, listPapers, getActionItems };
+/**
+ * GET /api/researchers/:id/collaborators
+ * Pro-gated (see middleware/requirePro.js once wired into routes). Ranks
+ * the researcher's existing co-authors by h-index as collaboration
+ * suggestions — grounded in real Semantic Scholar data, not invented.
+ */
+async function getCollaborators(req, res) {
+  try {
+    const { id } = req.params;
+    const researcher = await store.findResearcherById(id);
+    if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
+    if (researcher.user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized to view this researcher' });
+    }
+    const collaborators = await fetchTopCollaborators(researcher.semantic_scholar_id);
+    return res.json({ collaborators });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
+}
+
+module.exports = {
+  searchResearchers,
+  addResearcher,
+  getResearcher,
+  listPapers,
+  getActionItems,
+  getCollaborators,
+};

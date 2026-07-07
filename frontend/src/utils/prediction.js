@@ -12,8 +12,16 @@ export function calculateHIndex(citations) {
   return h;
 }
 
-export function projectHIndex({ currentCitations, targetH, monthlyCitationRate, papersPerYear, maxMonths = 240 }) {
+export function projectHIndex({
+  currentCitations,
+  targetH,
+  monthlyCitationRate,
+  papersPerYear,
+  newPaperCitationMultiplier = 1,
+  maxMonths = 240,
+}) {
   const citations = [...currentCitations];
+  const isNewPaper = citations.map(() => false);
   const path = [];
   let h = calculateHIndex(citations);
   const total = () => citations.reduce((a, b) => a + b, 0);
@@ -28,11 +36,13 @@ export function projectHIndex({ currentCitations, targetH, monthlyCitationRate, 
   while (month < maxMonths) {
     month += 1;
     for (let i = 0; i < citations.length; i += 1) {
-      citations[i] += Math.max(monthlyCitationRate, 0);
+      const rate = isNewPaper[i] ? monthlyCitationRate * newPaperCitationMultiplier : monthlyCitationRate;
+      citations[i] += Math.max(rate, 0);
     }
     acc += papersPerYear / 12;
     while (acc >= 1) {
       citations.push(0);
+      isNewPaper.push(true);
       acc -= 1;
     }
     h = calculateHIndex(citations);

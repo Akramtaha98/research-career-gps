@@ -40,8 +40,19 @@ export function AuthProvider({ children }) {
     setUser(null);
   }
 
+  /** Re-fetches the current user — used after returning from Stripe Checkout. */
+  async function refreshUser() {
+    if (!token) return;
+    try {
+      const { data } = await client.get('/auth/me');
+      setUser(data.user);
+    } catch {
+      // ignore — next natural load will retry
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

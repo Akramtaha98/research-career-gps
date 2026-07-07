@@ -16,6 +16,8 @@ function sanitizeUser(user) {
     email: user.email,
     name: user.name,
     authProvider: user.auth_provider || 'local',
+    plan: user.plan || 'free',
+    subscriptionStatus: user.subscription_status || 'inactive',
     created_at: user.created_at,
   };
 }
