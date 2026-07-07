@@ -1,0 +1,215 @@
+/**
+ * Data access layer. Exposes the same async interface regardless of backend,
+ * so controllers never need to know whether they're talking to Postgres or
+ * the in-memory demo store.
+ *
+ * Set DEMO_MODE=false and DATABASE_URL to a real Postgres/Supabase instance
+ * for production use. DEMO_MODE=true (default in .env.example) runs entirely
+ * in memory — handy for local development and grading/testing without a DB.
+ */
+const crypto = require('crypto');
+const { query, isDemoMode } = require('../config/db');
+
+const uuid = () => crypto.randomUUID();
+
+// ---------------------------------------------------------------------------
+// In-memory demo store
+// ---------------------------------------------------------------------------
+const memory = {
+  users: [], // { id, email, name, password_hash, created_at }
+  researchers: [], // { id, user_id, semantic_scholar_id, name, h_index, total_citations, paper_count, updated_at }
+  papers: [], // { id, researcher_id, external_id, title, year, citations, venue, updated_at }
+  predictions: [], // { id, researcher_id, target_h, monthly_citations, papers_per_year, estimated_months, created_at }
+  history: [], // { id, researcher_id, h_index, total_citations, recorded_at }
+};
+
+const memoryStore = {
+  async createUser({ email, name, passwordHash }) {
+    const user = {
+      id: uuid(),
+      email,
+      name,
+      password_hash: passwordHash,
+      created_at: new Date().toISOString(),
+    };
+    memory.users.push(user);
+    return user;
+  },
+
+  async findUserByEmail(email) {
+    return memory.users.find((u) => u.email === email) || null;
+  },
+
+  async findUserById(id) {
+    return memory.users.find((u) => u.id === id) || null;
+  },
+
+  async upsertResearcher({ userId, semanticScholarId, name, hIndex, totalCitations, paperCount }) {
+    let researcher = memory.researchers.find(
+      (r) => r.user_id === userId && r.semantic_scholar_id === semanticScholarId
+    );
+    const now = new Date().toISOString();
+    if (researcher) {
+      Object.assign(researcher, {
+        name,
+        h_index: hIndex,
+        total_citations: totalCitations,
+        paper_count: paperCount,
+        updated_at: now,
+      });
+    } else {
+      researcher = {
+        id: uuid(),
+        user_id: userId,
+        semantic_scholar_id: semanticScholarId,
+        name,
+        h_index: hIndex,
+        total_citations: totalCitations,
+        paper_count: paperCount,
+        updated_at: now,
+      };
+      memory.researchers.push(researcher);
+    }
+    memory.history.push({
+      id: uuid(),
+      researcher_id: researcher.id,
+      h_index: hIndex,
+      total_citations: totalCitations,
+      recorded_at: now,
+    });
+    return researcher;
+  },
+
+  async findResearcherById(id) {
+    return memory.researchers.find((r) => r.id === id) || null;
+  },
+
+  async replacePapers(researcherId, papers) {
+    memory.papers = memory.papers.filter((p) => p.researcher_id !== researcherId);
+    const now = new Date().toISOString();
+    const rows = papers.map((p) => ({
+      id: uuid(),
+      researcher_id: researcherId,
+      external_id: p.externalId || null,
+      title: p.title,
+      year: p.year || null,
+      citations: p.citations || 0,
+      venue: p.venue || null,
+      updated_at: now,
+    }));
+    memory.papers.push(...rows);
+    return rows;
+  },
+
+  async listPapers(researcherId) {
+    return memory.papers
+      .filter((p) => p.researcher_id === researcherId)
+      .sort((a, b) => (b.citations || 0) - (a.citations || 0));
+  },
+
+  async getHistory(researcherId) {
+    return memory.history
+      .filter((h) => h.researcher_id === researcherId)
+      .sort((a, b) => new Date(a.recorded_at) - new Date(b.recorded_at));
+  },
+
+  async createPrediction({ researcherId, targetH, monthlyCitations, papersPerYear, estimatedMonths }) {
+    const row = {
+      id: uuid(),
+      researcher_id: researcherId,
+      target_h: targetH,
+      monthly_citations: monthlyCitations,
+      papers_per_year: papersPerYear,
+      estimated_months: estimatedMonths,
+      created_at: new Date().toISOString(),
+    };
+    memory.predictions.push(row);
+    return row;
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Postgres-backed store
+// ---------------------------------------------------------------------------
+const pgStore = {
+  async createUser({ email, name, passwordHash }) {
+    const { rows } = await query(
+      `INSERT INTO users (email, name, password_hash) VALUES ($1, $2, $3) RETURNING *`,
+      [email, name, passwordHash]
+    );
+    return rows[0];
+  },
+
+  async findUserByEmail(email) {
+    const { rows } = await query(`SELECT * FROM users WHERE email = $1`, [email]);
+    return rows[0] || null;
+  },
+
+  async findUserById(id) {
+    const { rows } = await query(`SELECT * FROM users WHERE id = $1`, [id]);
+    return rows[0] || null;
+  },
+
+  async upsertResearcher({ userId, semanticScholarId, name, hIndex, totalCitations, paperCount }) {
+    const { rows } = await query(
+      `INSERT INTO researchers (user_id, semantic_scholar_id, name, h_index, total_citations, paper_count)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (user_id, semantic_scholar_id)
+       DO UPDATE SET name = $3, h_index = $4, total_citations = $5, paper_count = $6, updated_at = now()
+       RETURNING *`,
+      [userId, semanticScholarId, name, hIndex, totalCitations, paperCount]
+    );
+    const researcher = rows[0];
+    await query(
+      `INSERT INTO h_index_history (researcher_id, h_index, total_citations) VALUES ($1, $2, $3)`,
+      [researcher.id, hIndex, totalCitations]
+    );
+    return researcher;
+  },
+
+  async findResearcherById(id) {
+    const { rows } = await query(`SELECT * FROM researchers WHERE id = $1`, [id]);
+    return rows[0] || null;
+  },
+
+  async replacePapers(researcherId, papers) {
+    await query(`DELETE FROM papers WHERE researcher_id = $1`, [researcherId]);
+    const inserted = [];
+    for (const p of papers) {
+      const { rows } = await query(
+        `INSERT INTO papers (researcher_id, external_id, title, year, citations, venue)
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+        [researcherId, p.externalId || null, p.title, p.year || null, p.citations || 0, p.venue || null]
+      );
+      inserted.push(rows[0]);
+    }
+    return inserted;
+  },
+
+  async listPapers(researcherId) {
+    const { rows } = await query(
+      `SELECT * FROM papers WHERE researcher_id = $1 ORDER BY citations DESC`,
+      [researcherId]
+    );
+    return rows;
+  },
+
+  async getHistory(researcherId) {
+    const { rows } = await query(
+      `SELECT * FROM h_index_history WHERE researcher_id = $1 ORDER BY recorded_at ASC`,
+      [researcherId]
+    );
+    return rows;
+  },
+
+  async createPrediction({ researcherId, targetH, monthlyCitations, papersPerYear, estimatedMonths }) {
+    const { rows } = await query(
+      `INSERT INTO predictions (researcher_id, target_h, monthly_citations, papers_per_year, estimated_months)
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [researcherId, targetH, monthlyCitations, papersPerYear, estimatedMonths]
+    );
+    return rows[0];
+  },
+};
+
+module.exports = isDemoMode ? memoryStore : pgStore;
