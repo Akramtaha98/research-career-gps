@@ -47,7 +47,7 @@ Working MVP, verified end-to-end:
 - **Growth chart** — H-index and citation history over time
 - **Prediction calculator** — set a target H-index and growth rate, see an estimated timeline
 - **Auto-generated action items** — near-miss papers, publication cadence, venue strategy
-- **Google / Apple sign-in** — alongside email+password (Apple requires your own paid Apple Developer account to activate, see `docs/SETUP.md`)
+- **Google sign-in** — alongside email+password (needs a free Google Cloud OAuth client to activate, see `docs/SETUP.md`)
 - **Demo mode** — the whole app works instantly with sample data, no signup or database required
 
 ## Stack

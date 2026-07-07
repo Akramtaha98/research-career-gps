@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const store = require('../services/store');
-const { verifyGoogleToken, verifyAppleToken } = require('../services/socialAuth');
+const { verifyGoogleToken } = require('../services/socialAuth');
 
 function signToken(user) {
   return jwt.sign({ sub: user.id, email: user.email }, process.env.JWT_SECRET, {
@@ -113,25 +113,4 @@ async function googleLogin(req, res) {
   }
 }
 
-/**
- * POST /api/auth/apple
- * Body: { idToken, name? } — idToken is Apple's identityToken. `name` is
- * optional: Apple only includes the user's name in the one-time payload on
- * their very first sign-in, which the frontend must capture and forward
- * since it's never included in the token itself.
- */
-async function appleLogin(req, res) {
-  try {
-    const { idToken, name } = req.body;
-    if (!idToken) return res.status(400).json({ error: 'idToken is required' });
-
-    const { email } = await verifyAppleToken(idToken);
-    const user = await findOrCreateSocialUser({ email, name, provider: 'apple' });
-    const token = signToken(user);
-    return res.json({ token, user: sanitizeUser(user) });
-  } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
-  }
-}
-
-module.exports = { signup, login, me, googleLogin, appleLogin };
+module.exports = { signup, login, me, googleLogin };

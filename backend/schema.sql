@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS users (
   email         VARCHAR(255) UNIQUE NOT NULL,
   name          VARCHAR(255) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
-  -- 'local' (email+password), 'google', or 'apple'. Social accounts get an
-  -- unusable random password_hash placeholder — see authController.js.
+  -- 'local' (email+password) or 'google'. Social accounts get an unusable
+  -- random password_hash placeholder — see authController.js.
   auth_provider VARCHAR(20) NOT NULL DEFAULT 'local',
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
