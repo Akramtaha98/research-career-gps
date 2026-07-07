@@ -20,6 +20,19 @@ export function ResearcherProvider({ children }) {
     setError(null);
   }, []);
 
+  /** Search Semantic Scholar by name — returns lightweight candidates, no auth required. */
+  const searchByName = useCallback(async (name) => {
+    setError(null);
+    try {
+      const { data } = await client.get('/researchers/search', { params: { q: name } });
+      return data.candidates;
+    } catch (err) {
+      const message = err.response?.data?.error || err.message || 'Search failed';
+      setError(message);
+      throw new Error(message);
+    }
+  }, []);
+
   /** Look up (and persist, if logged in) a real Semantic Scholar author. */
   const lookupResearcher = useCallback(async (semanticScholarId) => {
     setLoading(true);
@@ -64,7 +77,18 @@ export function ResearcherProvider({ children }) {
 
   return (
     <ResearcherContext.Provider
-      value={{ source, researcher, papers, history, loading, error, useDemo, lookupResearcher, refreshResearcher }}
+      value={{
+        source,
+        researcher,
+        papers,
+        history,
+        loading,
+        error,
+        useDemo,
+        searchByName,
+        lookupResearcher,
+        refreshResearcher,
+      }}
     >
       {children}
     </ResearcherContext.Provider>

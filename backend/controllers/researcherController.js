@@ -1,6 +1,25 @@
 const store = require('../services/store');
-const { fetchAuthorProfile } = require('../services/semanticScholar');
+const { fetchAuthorProfile, searchAuthors } = require('../services/semanticScholar');
 const { generateActionItems } = require('../utils/actionItems');
+
+/**
+ * GET /api/researchers/search?q=name
+ * Public (no auth) — lets a user find a researcher by name before deciding
+ * which one to track. Returns lightweight candidates, no papers/citations
+ * are stored until the user picks one via POST /api/researchers.
+ */
+async function searchResearchers(req, res) {
+  try {
+    const q = (req.query.q || '').trim();
+    if (!q) return res.status(400).json({ error: 'q is required' });
+    if (q.length < 2) return res.status(400).json({ error: 'q must be at least 2 characters' });
+
+    const candidates = await searchAuthors(q);
+    return res.json({ candidates });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
+}
 
 /**
  * POST /api/researchers
@@ -101,4 +120,4 @@ async function getActionItems(req, res) {
   }
 }
 
-module.exports = { addResearcher, getResearcher, listPapers, getActionItems };
+module.exports = { searchResearchers, addResearcher, getResearcher, listPapers, getActionItems };

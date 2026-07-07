@@ -1,6 +1,8 @@
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const store = require('../services/store');
+const { verifyGoogleToken, verifyAppleToken } = require('../services/socialAuth');
 
 function signToken(user) {
   return jwt.sign({ sub: user.id, email: user.email }, process.env.JWT_SECRET, {
@@ -9,7 +11,32 @@ function signToken(user) {
 }
 
 function sanitizeUser(user) {
-  return { id: user.id, email: user.email, name: user.name, created_at: user.created_at };
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    authProvider: user.auth_provider || 'local',
+    created_at: user.created_at,
+  };
+}
+
+/**
+ * Finds the user by email, or creates one for a social sign-in. Social
+ * accounts get a random, never-used password hash as a placeholder — they
+ * can only ever authenticate via their provider, never via /auth/login.
+ */
+async function findOrCreateSocialUser({ email, name, provider }) {
+  const existing = await store.findUserByEmail(email);
+  if (existing) return existing;
+
+  const placeholderPassword = crypto.randomUUID() + crypto.randomUUID();
+  const passwordHash = await bcrypt.hash(placeholderPassword, 10);
+  return store.createUser({
+    email,
+    name: name || email.split('@')[0],
+    passwordHash,
+    authProvider: provider,
+  });
 }
 
 async function signup(req, res) {
@@ -67,4 +94,44 @@ async function me(req, res) {
   return res.json({ user: sanitizeUser(user) });
 }
 
-module.exports = { signup, login, me };
+/**
+ * POST /api/auth/google
+ * Body: { idToken } — the credential returned by Google Identity Services
+ * on the frontend after the user picks their Google account.
+ */
+async function googleLogin(req, res) {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) return res.status(400).json({ error: 'idToken is required' });
+
+    const { email, name } = await verifyGoogleToken(idToken);
+    const user = await findOrCreateSocialUser({ email, name, provider: 'google' });
+    const token = signToken(user);
+    return res.json({ token, user: sanitizeUser(user) });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
+}
+
+/**
+ * POST /api/auth/apple
+ * Body: { idToken, name? } — idToken is Apple's identityToken. `name` is
+ * optional: Apple only includes the user's name in the one-time payload on
+ * their very first sign-in, which the frontend must capture and forward
+ * since it's never included in the token itself.
+ */
+async function appleLogin(req, res) {
+  try {
+    const { idToken, name } = req.body;
+    if (!idToken) return res.status(400).json({ error: 'idToken is required' });
+
+    const { email } = await verifyAppleToken(idToken);
+    const user = await findOrCreateSocialUser({ email, name, provider: 'apple' });
+    const token = signToken(user);
+    return res.json({ token, user: sanitizeUser(user) });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
+}
+
+module.exports = { signup, login, me, googleLogin, appleLogin };

@@ -1,5 +1,6 @@
 const express = require('express');
 const {
+  searchResearchers,
   addResearcher,
   getResearcher,
   listPapers,
@@ -8,6 +9,9 @@ const {
 const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
+
+// Public — name search doesn't touch user data or require an account.
+router.get('/search', searchResearchers);
 
 router.use(requireAuth);
 

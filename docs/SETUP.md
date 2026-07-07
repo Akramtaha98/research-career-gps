@@ -59,6 +59,29 @@ FRONTEND_ORIGIN=<your deployed frontend URL>
 
 ---
 
+## Social sign-in (optional)
+
+Both are optional — email/password auth works without either configured. Buttons show as "not configured" placeholders until you set the corresponding env vars.
+
+### Google Sign-In (free)
+1. Go to console.cloud.google.com/apis/credentials → create a project if you don't have one.
+2. "Create Credentials" → "OAuth client ID" → Application type: **Web application**.
+3. Under "Authorized JavaScript origins" add `http://localhost:5173` (dev) and your deployed frontend URL (prod).
+4. Copy the generated Client ID.
+5. Set it as **both**:
+   - `GOOGLE_CLIENT_ID` in `backend/.env`
+   - `VITE_GOOGLE_CLIENT_ID` in `frontend/.env`
+6. Restart both servers. No client secret is needed — the frontend gets an ID token directly from Google and the backend verifies its signature.
+
+### Apple Sign In (requires a paid Apple Developer account, $99/year)
+1. Enroll at developer.apple.com/programs if you haven't.
+2. In "Certificates, Identifiers & Profiles" → Identifiers → create an **App ID** with the "Sign in with Apple" capability enabled.
+3. Create a **Services ID** (this is your `APPLE_CLIENT_ID` / `VITE_APPLE_CLIENT_ID`) and configure it for "Sign in with Apple", registering your domain and return URLs (Apple requires HTTPS in production — localhost has limited support for testing).
+4. Set `APPLE_CLIENT_ID` in `backend/.env` and `VITE_APPLE_CLIENT_ID` + `VITE_APPLE_REDIRECT_URI` in `frontend/.env`.
+5. No client secret is needed for identity verification (only for refresh-token flows, which this app doesn't use).
+
+Note: Apple Sign In fundamentally will not work until you have real domain verification set up — it's not something that can be faked or tested purely locally the way Google's flow can.
+
 ## Beta testing
 
 1. Share the Vercel URL with your first 20-30 users (labmates, Twitter/LinkedIn, r/PhD, r/gradschool — post text is your call since it's outward-facing communication I shouldn't draft and send on your behalf without your review).

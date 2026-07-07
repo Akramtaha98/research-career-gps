@@ -4,9 +4,10 @@
 Open the app and click **"Use demo data"** on the search page. You'll see a sample researcher profile with 22 papers, an H-index history, and the full dashboard/predictor/action-items experience — a quick way to see what the tool does before connecting your own data.
 
 ## 2. Track your own H-index
-1. Click **Sign up**, create an account with your email.
-2. On the Search page, find your Semantic Scholar Author ID: go to semanticscholar.org, search your name, open your profile — the ID is the number in the URL (`semanticscholar.org/author/Your-Name/1741101`).
-3. Enter the ID and click **Look up researcher**. Your real papers and citation counts load into the dashboard.
+1. Click **Sign up** (email/password, or Google/Apple if your instance has social sign-in configured).
+2. On the Search page, just type your name — no need to look up an ID yourself. Semantic Scholar search runs automatically.
+3. Since names aren't unique, you'll see a list of matching authors with affiliation, paper count, and citation count to help you tell them apart. Click the right one.
+4. Your real papers and citation counts load into the dashboard. If you already know your numeric Semantic Scholar Author ID, you can paste that directly instead of a name to skip the disambiguation step.
 
 ## 3. Dashboard
 Shows your current H-index, total citations, tracked paper count, and average citations per paper, plus a chart of H-index growth over time and a table of your top-cited papers. Click **Refresh from Semantic Scholar** any time to pull the latest citation counts.

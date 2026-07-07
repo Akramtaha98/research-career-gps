@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import client from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import SocialLogin from '../components/SocialLogin';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -62,6 +63,20 @@ export default function Login() {
             {submitting ? 'Logging in...' : 'Log in'}
           </button>
         </form>
+
+        <div className="my-5 flex items-center gap-3">
+          <div className="h-px flex-1 bg-slate-200" />
+          <span className="text-xs text-slate-400">or</span>
+          <div className="h-px flex-1 bg-slate-200" />
+        </div>
+
+        <SocialLogin
+          onSuccess={(token, user) => {
+            login(token, user);
+            navigate('/dashboard');
+          }}
+          onError={setError}
+        />
 
         <p className="mt-6 text-sm text-slate-500 text-center">
           No account? <Link to="/signup" className="text-brand-600 font-semibold">Sign up</Link>

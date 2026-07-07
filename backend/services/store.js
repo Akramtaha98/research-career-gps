@@ -24,12 +24,13 @@ const memory = {
 };
 
 const memoryStore = {
-  async createUser({ email, name, passwordHash }) {
+  async createUser({ email, name, passwordHash, authProvider = 'local' }) {
     const user = {
       id: uuid(),
       email,
       name,
       password_hash: passwordHash,
+      auth_provider: authProvider,
       created_at: new Date().toISOString(),
     };
     memory.users.push(user);
@@ -132,10 +133,10 @@ const memoryStore = {
 // Postgres-backed store
 // ---------------------------------------------------------------------------
 const pgStore = {
-  async createUser({ email, name, passwordHash }) {
+  async createUser({ email, name, passwordHash, authProvider = 'local' }) {
     const { rows } = await query(
-      `INSERT INTO users (email, name, password_hash) VALUES ($1, $2, $3) RETURNING *`,
-      [email, name, passwordHash]
+      `INSERT INTO users (email, name, password_hash, auth_provider) VALUES ($1, $2, $3, $4) RETURNING *`,
+      [email, name, passwordHash, authProvider]
     );
     return rows[0];
   },

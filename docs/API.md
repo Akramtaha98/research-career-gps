@@ -28,9 +28,22 @@ Body: `{ email, password }`
 ### GET /api/auth/me
 Auth required. Returns the current user.
 
+### POST /api/auth/google
+Body: `{ idToken }` — the credential returned by Google Identity Services on the frontend after the user picks their Google account.
+200 → `{ token, user }`. Creates the user on first sign-in. Requires `GOOGLE_CLIENT_ID` to be set; returns 501 if not configured, 401 if the token is invalid/expired.
+
+### POST /api/auth/apple
+Body: `{ idToken, name? }` — `idToken` is Apple's `identityToken`. `name` is optional and only meaningful on the user's very first Apple sign-in (Apple omits it from later tokens; the frontend forwards it from the one-time `user` payload Apple provides).
+200 → `{ token, user }`. Requires `APPLE_CLIENT_ID`; returns 501 if not configured, 401 if the token is invalid/expired.
+
 ---
 
 ## Researchers
+
+### GET /api/researchers/search?q=name
+No auth required. Searches Semantic Scholar by name and returns lightweight candidates for disambiguation (multiple people can share a name).
+200 → `{ candidates: [{ semanticScholarId, name, affiliations, paperCount, citationCount, hIndex }, ...] }`
+400 if `q` is missing or under 2 characters.
 
 ### POST /api/researchers
 Auth required. Body: `{ semanticScholarId }`

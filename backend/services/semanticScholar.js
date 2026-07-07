@@ -78,4 +78,37 @@ async function fetchAuthorProfile(semanticScholarId, { retry = true } = {}) {
   }
 }
 
-module.exports = { fetchAuthorProfile };
+/**
+ * Search Semantic Scholar for authors matching a name, so users can find
+ * researchers without needing to already know their numeric Author ID.
+ * Returns lightweight candidates for a disambiguation UI — full paper data
+ * is fetched separately via fetchAuthorProfile once the user picks one.
+ */
+async function searchAuthors(query, { retry = true } = {}) {
+  const fields = ['name', 'affiliations', 'paperCount', 'citationCount', 'hIndex'].join(',');
+
+  try {
+    const { data } = await client.get('/author/search', {
+      params: { query, fields },
+    });
+
+    return (data.data || []).map((a) => ({
+      semanticScholarId: a.authorId,
+      name: a.name || 'Unknown',
+      affiliations: a.affiliations || [],
+      paperCount: a.paperCount || 0,
+      citationCount: a.citationCount || 0,
+      hIndex: a.hIndex || 0,
+    }));
+  } catch (err) {
+    if (err.response && err.response.status === 429 && retry) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      return searchAuthors(query, { retry: false });
+    }
+    const wrapped = new Error(`Semantic Scholar search failed: ${err.message}`);
+    wrapped.statusCode = err.response ? err.response.status : 502;
+    throw wrapped;
+  }
+}
+
+module.exports = { fetchAuthorProfile, searchAuthors };

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import client from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import SocialLogin from '../components/SocialLogin';
 
 export default function Signup() {
   const [name, setName] = useState('');
@@ -53,6 +54,20 @@ export default function Signup() {
             {submitting ? 'Creating account...' : 'Sign up'}
           </button>
         </form>
+
+        <div className="my-5 flex items-center gap-3">
+          <div className="h-px flex-1 bg-slate-200" />
+          <span className="text-xs text-slate-400">or</span>
+          <div className="h-px flex-1 bg-slate-200" />
+        </div>
+
+        <SocialLogin
+          onSuccess={(token, socialUser) => {
+            login(token, socialUser);
+            navigate('/search');
+          }}
+          onError={setError}
+        />
 
         <p className="mt-6 text-sm text-slate-500 text-center">
           Already have an account? <Link to="/login" className="text-brand-600 font-semibold">Log in</Link>
