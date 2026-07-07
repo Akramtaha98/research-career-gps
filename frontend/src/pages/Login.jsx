@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import client from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import SocialLogin from '../components/SocialLogin';
@@ -11,6 +12,7 @@ export default function Login() {
   const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -21,7 +23,7 @@ export default function Login() {
       login(data.token, data.user);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed');
+      setError(err.response?.data?.error || t('login.errorFallback'));
     } finally {
       setSubmitting(false);
     }
@@ -30,43 +32,43 @@ export default function Login() {
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4">
       <div className="card w-full max-w-md">
-        <h1 className="text-2xl font-bold text-slate-900">Welcome back</h1>
-        <p className="mt-1 text-sm text-slate-500">Log in to track and predict your H-index growth.</p>
+        <h1 className="text-2xl font-bold text-slate-900">{t('login.title')}</h1>
+        <p className="mt-1 text-sm text-slate-500">{t('login.subtitle')}</p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">{t('login.email')}</label>
             <input
               type="email"
               required
               className="input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@university.edu"
+              placeholder={t('login.emailPlaceholder')}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">{t('login.password')}</label>
             <input
               type="password"
               required
               className="input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder={t('login.passwordPlaceholder')}
             />
           </div>
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
           <button type="submit" disabled={submitting} className="btn-primary w-full">
-            {submitting ? 'Logging in...' : 'Log in'}
+            {submitting ? t('login.submitting') : t('login.submit')}
           </button>
         </form>
 
         <div className="my-5 flex items-center gap-3">
           <div className="h-px flex-1 bg-slate-200" />
-          <span className="text-xs text-slate-400">or</span>
+          <span className="text-xs text-slate-400">{t('login.or')}</span>
           <div className="h-px flex-1 bg-slate-200" />
         </div>
 
@@ -79,10 +81,10 @@ export default function Login() {
         />
 
         <p className="mt-6 text-sm text-slate-500 text-center">
-          No account? <Link to="/signup" className="text-brand-600 font-semibold">Sign up</Link>
+          {t('login.noAccount')} <Link to="/signup" className="text-brand-600 font-semibold">{t('login.signUp')}</Link>
         </p>
         <p className="mt-2 text-xs text-slate-400 text-center">
-          Just exploring? <Link to="/dashboard" className="underline">View demo dashboard</Link> — no login needed.
+          {t('login.demoPrompt')} <Link to="/dashboard" className="underline">{t('login.demoLink')}</Link> {t('login.demoSuffix')}
         </p>
       </div>
     </div>

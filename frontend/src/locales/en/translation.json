@@ -1,0 +1,184 @@
+{
+  "nav": {
+    "brand": "Research Career GPS",
+    "search": "Search",
+    "dashboard": "Dashboard",
+    "predictor": "Predictor",
+    "actions": "Actions",
+    "logout": "Log out",
+    "login": "Log in"
+  },
+  "footer": {
+    "tagline": "Research Career GPS — MVP"
+  },
+  "common": {
+    "loading": "Loading..."
+  },
+  "login": {
+    "title": "Welcome back",
+    "subtitle": "Log in to track and predict your H-index growth.",
+    "email": "Email",
+    "emailPlaceholder": "you@university.edu",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Log in",
+    "submitting": "Logging in...",
+    "or": "or",
+    "noAccount": "No account?",
+    "signUp": "Sign up",
+    "demoPrompt": "Just exploring?",
+    "demoLink": "View demo dashboard",
+    "demoSuffix": "— no login needed.",
+    "errorFallback": "Login failed"
+  },
+  "signup": {
+    "title": "Create your account",
+    "subtitle": "Start tracking your research career trajectory.",
+    "name": "Name",
+    "namePlaceholder": "Dr. Jane Doe",
+    "email": "Email",
+    "emailPlaceholder": "you@university.edu",
+    "password": "Password",
+    "passwordPlaceholder": "At least 8 characters",
+    "submit": "Sign up",
+    "submitting": "Creating account...",
+    "haveAccount": "Already have an account?",
+    "logIn": "Log in",
+    "errorFallback": "Signup failed"
+  },
+  "socialLogin": {
+    "notConfigured": "Continue with Google (not configured)",
+    "notConfiguredTitle": "Set VITE_GOOGLE_CLIENT_ID / GOOGLE_CLIENT_ID to enable — see docs/SETUP.md",
+    "errorFallback": "Google sign-in failed"
+  },
+  "search": {
+    "title": "Find a researcher",
+    "subtitle": "Search by name to pull real citation data from Semantic Scholar, or explore with demo data first.",
+    "label": "Researcher name or Semantic Scholar ID",
+    "placeholder": "e.g. Oren Etzioni",
+    "hint": "Enter a name to search, or paste a numeric Semantic Scholar Author ID directly.",
+    "loginRequired": "You'll need to log in to save a real researcher lookup.",
+    "searchBtn": "Search",
+    "searching": "Searching...",
+    "fetching": "Fetching...",
+    "demoBtn": "Use demo data",
+    "matchesFound_one": "{{count}} match — pick the right one",
+    "matchesFound_other": "{{count}} matches — pick the right one",
+    "noMatches": "No matches found",
+    "papers": "papers",
+    "citations": "citations",
+    "hIndexLabel": "h-index",
+    "select": "Select →",
+    "pickLoading": "Loading..."
+  },
+  "dashboard": {
+    "demoData": "Demo data",
+    "semanticScholarId": "Semantic Scholar ID",
+    "refresh": "Refresh from Semantic Scholar",
+    "refreshing": "Refreshing...",
+    "hIndex": "H-index",
+    "totalCitations": "Total citations",
+    "trackedPapers": "Tracked papers",
+    "avgCitations": "Avg. citations / paper",
+    "growthTitle": "H-index growth over time",
+    "notEnoughHistoryTitle": "Not enough history yet",
+    "notEnoughHistoryDesc": "We only have one snapshot so far. Come back after refreshing this researcher a few times over the coming weeks/months to see a growth trend here.",
+    "topPapersTitle": "Top cited papers",
+    "colTitle": "Title",
+    "colYear": "Year",
+    "colVenue": "Venue",
+    "colCitations": "Citations",
+    "emptyTitle": "No papers tracked yet for {{name}}",
+    "emptyDesc": "Semantic Scholar doesn't have any papers indexed for this profile yet, or this is a brand-new researcher ID. Metrics and charts will populate once papers with citations are indexed.",
+    "emptyRefresh": "Try refreshing from Semantic Scholar"
+  },
+  "predictor": {
+    "title": "H-index Predictor",
+    "subtitle": "Project when you'll hit your target H-index based on citation growth and publication rate.",
+    "noPapersWarning": "This researcher has no tracked papers yet, so this projection is based purely on new papers you plan to publish — it won't reflect any existing body of work. Look up a researcher with papers, or use demo data, for a more realistic projection.",
+    "targetH": "Target H-index (current: {{current}})",
+    "monthlyRate": "Avg. new citations / paper / month",
+    "papersPerYear": "New papers / year",
+    "targetVenue": "Target venue for future papers",
+    "optional": "(optional)",
+    "venueTooltip": "Sets a multiplier on how fast NEW papers you publish going forward earn citations — Top venue (3x) and Strong venue (2x) speed up the projection, Emerging venue (0.5x) slows it down. It does not change citations on papers you've already published.",
+    "venuePlaceholder": "e.g. NeurIPS, IEEE Transactions...",
+    "venueSuggest": "\"{{venue}}\" looks like a {{tier}} venue — apply?",
+    "venueHint": "A rough heuristic, not a real impact-factor database — only affects how fast new papers you publish going forward accumulate citations.",
+    "save": "Save this prediction",
+    "saving": "Saving...",
+    "saveLoginRequired": "Log in and look up a real researcher to save predictions.",
+    "saveSuccess": "Prediction saved.",
+    "saveFailed": "Failed to save prediction",
+    "reachedTitle": "Estimated time to reach H-index {{target}}",
+    "reachedMonths": "{{months}} mo",
+    "reachedYears": "≈ {{years}} years, at current rates",
+    "notReachedTitle": "Not reachable within 20 years at this rate",
+    "notReachedDesc": "Try increasing citation growth or publication rate.",
+    "pathTitle": "Projected H-index path",
+    "now": "Now"
+  },
+  "actions": {
+    "title": "Action Items",
+    "subtitle": "Auto-generated recommendations for {{name}} based on current citation data.",
+    "emptyTitle": "No papers to analyze yet",
+    "emptyDesc": "Once this researcher has tracked papers with citations, you'll see prioritized recommendations here — near-miss papers, publication cadence, and venue strategy.",
+    "collabTitle": "Collaboration advisor",
+    "collabSubtitle": "Your most frequent co-authors, ranked by their own h-index — real collaboration history, not guesses."
+  },
+  "actionItems": {
+    "nearMiss": {
+      "title": "Promote \"{{title}}\"",
+      "desc_one": "Only {{count}} more citation needed to help push your H-index to {{next}}. Share it, present it, or cite it in upcoming work.",
+      "desc_other": "Only {{count}} more citations needed to help push your H-index to {{next}}. Share it, present it, or cite it in upcoming work."
+    },
+    "lowCitation": {
+      "title": "Boost visibility of low-citation papers",
+      "desc": "{{count}} of your papers have 0-1 citations. Consider co-authoring follow-ups or posting preprints to relevant communities."
+    },
+    "venueStrategy": {
+      "title": "Target higher-impact venues",
+      "desc": "Prioritize your strongest work-in-progress for the highest-impact venue in your subfield."
+    },
+    "outputCadence": {
+      "title": "Increase publication cadence",
+      "desc": "You've published {{count}} paper(s) in the last 2 years. Aim for 2-3 submissions per year for sustained growth."
+    },
+    "summary": {
+      "title": "Current H-index: {{h}}",
+      "desc": "{{count}} tracked papers. Focus on near-miss papers first, then output cadence and venue strategy."
+    },
+    "priority": {
+      "high": "high",
+      "medium": "medium",
+      "low": "low",
+      "info": "info"
+    }
+  },
+  "collaboration": {
+    "analyzing": "Analyzing co-author network...",
+    "notEnough": "Not enough co-authorship data to suggest collaborators yet.",
+    "papersTogether_one": "{{count}} paper together",
+    "papersTogether_other": "{{count}} papers together",
+    "strongTrack": "Strong track record"
+  },
+  "upgrade": {
+    "isPro": "{{feature}} is a Pro feature",
+    "desc": "Upgrade to Pro ($4.99/mo) to unlock predictions and the collaboration advisor.",
+    "cta": "Upgrade to Pro",
+    "redirecting": "Redirecting...",
+    "checkoutError": "Could not start checkout",
+    "predictorFeature": "The predictor",
+    "collabFeature": "The collaboration advisor"
+  },
+  "chart": {
+    "historyLabel": "H-index (history)",
+    "projectionLabel": "H-index (projected)"
+  },
+  "venueTiers": {
+    "top": "Top venue",
+    "strong": "Strong venue",
+    "average": "Average venue",
+    "emerging": "Emerging venue"
+  }
+}

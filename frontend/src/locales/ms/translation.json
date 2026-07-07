@@ -1,0 +1,184 @@
+{
+  "nav": {
+    "brand": "Research Career GPS",
+    "search": "Cari",
+    "dashboard": "Papan Pemuka",
+    "predictor": "Peramal",
+    "actions": "Tindakan",
+    "logout": "Log keluar",
+    "login": "Log masuk"
+  },
+  "footer": {
+    "tagline": "Research Career GPS — MVP"
+  },
+  "common": {
+    "loading": "Sedang memuatkan..."
+  },
+  "login": {
+    "title": "Selamat kembali",
+    "subtitle": "Log masuk untuk menjejaki dan meramal pertumbuhan indeks-H anda.",
+    "email": "E-mel",
+    "emailPlaceholder": "anda@universiti.edu",
+    "password": "Kata laluan",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Log masuk",
+    "submitting": "Sedang log masuk...",
+    "or": "atau",
+    "noAccount": "Belum ada akaun?",
+    "signUp": "Daftar",
+    "demoPrompt": "Sekadar meninjau?",
+    "demoLink": "Lihat papan pemuka demo",
+    "demoSuffix": "— tiada log masuk diperlukan.",
+    "errorFallback": "Log masuk gagal"
+  },
+  "signup": {
+    "title": "Cipta akaun anda",
+    "subtitle": "Mula menjejaki trajektori kerjaya penyelidikan anda.",
+    "name": "Nama",
+    "namePlaceholder": "Dr. Jane Doe",
+    "email": "E-mel",
+    "emailPlaceholder": "anda@universiti.edu",
+    "password": "Kata laluan",
+    "passwordPlaceholder": "Sekurang-kurangnya 8 aksara",
+    "submit": "Daftar",
+    "submitting": "Sedang mencipta akaun...",
+    "haveAccount": "Sudah ada akaun?",
+    "logIn": "Log masuk",
+    "errorFallback": "Pendaftaran gagal"
+  },
+  "socialLogin": {
+    "notConfigured": "Teruskan dengan Google (belum dikonfigurasi)",
+    "notConfiguredTitle": "Tetapkan VITE_GOOGLE_CLIENT_ID / GOOGLE_CLIENT_ID untuk mengaktifkan — lihat docs/SETUP.md",
+    "errorFallback": "Log masuk Google gagal"
+  },
+  "search": {
+    "title": "Cari penyelidik",
+    "subtitle": "Cari mengikut nama untuk mendapatkan data petikan sebenar daripada Semantic Scholar, atau terokai dahulu dengan data demo.",
+    "label": "Nama penyelidik atau ID Semantic Scholar",
+    "placeholder": "cth. Oren Etzioni",
+    "hint": "Masukkan nama untuk mencari, atau tampal terus ID Pengarang Semantic Scholar berangka.",
+    "loginRequired": "Anda perlu log masuk untuk menyimpan carian penyelidik sebenar.",
+    "searchBtn": "Cari",
+    "searching": "Sedang mencari...",
+    "fetching": "Sedang mengambil data...",
+    "demoBtn": "Guna data demo",
+    "matchesFound_one": "{{count}} padanan — pilih yang betul",
+    "matchesFound_other": "{{count}} padanan — pilih yang betul",
+    "noMatches": "Tiada padanan ditemui",
+    "papers": "kertas kerja",
+    "citations": "petikan",
+    "hIndexLabel": "indeks-h",
+    "select": "Pilih →",
+    "pickLoading": "Sedang memuatkan..."
+  },
+  "dashboard": {
+    "demoData": "Data demo",
+    "semanticScholarId": "ID Semantic Scholar",
+    "refresh": "Kemas kini daripada Semantic Scholar",
+    "refreshing": "Sedang mengemas kini...",
+    "hIndex": "Indeks-H",
+    "totalCitations": "Jumlah petikan",
+    "trackedPapers": "Kertas kerja dijejaki",
+    "avgCitations": "Purata petikan / kertas kerja",
+    "growthTitle": "Pertumbuhan indeks-H mengikut masa",
+    "notEnoughHistoryTitle": "Sejarah masih tidak mencukupi",
+    "notEnoughHistoryDesc": "Kami hanya mempunyai satu tangkapan data setakat ini. Kembali selepas mengemas kini penyelidik ini beberapa kali dalam minggu/bulan akan datang untuk melihat trend pertumbuhan di sini.",
+    "topPapersTitle": "Kertas kerja paling banyak dipetik",
+    "colTitle": "Tajuk",
+    "colYear": "Tahun",
+    "colVenue": "Penerbitan",
+    "colCitations": "Petikan",
+    "emptyTitle": "Belum ada kertas kerja dijejaki untuk {{name}}",
+    "emptyDesc": "Semantic Scholar belum mempunyai sebarang kertas kerja diindeks untuk profil ini, atau ini adalah ID penyelidik yang baharu sepenuhnya. Metrik dan carta akan dipenuhi sebaik sahaja kertas kerja dengan petikan diindeks.",
+    "emptyRefresh": "Cuba kemas kini daripada Semantic Scholar"
+  },
+  "predictor": {
+    "title": "Peramal Indeks-H",
+    "subtitle": "Ramalkan bila anda akan mencapai indeks-H sasaran berdasarkan pertumbuhan petikan dan kadar penerbitan.",
+    "noPapersWarning": "Penyelidik ini belum mempunyai kertas kerja dijejaki, jadi unjuran ini semata-mata berdasarkan kertas kerja baharu yang anda rancang untuk diterbitkan — ia tidak akan mencerminkan sebarang hasil kerja sedia ada. Cari penyelidik yang mempunyai kertas kerja, atau guna data demo, untuk unjuran yang lebih realistik.",
+    "targetH": "Indeks-H sasaran (semasa: {{current}})",
+    "monthlyRate": "Purata petikan baharu / kertas kerja / bulan",
+    "papersPerYear": "Kertas kerja baharu / tahun",
+    "targetVenue": "Penerbitan sasaran untuk kertas kerja akan datang",
+    "optional": "(pilihan)",
+    "venueTooltip": "Menetapkan pengganda tentang kelajuan kertas kerja BAHARU yang anda terbitkan pada masa hadapan memperoleh petikan — Penerbitan teratas (x3) dan Penerbitan kukuh (x2) mempercepatkan unjuran, Penerbitan baharu muncul (x0.5) memperlahankannya. Ini tidak mengubah petikan kertas kerja yang telah anda terbitkan.",
+    "venuePlaceholder": "cth. NeurIPS, IEEE Transactions...",
+    "venueSuggest": "\"{{venue}}\" kelihatan seperti penerbitan tahap {{tier}} — guna?",
+    "venueHint": "Anggaran kasar, bukan pangkalan data faktor impak sebenar — hanya mempengaruhi kelajuan kertas kerja baharu yang anda terbitkan pada masa hadapan mengumpul petikan.",
+    "save": "Simpan ramalan ini",
+    "saving": "Sedang menyimpan...",
+    "saveLoginRequired": "Log masuk dan cari penyelidik sebenar untuk menyimpan ramalan.",
+    "saveSuccess": "Ramalan disimpan.",
+    "saveFailed": "Gagal menyimpan ramalan",
+    "reachedTitle": "Anggaran masa untuk mencapai indeks-H {{target}}",
+    "reachedMonths": "{{months}} bulan",
+    "reachedYears": "≈ {{years}} tahun, pada kadar semasa",
+    "notReachedTitle": "Tidak dapat dicapai dalam masa 20 tahun pada kadar ini",
+    "notReachedDesc": "Cuba tingkatkan pertumbuhan petikan atau kadar penerbitan.",
+    "pathTitle": "Trajektori indeks-H yang diunjurkan",
+    "now": "Sekarang"
+  },
+  "actions": {
+    "title": "Item Tindakan",
+    "subtitle": "Cadangan yang dijana secara automatik untuk {{name}} berdasarkan data petikan semasa.",
+    "emptyTitle": "Belum ada kertas kerja untuk dianalisis",
+    "emptyDesc": "Sebaik sahaja penyelidik ini mempunyai kertas kerja dijejaki dengan petikan, anda akan melihat cadangan mengikut keutamaan di sini — kertas kerja hampir mencapai ambang, kadar penerbitan, dan strategi penerbitan.",
+    "collabTitle": "Penasihat Kolaborasi",
+    "collabSubtitle": "Rakan pengarang bersama anda yang paling kerap, disusun mengikut indeks-h mereka sendiri — sejarah kolaborasi sebenar, bukan tekaan."
+  },
+  "actionItems": {
+    "nearMiss": {
+      "title": "Promosikan \"{{title}}\"",
+      "desc_one": "Hanya {{count}} lagi petikan diperlukan untuk membantu menaikkan indeks-H anda kepada {{next}}. Kongsikannya, bentangkannya, atau petik dalam kerja akan datang.",
+      "desc_other": "Hanya {{count}} lagi petikan diperlukan untuk membantu menaikkan indeks-H anda kepada {{next}}. Kongsikannya, bentangkannya, atau petik dalam kerja akan datang."
+    },
+    "lowCitation": {
+      "title": "Tingkatkan keterlihatan kertas kerja berpetikan rendah",
+      "desc": "{{count}} daripada kertas kerja anda mempunyai 0-1 petikan. Pertimbangkan pengarang bersama untuk kerja susulan atau menerbitkan pracetak dalam komuniti berkaitan."
+    },
+    "venueStrategy": {
+      "title": "Sasarkan penerbitan berimpak lebih tinggi",
+      "desc": "Utamakan kerja sedang berjalan anda yang paling kukuh untuk penerbitan paling berimpak dalam sub-bidang anda."
+    },
+    "outputCadence": {
+      "title": "Tingkatkan kadar penerbitan",
+      "desc": "Anda telah menerbitkan {{count}} kertas kerja dalam 2 tahun kebelakangan. Sasarkan 2-3 penyerahan setahun untuk pertumbuhan yang berterusan."
+    },
+    "summary": {
+      "title": "Indeks-H semasa: {{h}}",
+      "desc": "{{count}} kertas kerja dijejaki. Fokus dahulu pada kertas kerja hampir mencapai ambang, kemudian kadar penerbitan dan strategi penerbitan."
+    },
+    "priority": {
+      "high": "tinggi",
+      "medium": "sederhana",
+      "low": "rendah",
+      "info": "info"
+    }
+  },
+  "collaboration": {
+    "analyzing": "Sedang menganalisis rangkaian rakan pengarang...",
+    "notEnough": "Data pengarang bersama masih tidak mencukupi untuk mencadangkan kolaborator.",
+    "papersTogether_one": "{{count}} kertas kerja bersama",
+    "papersTogether_other": "{{count}} kertas kerja bersama",
+    "strongTrack": "Rekod prestasi kukuh"
+  },
+  "upgrade": {
+    "isPro": "{{feature}} ialah ciri Pro",
+    "desc": "Naik taraf ke Pro ($4.99/bulan) untuk membuka kunci ramalan dan penasihat kolaborasi.",
+    "cta": "Naik taraf ke Pro",
+    "redirecting": "Sedang mengalih hala...",
+    "checkoutError": "Tidak dapat memulakan pembayaran",
+    "predictorFeature": "Peramal",
+    "collabFeature": "Penasihat kolaborasi"
+  },
+  "chart": {
+    "historyLabel": "Indeks-H (sejarah)",
+    "projectionLabel": "Indeks-H (diunjurkan)"
+  },
+  "venueTiers": {
+    "top": "Penerbitan teratas",
+    "strong": "Penerbitan kukuh",
+    "average": "Penerbitan purata",
+    "emerging": "Penerbitan baharu muncul"
+  }
+}

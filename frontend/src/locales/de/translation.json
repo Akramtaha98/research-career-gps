@@ -1,0 +1,184 @@
+{
+  "nav": {
+    "brand": "Research Career GPS",
+    "search": "Suche",
+    "dashboard": "Dashboard",
+    "predictor": "Prognose",
+    "actions": "Aufgaben",
+    "logout": "Abmelden",
+    "login": "Anmelden"
+  },
+  "footer": {
+    "tagline": "Research Career GPS — MVP"
+  },
+  "common": {
+    "loading": "Wird geladen..."
+  },
+  "login": {
+    "title": "Willkommen zurück",
+    "subtitle": "Melde dich an, um dein H-Index-Wachstum zu verfolgen und vorherzusagen.",
+    "email": "E-Mail",
+    "emailPlaceholder": "du@universitaet.edu",
+    "password": "Passwort",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Anmelden",
+    "submitting": "Anmeldung läuft...",
+    "or": "oder",
+    "noAccount": "Noch kein Konto?",
+    "signUp": "Registrieren",
+    "demoPrompt": "Nur am Erkunden?",
+    "demoLink": "Demo-Dashboard ansehen",
+    "demoSuffix": "— keine Anmeldung nötig.",
+    "errorFallback": "Anmeldung fehlgeschlagen"
+  },
+  "signup": {
+    "title": "Konto erstellen",
+    "subtitle": "Beginne, deinen Forschungskarriereweg zu verfolgen.",
+    "name": "Name",
+    "namePlaceholder": "Dr. Jane Doe",
+    "email": "E-Mail",
+    "emailPlaceholder": "du@universitaet.edu",
+    "password": "Passwort",
+    "passwordPlaceholder": "Mindestens 8 Zeichen",
+    "submit": "Registrieren",
+    "submitting": "Konto wird erstellt...",
+    "haveAccount": "Bereits ein Konto?",
+    "logIn": "Anmelden",
+    "errorFallback": "Registrierung fehlgeschlagen"
+  },
+  "socialLogin": {
+    "notConfigured": "Mit Google fortfahren (nicht konfiguriert)",
+    "notConfiguredTitle": "Setze VITE_GOOGLE_CLIENT_ID / GOOGLE_CLIENT_ID zur Aktivierung — siehe docs/SETUP.md",
+    "errorFallback": "Google-Anmeldung fehlgeschlagen"
+  },
+  "search": {
+    "title": "Forscher finden",
+    "subtitle": "Suche nach Namen, um echte Zitationsdaten von Semantic Scholar abzurufen, oder erkunde zunächst mit Demodaten.",
+    "label": "Name des Forschers oder Semantic-Scholar-ID",
+    "placeholder": "z. B. Oren Etzioni",
+    "hint": "Gib einen Namen zur Suche ein oder füge direkt eine numerische Semantic-Scholar-Autoren-ID ein.",
+    "loginRequired": "Du musst dich anmelden, um die Suche nach einem echten Forscher zu speichern.",
+    "searchBtn": "Suchen",
+    "searching": "Suche läuft...",
+    "fetching": "Daten werden abgerufen...",
+    "demoBtn": "Demodaten verwenden",
+    "matchesFound_one": "{{count}} Treffer — wähle den richtigen aus",
+    "matchesFound_other": "{{count}} Treffer — wähle den richtigen aus",
+    "noMatches": "Keine Treffer gefunden",
+    "papers": "Publikationen",
+    "citations": "Zitationen",
+    "hIndexLabel": "H-Index",
+    "select": "Auswählen →",
+    "pickLoading": "Wird geladen..."
+  },
+  "dashboard": {
+    "demoData": "Demodaten",
+    "semanticScholarId": "Semantic-Scholar-ID",
+    "refresh": "Von Semantic Scholar aktualisieren",
+    "refreshing": "Wird aktualisiert...",
+    "hIndex": "H-Index",
+    "totalCitations": "Zitationen insgesamt",
+    "trackedPapers": "Erfasste Publikationen",
+    "avgCitations": "Ø Zitationen / Publikation",
+    "growthTitle": "H-Index-Wachstum im Zeitverlauf",
+    "notEnoughHistoryTitle": "Noch nicht genug Verlaufsdaten",
+    "notEnoughHistoryDesc": "Bisher gibt es nur eine Momentaufnahme. Komm zurück, nachdem du diesen Forscher in den kommenden Wochen/Monaten mehrmals aktualisiert hast, um hier einen Wachstumstrend zu sehen.",
+    "topPapersTitle": "Meistzitierte Publikationen",
+    "colTitle": "Titel",
+    "colYear": "Jahr",
+    "colVenue": "Publikationsort",
+    "colCitations": "Zitationen",
+    "emptyTitle": "Noch keine Publikationen erfasst für {{name}}",
+    "emptyDesc": "Semantic Scholar hat für dieses Profil noch keine Publikationen indexiert, oder es handelt sich um eine brandneue Forscher-ID. Kennzahlen und Diagramme werden gefüllt, sobald Publikationen mit Zitationen indexiert sind.",
+    "emptyRefresh": "Von Semantic Scholar aktualisieren versuchen"
+  },
+  "predictor": {
+    "title": "H-Index-Prognose",
+    "subtitle": "Prognostiziere, wann du deinen Ziel-H-Index basierend auf Zitationswachstum und Publikationsrate erreichst.",
+    "noPapersWarning": "Dieser Forscher hat noch keine erfassten Publikationen, daher basiert diese Prognose ausschließlich auf neuen Publikationen, die du planst — sie spiegelt kein bestehendes Werk wider. Suche einen Forscher mit Publikationen oder nutze Demodaten für eine realistischere Prognose.",
+    "targetH": "Ziel-H-Index (aktuell: {{current}})",
+    "monthlyRate": "Ø neue Zitationen / Publikation / Monat",
+    "papersPerYear": "Neue Publikationen / Jahr",
+    "targetVenue": "Zielpublikationsort für zukünftige Arbeiten",
+    "optional": "(optional)",
+    "venueTooltip": "Legt einen Multiplikator dafür fest, wie schnell NEUE Publikationen, die du künftig veröffentlichst, Zitationen erhalten — Top-Publikationsort (x3) und Starker Publikationsort (x2) beschleunigen die Prognose, Aufstrebender Publikationsort (x0,5) verlangsamt sie. Dies ändert nichts an den Zitationen bereits veröffentlichter Arbeiten.",
+    "venuePlaceholder": "z. B. NeurIPS, IEEE Transactions...",
+    "venueSuggest": "„{{venue}}“ sieht nach einem Publikationsort der Stufe {{tier}} aus — anwenden?",
+    "venueHint": "Eine grobe Heuristik, keine echte Impact-Factor-Datenbank — beeinflusst nur, wie schnell künftig veröffentlichte neue Publikationen Zitationen sammeln.",
+    "save": "Diese Prognose speichern",
+    "saving": "Wird gespeichert...",
+    "saveLoginRequired": "Melde dich an und suche einen echten Forscher, um Prognosen zu speichern.",
+    "saveSuccess": "Prognose gespeichert.",
+    "saveFailed": "Prognose konnte nicht gespeichert werden",
+    "reachedTitle": "Geschätzte Zeit bis zum H-Index {{target}}",
+    "reachedMonths": "{{months}} Monate",
+    "reachedYears": "≈ {{years}} Jahre, bei aktuellen Raten",
+    "notReachedTitle": "Bei dieser Rate innerhalb von 20 Jahren nicht erreichbar",
+    "notReachedDesc": "Versuche, das Zitationswachstum oder die Publikationsrate zu erhöhen.",
+    "pathTitle": "Prognostizierter H-Index-Verlauf",
+    "now": "Jetzt"
+  },
+  "actions": {
+    "title": "Aufgaben",
+    "subtitle": "Automatisch generierte Empfehlungen für {{name}} basierend auf aktuellen Zitationsdaten.",
+    "emptyTitle": "Noch keine Publikationen zum Analysieren",
+    "emptyDesc": "Sobald dieser Forscher erfasste Publikationen mit Zitationen hat, siehst du hier priorisierte Empfehlungen — knapp verpasste Publikationen, Publikationsrhythmus und Strategie für Publikationsorte.",
+    "collabTitle": "Kollaborationsberater",
+    "collabSubtitle": "Deine häufigsten Koautoren, sortiert nach ihrem eigenen H-Index — echte Kollaborationshistorie, keine Vermutungen."
+  },
+  "actionItems": {
+    "nearMiss": {
+      "title": "Bewirb „{{title}}“",
+      "desc_one": "Nur noch {{count}} Zitation nötig, um deinen H-Index auf {{next}} zu heben. Teile sie, präsentiere sie oder zitiere sie in kommenden Arbeiten.",
+      "desc_other": "Nur noch {{count}} Zitationen nötig, um deinen H-Index auf {{next}} zu heben. Teile sie, präsentiere sie oder zitiere sie in kommenden Arbeiten."
+    },
+    "lowCitation": {
+      "title": "Sichtbarkeit gering zitierter Publikationen erhöhen",
+      "desc": "{{count}} deiner Publikationen haben 0-1 Zitationen. Erwäge Ko-Autorenschaften für Folgearbeiten oder Preprints in relevanten Communities."
+    },
+    "venueStrategy": {
+      "title": "Auf wirkungsstärkere Publikationsorte zielen",
+      "desc": "Priorisiere deine stärkste laufende Arbeit für den wirkungsstärksten Publikationsort in deinem Teilgebiet."
+    },
+    "outputCadence": {
+      "title": "Publikationsrhythmus erhöhen",
+      "desc": "Du hast in den letzten 2 Jahren {{count}} Publikation(en) veröffentlicht. Strebe 2-3 Einreichungen pro Jahr für nachhaltiges Wachstum an."
+    },
+    "summary": {
+      "title": "Aktueller H-Index: {{h}}",
+      "desc": "{{count}} erfasste Publikationen. Konzentriere dich zuerst auf knapp verpasste Publikationen, dann auf Publikationsrhythmus und Strategie für Publikationsorte."
+    },
+    "priority": {
+      "high": "hoch",
+      "medium": "mittel",
+      "low": "niedrig",
+      "info": "info"
+    }
+  },
+  "collaboration": {
+    "analyzing": "Koautorennetzwerk wird analysiert...",
+    "notEnough": "Noch nicht genug Ko-Autorenschaftsdaten, um Kollaborationspartner vorzuschlagen.",
+    "papersTogether_one": "{{count}} gemeinsame Publikation",
+    "papersTogether_other": "{{count}} gemeinsame Publikationen",
+    "strongTrack": "Starke Erfolgsbilanz"
+  },
+  "upgrade": {
+    "isPro": "{{feature}} ist eine Pro-Funktion",
+    "desc": "Upgrade auf Pro ($4,99/Monat), um Prognosen und den Kollaborationsberater freizuschalten.",
+    "cta": "Auf Pro upgraden",
+    "redirecting": "Weiterleitung läuft...",
+    "checkoutError": "Bezahlvorgang konnte nicht gestartet werden",
+    "predictorFeature": "Die Prognose",
+    "collabFeature": "Der Kollaborationsberater"
+  },
+  "chart": {
+    "historyLabel": "H-Index (Verlauf)",
+    "projectionLabel": "H-Index (prognostiziert)"
+  },
+  "venueTiers": {
+    "top": "Top-Publikationsort",
+    "strong": "Starker Publikationsort",
+    "average": "Durchschnittlicher Publikationsort",
+    "emerging": "Aufstrebender Publikationsort"
+  }
+}

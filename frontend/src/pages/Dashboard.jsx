@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useResearcher } from '../context/ResearcherContext';
 import MetricCard from '../components/MetricCard';
 import HIndexChart from '../components/HIndexChart';
@@ -9,6 +10,7 @@ function formatDate(iso) {
 
 export default function Dashboard() {
   const { source, researcher, papers, history, loading, refreshResearcher } = useResearcher();
+  const { t } = useTranslation();
 
   const chartHistory = history.map((h) => ({
     label: formatDate(h.recorded_at),
@@ -23,12 +25,12 @@ export default function Dashboard() {
         <div className="card">
           <EmptyState
             icon="🌱"
-            title={`No papers tracked yet for ${researcher.name}`}
-            description="Semantic Scholar doesn't have any papers indexed for this profile yet, or this is a brand-new researcher ID. Metrics and charts will populate once papers with citations are indexed."
+            title={t('dashboard.emptyTitle', { name: researcher.name })}
+            description={t('dashboard.emptyDesc')}
             action={
               source === 'live' ? (
                 <button onClick={refreshResearcher} disabled={loading} className="btn-secondary">
-                  {loading ? 'Refreshing...' : 'Try refreshing from Semantic Scholar'}
+                  {loading ? t('dashboard.refreshing') : t('dashboard.emptyRefresh')}
                 </button>
               ) : null
             }
@@ -44,50 +46,50 @@ export default function Dashboard() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">{researcher.name}</h1>
           <p className="text-sm text-slate-500">
-            {source === 'demo' ? 'Demo data' : `Semantic Scholar ID: ${researcher.semantic_scholar_id}`}
+            {source === 'demo' ? t('dashboard.demoData') : `${t('dashboard.semanticScholarId')}: ${researcher.semantic_scholar_id}`}
           </p>
         </div>
         {source === 'live' && (
           <button onClick={refreshResearcher} disabled={loading} className="btn-secondary">
-            {loading ? 'Refreshing...' : 'Refresh from Semantic Scholar'}
+            {loading ? t('dashboard.refreshing') : t('dashboard.refresh')}
           </button>
         )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard label="H-index" value={researcher.h_index} accent="brand" />
-        <MetricCard label="Total citations" value={researcher.total_citations?.toLocaleString?.() ?? researcher.total_citations} accent="sky" />
-        <MetricCard label="Tracked papers" value={researcher.paper_count ?? papers.length} accent="emerald" />
+        <MetricCard label={t('dashboard.hIndex')} value={researcher.h_index} accent="brand" />
+        <MetricCard label={t('dashboard.totalCitations')} value={researcher.total_citations?.toLocaleString?.() ?? researcher.total_citations} accent="sky" />
+        <MetricCard label={t('dashboard.trackedPapers')} value={researcher.paper_count ?? papers.length} accent="emerald" />
         <MetricCard
-          label="Avg. citations / paper"
-          value={papers.length ? Math.round((researcher.total_citations || 0) / papers.length) : 0}
+          label={t('dashboard.avgCitations')}
+          value={(papers.length ? Math.round((researcher.total_citations || 0) / papers.length) : 0).toLocaleString()}
           accent="amber"
         />
       </div>
 
       <div className="card">
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">H-index growth over time</h2>
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">{t('dashboard.growthTitle')}</h2>
         {chartHistory.length > 1 ? (
           <HIndexChart history={chartHistory} />
         ) : (
           <EmptyState
             icon="📈"
-            title="Not enough history yet"
-            description="We only have one snapshot so far. Come back after refreshing this researcher a few times over the coming weeks/months to see a growth trend here."
+            title={t('dashboard.notEnoughHistoryTitle')}
+            description={t('dashboard.notEnoughHistoryDesc')}
           />
         )}
       </div>
 
       <div className="card">
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">Top cited papers</h2>
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">{t('dashboard.topPapersTitle')}</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-slate-400 border-b border-slate-100">
-                <th className="py-2 pr-4">Title</th>
-                <th className="py-2 pr-4">Year</th>
-                <th className="py-2 pr-4">Venue</th>
-                <th className="py-2 pr-4 text-right">Citations</th>
+                <th className="py-2 pr-4">{t('dashboard.colTitle')}</th>
+                <th className="py-2 pr-4">{t('dashboard.colYear')}</th>
+                <th className="py-2 pr-4">{t('dashboard.colVenue')}</th>
+                <th className="py-2 pr-4 text-right">{t('dashboard.colCitations')}</th>
               </tr>
             </thead>
             <tbody>
@@ -96,7 +98,7 @@ export default function Dashboard() {
                   <td className="py-2.5 pr-4 font-medium text-slate-700">{p.title}</td>
                   <td className="py-2.5 pr-4 text-slate-500">{p.year || '—'}</td>
                   <td className="py-2.5 pr-4 text-slate-500">{p.venue || '—'}</td>
-                  <td className="py-2.5 pr-4 text-right font-semibold text-brand-600">{p.citations}</td>
+                  <td className="py-2.5 pr-4 text-right font-semibold text-brand-600">{(p.citations || 0).toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>

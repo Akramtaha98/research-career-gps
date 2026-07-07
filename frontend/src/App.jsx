@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -9,6 +10,7 @@ import Actions from './pages/Actions';
 import { ResearcherProvider } from './context/ResearcherContext';
 
 export default function App() {
+  const { t } = useTranslation();
   return (
     <ResearcherProvider>
       <div className="min-h-screen flex flex-col">
@@ -26,7 +28,7 @@ export default function App() {
           </Routes>
         </main>
         <footer className="text-center text-xs text-slate-400 py-6">
-          Research Career GPS — MVP
+          {t('footer.tagline')}
         </footer>
       </div>
     </ResearcherProvider>

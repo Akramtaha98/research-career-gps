@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useResearcher } from '../context/ResearcherContext';
 import { useAuth } from '../context/AuthContext';
 import client from '../api/client';
@@ -12,6 +13,7 @@ export default function Predictor() {
   const { source, researcher, papers } = useResearcher();
   const { user, refreshUser } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { t } = useTranslation();
 
   // After returning from Stripe Checkout, refresh the user's plan. Stripe's
   // webhook may take a moment to land, so this is best-effort — reloading
@@ -59,7 +61,7 @@ export default function Predictor() {
 
   async function handleSave() {
     if (!user || source !== 'live') {
-      setSaveMessage('Log in and look up a real researcher to save predictions.');
+      setSaveMessage(t('predictor.saveLoginRequired'));
       return;
     }
     setSaving(true);
@@ -72,9 +74,9 @@ export default function Predictor() {
         papersPerYear: Number(papersPerYear),
         venueTier,
       });
-      setSaveMessage('Prediction saved.');
+      setSaveMessage(t('predictor.saveSuccess'));
     } catch (err) {
-      setSaveMessage(err.response?.data?.error || 'Failed to save prediction');
+      setSaveMessage(err.response?.data?.error || t('predictor.saveFailed'));
     } finally {
       setSaving(false);
     }
@@ -89,15 +91,13 @@ export default function Predictor() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">H-index Predictor</h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Project when you'll hit your target H-index based on citation growth and publication rate.
-        </p>
+        <h1 className="text-2xl font-bold text-slate-900">{t('predictor.title')}</h1>
+        <p className="text-sm text-slate-500 mt-1">{t('predictor.subtitle')}</p>
       </div>
 
       {isGated ? (
         <div className="card">
-          <UpgradeCTA feature="The predictor" />
+          <UpgradeCTA feature={t('upgrade.predictorFeature')} />
         </div>
       ) : (
         <PredictorBody
@@ -145,15 +145,12 @@ function PredictorBody({
   saveMessage,
   handleSave,
 }) {
+  const { t } = useTranslation();
   return (
     <>
       {papers.length === 0 && (
         <div className="card border border-amber-100 bg-amber-50">
-          <p className="text-sm text-amber-700">
-            This researcher has no tracked papers yet, so this projection is based purely on new papers you plan to
-            publish — it won't reflect any existing body of work. Look up a researcher with papers, or use demo data,
-            for a more realistic projection.
-          </p>
+          <p className="text-sm text-amber-700">{t('predictor.noPapersWarning')}</p>
         </div>
       )}
 
@@ -161,7 +158,7 @@ function PredictorBody({
         <div className="card space-y-5 lg:col-span-1">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              Target H-index (current: {researcher.h_index})
+              {t('predictor.targetH', { current: researcher.h_index })}
             </label>
             <input
               type="number"
@@ -173,7 +170,7 @@ function PredictorBody({
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              Avg. new citations / paper / month
+              {t('predictor.monthlyRate')}
             </label>
             <input
               type="number"
@@ -185,7 +182,7 @@ function PredictorBody({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">New papers / year</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">{t('predictor.papersPerYear')}</label>
             <input
               type="number"
               step="0.5"
@@ -197,12 +194,19 @@ function PredictorBody({
           </div>
 
           <div className="pt-1 border-t border-slate-100">
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Target venue for future papers <span className="text-slate-400 font-normal">(optional)</span>
+            <label className="flex items-center gap-1.5 text-sm font-medium text-slate-700 mb-1">
+              {t('predictor.targetVenue')} <span className="text-slate-400 font-normal">{t('predictor.optional')}</span>
+              <span
+                tabIndex={0}
+                title={t('predictor.venueTooltip')}
+                className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-100 text-slate-500 text-[10px] font-bold cursor-help shrink-0"
+              >
+                ?
+              </span>
             </label>
             <input
               className="input mb-2"
-              placeholder="e.g. NeurIPS, IEEE Transactions..."
+              placeholder={t('predictor.venuePlaceholder')}
               value={venueName}
               onChange={(e) => setVenueName(e.target.value)}
             />
@@ -211,9 +215,9 @@ function PredictorBody({
               value={venueTier}
               onChange={(e) => setVenueTier(e.target.value)}
             >
-              {Object.entries(TIERS).map(([key, t]) => (
+              {Object.entries(TIERS).map(([key, tier]) => (
                 <option key={key} value={key}>
-                  {t.label} ({t.multiplier}x)
+                  {t(`venueTiers.${key}`)} ({tier.multiplier}x)
                 </option>
               ))}
             </select>
@@ -223,17 +227,14 @@ function PredictorBody({
                 onClick={() => setVenueTier(suggestedTier)}
                 className="mt-1 text-xs text-brand-600 underline"
               >
-                "{venueName}" looks like a {TIERS[suggestedTier].label} venue — apply?
+                {t('predictor.venueSuggest', { venue: venueName, tier: t(`venueTiers.${suggestedTier}`) })}
               </button>
             )}
-            <p className="mt-1 text-xs text-slate-400">
-              A rough heuristic, not a real impact-factor database — only affects how fast{' '}
-              <em>new</em> papers you publish going forward accumulate citations.
-            </p>
+            <p className="mt-1 text-xs text-slate-400">{t('predictor.venueHint')}</p>
           </div>
 
           <button onClick={handleSave} disabled={saving} className="btn-primary w-full">
-            {saving ? 'Saving...' : 'Save this prediction'}
+            {saving ? t('predictor.saving') : t('predictor.save')}
           </button>
           {saveMessage && <p className="text-xs text-slate-500">{saveMessage}</p>}
         </div>
@@ -241,23 +242,23 @@ function PredictorBody({
         <div className="card lg:col-span-2 flex flex-col justify-center items-center text-center">
           {projection.reached ? (
             <>
-              <p className="text-sm font-medium text-slate-500">Estimated time to reach H-index {targetH}</p>
-              <p className="mt-2 text-5xl font-bold text-brand-600">{projection.estimatedMonths} mo</p>
-              <p className="mt-1 text-sm text-slate-400">≈ {years} years, at current rates</p>
+              <p className="text-sm font-medium text-slate-500">{t('predictor.reachedTitle', { target: targetH })}</p>
+              <p className="mt-2 text-5xl font-bold text-brand-600">{t('predictor.reachedMonths', { months: projection.estimatedMonths })}</p>
+              <p className="mt-1 text-sm text-slate-400">{t('predictor.reachedYears', { years })}</p>
             </>
           ) : (
             <>
-              <p className="text-sm font-medium text-slate-500">Not reachable within 20 years at this rate</p>
-              <p className="mt-2 text-lg text-slate-600">Try increasing citation growth or publication rate.</p>
+              <p className="text-sm font-medium text-slate-500">{t('predictor.notReachedTitle')}</p>
+              <p className="mt-2 text-lg text-slate-600">{t('predictor.notReachedDesc')}</p>
             </>
           )}
         </div>
       </div>
 
       <div className="card">
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">Projected H-index path</h2>
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">{t('predictor.pathTitle')}</h2>
         <HIndexChart
-          history={[{ label: 'Now', hIndex: researcher.h_index }]}
+          history={[{ label: t('predictor.now'), hIndex: researcher.h_index }]}
           projection={projection.path.filter((_, i) => i % Math.max(Math.floor(projection.path.length / 24), 1) === 0)}
         />
       </div>

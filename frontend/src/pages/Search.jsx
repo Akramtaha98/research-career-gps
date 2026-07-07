@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useResearcher } from '../context/ResearcherContext';
 
@@ -13,6 +14,7 @@ export default function Search() {
   const { user } = useAuth();
   const { searchByName, lookupResearcher, useDemo, loading, error } = useResearcher();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -69,38 +71,34 @@ export default function Search() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-16">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">Find a researcher</h1>
-        <p className="mt-2 text-slate-500">
-          Search by name to pull real citation data from Semantic Scholar, or explore with demo data first.
-        </p>
+        <h1 className="text-3xl font-bold text-slate-900">{t('search.title')}</h1>
+        <p className="mt-2 text-slate-500">{t('search.subtitle')}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="card space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Researcher name or Semantic Scholar ID</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('search.label')}</label>
           <input
             className="input"
-            placeholder="e.g. Oren Etzioni"
+            placeholder={t('search.placeholder')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             required
           />
-          <p className="mt-1 text-xs text-slate-400">
-            Enter a name to search, or paste a numeric Semantic Scholar Author ID directly.
-          </p>
+          <p className="mt-1 text-xs text-slate-400">{t('search.hint')}</p>
         </div>
 
         {error && <p className="text-sm text-red-600">{error}</p>}
         {!user && (
-          <p className="text-sm text-amber-600">You'll need to log in to save a real researcher lookup.</p>
+          <p className="text-sm text-amber-600">{t('search.loginRequired')}</p>
         )}
 
         <div className="flex gap-3">
           <button type="submit" disabled={searching || loading} className="btn-primary flex-1">
-            {searching ? 'Searching...' : loading ? 'Fetching...' : 'Search'}
+            {searching ? t('search.searching') : loading ? t('search.fetching') : t('search.searchBtn')}
           </button>
           <button type="button" onClick={handleDemo} className="btn-secondary flex-1">
-            Use demo data
+            {t('search.demoBtn')}
           </button>
         </div>
       </form>
@@ -108,7 +106,9 @@ export default function Search() {
       {candidates && (
         <div className="card mt-6">
           <h2 className="text-sm font-semibold text-slate-700 mb-3">
-            {candidates.length > 0 ? `${candidates.length} match${candidates.length === 1 ? '' : 'es'} — pick the right one` : 'No matches found'}
+            {candidates.length > 0
+              ? t('search.matchesFound', { count: candidates.length })
+              : t('search.noMatches')}
           </h2>
           <div className="space-y-2">
             {candidates.map((c) => (
@@ -122,11 +122,11 @@ export default function Search() {
                   <p className="font-medium text-slate-800">{c.name}</p>
                   <p className="text-xs text-slate-500">
                     {c.affiliations?.length ? c.affiliations.join(', ') + ' · ' : ''}
-                    {c.paperCount} papers · {c.citationCount.toLocaleString()} citations · h-index {c.hIndex}
+                    {c.paperCount} {t('search.papers')} · {c.citationCount.toLocaleString()} {t('search.citations')} · {t('search.hIndexLabel')} {c.hIndex}
                   </p>
                 </div>
                 <span className="text-xs text-brand-600 font-semibold shrink-0">
-                  {pickingId === c.semanticScholarId ? 'Loading...' : 'Select →'}
+                  {pickingId === c.semanticScholarId ? t('search.pickLoading') : t('search.select')}
                 </span>
               </button>
             ))}

@@ -53,6 +53,7 @@ Working MVP, verified end-to-end:
 - **Auto-generated action items** — near-miss papers, publication cadence, venue strategy *(free)*
 - **Google sign-in** — alongside email+password (needs a free Google Cloud OAuth client to activate, see `docs/SETUP.md`)
 - **Demo mode** — the whole app works instantly with sample data, no signup, database, or payment required
+- **6 languages** — English, Arabic (RTL), Spanish, German, French, Bahasa Melayu. Auto-detected from the browser, switchable anytime from the 🌐 menu in the navbar, remembered on return visits
 
 ## Freemium model
 
@@ -121,6 +122,7 @@ research-career-gps/
 │       │                          CollaborationAdvisor, UpgradeCTA, ProtectedRoute
 │       ├── context/                AuthContext, ResearcherContext
 │       ├── data/demoData.js        Standalone demo dataset (incl. demo collaborators)
+│       ├── i18n.js, locales/       6-language i18n config (en, ar, es, de, fr, ms) + RTL handling
 │       └── utils/                  Client-side mirrors of the H-index/prediction/action/venue logic
 └── docs/
     ├── API.md
@@ -157,4 +159,5 @@ A few deliberate substitutions, made for stability/time:
 - **React 18** instead of React 19 — `react-chartjs-2` and the broader ecosystem are most battle-tested there; upgrading later is a low-risk change.
 - **Google sign-in only** — Apple Sign In was evaluated but requires a paid ($99/yr) Apple Developer account plus domain verification, so it was dropped from this pass. Google needs only a free OAuth client.
 - **Venue-tier weighting is a heuristic, not a real database** — no free, reliable journal impact-factor/SJR API exists; the multiplier list in `utils/venueTiers.js` is hand-curated and editable.
+- **Translations are AI-generated, not reviewed by native speakers** — all UI text (navigation, forms, dashboard, predictor, action items) is translated across all 6 languages, but phrasing in Arabic/Spanish/German/French/Malay hasn't been checked by a native speaker yet. Strings live in one JSON file per language (`frontend/src/locales/<lang>/translation.json`), so any awkward phrasing is a quick one-line fix. Backend error messages and Semantic Scholar's own data (paper titles, venue names) remain in their original language — translating those is future scope.
 - Deployment, Stripe account setup, beta testing with real users, and marketing posts need your accounts and outreach — see [`docs/SETUP.md`](docs/SETUP.md) for copy-pasteable steps.

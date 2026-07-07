@@ -1,4 +1,5 @@
 import { Line } from 'react-chartjs-2';
+import { useTranslation } from 'react-i18next';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -17,6 +18,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip,
  * @param {{month: number, hIndex: number}[]} [projection] - optional future projection path
  */
 export default function HIndexChart({ history = [], projection = [] }) {
+  const { t } = useTranslation();
   const historyLabels = history.map((h) => h.label);
   const projectionLabels = projection.map((p) => `+${p.month}mo`);
   const labels = [...historyLabels, ...projectionLabels];
@@ -32,7 +34,7 @@ export default function HIndexChart({ history = [], projection = [] }) {
     labels,
     datasets: [
       {
-        label: 'H-index (history)',
+        label: t('chart.historyLabel'),
         data: [...historyData, ...new Array(projectionLabels.length).fill(null)],
         borderColor: '#7c3aed',
         backgroundColor: 'rgba(124,58,237,0.12)',
@@ -43,7 +45,7 @@ export default function HIndexChart({ history = [], projection = [] }) {
       ...(projection.length > 0
         ? [
             {
-              label: 'H-index (projected)',
+              label: t('chart.projectionLabel'),
               data: projectionData,
               borderColor: '#0ea5e9',
               backgroundColor: 'rgba(14,165,233,0.08)',

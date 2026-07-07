@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import client from '../api/client';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -12,6 +13,7 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 export default function SocialLogin({ onSuccess, onError }) {
   const containerRef = useRef(null);
   const [ready, setReady] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!GOOGLE_CLIENT_ID) return;
@@ -27,7 +29,7 @@ export default function SocialLogin({ onSuccess, onError }) {
             const { data } = await client.post('/auth/google', { idToken: response.credential });
             onSuccess(data.token, data.user);
           } catch (err) {
-            onError(err.response?.data?.error || 'Google sign-in failed');
+            onError(err.response?.data?.error || t('socialLogin.errorFallback'));
           }
         },
       });
@@ -60,10 +62,10 @@ export default function SocialLogin({ onSuccess, onError }) {
       <button
         type="button"
         disabled
-        title="Set VITE_GOOGLE_CLIENT_ID / GOOGLE_CLIENT_ID to enable — see docs/SETUP.md"
+        title={t('socialLogin.notConfiguredTitle')}
         className="btn-secondary w-full opacity-50 cursor-not-allowed"
       >
-        Continue with Google (not configured)
+        {t('socialLogin.notConfigured')}
       </button>
     );
   }

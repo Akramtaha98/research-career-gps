@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useResearcher } from '../context/ResearcherContext';
 
 /**
@@ -10,6 +11,7 @@ export default function CollaborationAdvisor() {
   const [collaborators, setCollaborators] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     let cancelled = false;
@@ -30,17 +32,13 @@ export default function CollaborationAdvisor() {
   }, []);
 
   if (loading) {
-    return <p className="text-sm text-slate-400">Analyzing co-author network...</p>;
+    return <p className="text-sm text-slate-400">{t('collaboration.analyzing')}</p>;
   }
   if (error) {
     return <p className="text-sm text-red-600">{error}</p>;
   }
   if (!collaborators || collaborators.length === 0) {
-    return (
-      <p className="text-sm text-slate-500">
-        Not enough co-authorship data to suggest collaborators yet.
-      </p>
-    );
+    return <p className="text-sm text-slate-500">{t('collaboration.notEnough')}</p>;
   }
 
   return (
@@ -53,11 +51,11 @@ export default function CollaborationAdvisor() {
           <div>
             <p className="font-medium text-slate-800">{c.name}</p>
             <p className="text-xs text-slate-500">
-              {c.papersCoAuthored} paper{c.papersCoAuthored === 1 ? '' : 's'} together · h-index {c.hIndex} ·{' '}
-              {c.citationCount.toLocaleString()} citations
+              {t('collaboration.papersTogether', { count: c.papersCoAuthored })} · {t('search.hIndexLabel')} {c.hIndex} ·{' '}
+              {c.citationCount.toLocaleString()} {t('search.citations')}
             </p>
           </div>
-          <span className="text-xs font-semibold text-brand-600 shrink-0">Strong track record</span>
+          <span className="text-xs font-semibold text-brand-600 shrink-0">{t('collaboration.strongTrack')}</span>
         </div>
       ))}
     </div>

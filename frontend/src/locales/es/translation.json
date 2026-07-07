@@ -1,0 +1,184 @@
+{
+  "nav": {
+    "brand": "Research Career GPS",
+    "search": "Buscar",
+    "dashboard": "Panel",
+    "predictor": "Predictor",
+    "actions": "Acciones",
+    "logout": "Cerrar sesión",
+    "login": "Iniciar sesión"
+  },
+  "footer": {
+    "tagline": "Research Career GPS — MVP"
+  },
+  "common": {
+    "loading": "Cargando..."
+  },
+  "login": {
+    "title": "Bienvenido de nuevo",
+    "subtitle": "Inicia sesión para seguir y predecir el crecimiento de tu índice H.",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "tu@universidad.edu",
+    "password": "Contraseña",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Iniciar sesión",
+    "submitting": "Iniciando sesión...",
+    "or": "o",
+    "noAccount": "¿No tienes cuenta?",
+    "signUp": "Regístrate",
+    "demoPrompt": "¿Solo estás explorando?",
+    "demoLink": "Ver panel de demostración",
+    "demoSuffix": "— no necesitas iniciar sesión.",
+    "errorFallback": "Error al iniciar sesión"
+  },
+  "signup": {
+    "title": "Crea tu cuenta",
+    "subtitle": "Empieza a seguir tu trayectoria de carrera investigadora.",
+    "name": "Nombre",
+    "namePlaceholder": "Dra. Jane Doe",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "tu@universidad.edu",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Al menos 8 caracteres",
+    "submit": "Registrarse",
+    "submitting": "Creando cuenta...",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "logIn": "Iniciar sesión",
+    "errorFallback": "Error al registrarse"
+  },
+  "socialLogin": {
+    "notConfigured": "Continuar con Google (no configurado)",
+    "notConfiguredTitle": "Configura VITE_GOOGLE_CLIENT_ID / GOOGLE_CLIENT_ID para activarlo — consulta docs/SETUP.md",
+    "errorFallback": "Error al iniciar sesión con Google"
+  },
+  "search": {
+    "title": "Buscar un investigador",
+    "subtitle": "Busca por nombre para obtener datos reales de citas desde Semantic Scholar, o explora primero con datos de demostración.",
+    "label": "Nombre del investigador o ID de Semantic Scholar",
+    "placeholder": "ej. Oren Etzioni",
+    "hint": "Escribe un nombre para buscar, o pega directamente un ID numérico de autor de Semantic Scholar.",
+    "loginRequired": "Necesitarás iniciar sesión para guardar la búsqueda de un investigador real.",
+    "searchBtn": "Buscar",
+    "searching": "Buscando...",
+    "fetching": "Obteniendo datos...",
+    "demoBtn": "Usar datos de demostración",
+    "matchesFound_one": "{{count}} coincidencia — elige la correcta",
+    "matchesFound_other": "{{count}} coincidencias — elige la correcta",
+    "noMatches": "No se encontraron coincidencias",
+    "papers": "artículos",
+    "citations": "citas",
+    "hIndexLabel": "índice h",
+    "select": "Seleccionar →",
+    "pickLoading": "Cargando..."
+  },
+  "dashboard": {
+    "demoData": "Datos de demostración",
+    "semanticScholarId": "ID de Semantic Scholar",
+    "refresh": "Actualizar desde Semantic Scholar",
+    "refreshing": "Actualizando...",
+    "hIndex": "Índice H",
+    "totalCitations": "Citas totales",
+    "trackedPapers": "Artículos rastreados",
+    "avgCitations": "Citas promedio / artículo",
+    "growthTitle": "Crecimiento del índice H a lo largo del tiempo",
+    "notEnoughHistoryTitle": "Aún no hay suficiente historial",
+    "notEnoughHistoryDesc": "Por ahora solo tenemos una instantánea. Vuelve después de actualizar este investigador varias veces en las próximas semanas o meses para ver una tendencia de crecimiento aquí.",
+    "topPapersTitle": "Artículos más citados",
+    "colTitle": "Título",
+    "colYear": "Año",
+    "colVenue": "Publicación",
+    "colCitations": "Citas",
+    "emptyTitle": "Aún no hay artículos rastreados para {{name}}",
+    "emptyDesc": "Semantic Scholar aún no tiene artículos indexados para este perfil, o este es un ID de investigador completamente nuevo. Las métricas y los gráficos se completarán una vez que se indexen artículos con citas.",
+    "emptyRefresh": "Intentar actualizar desde Semantic Scholar"
+  },
+  "predictor": {
+    "title": "Predictor de índice H",
+    "subtitle": "Proyecta cuándo alcanzarás tu índice H objetivo según el crecimiento de citas y la tasa de publicación.",
+    "noPapersWarning": "Este investigador aún no tiene artículos rastreados, por lo que esta proyección se basa únicamente en artículos nuevos que planeas publicar — no reflejará ningún trabajo existente. Busca un investigador con artículos, o usa datos de demostración, para una proyección más realista.",
+    "targetH": "Índice H objetivo (actual: {{current}})",
+    "monthlyRate": "Citas nuevas promedio / artículo / mes",
+    "papersPerYear": "Artículos nuevos / año",
+    "targetVenue": "Publicación objetivo para futuros artículos",
+    "optional": "(opcional)",
+    "venueTooltip": "Establece un multiplicador sobre la rapidez con la que los NUEVOS artículos que publiques a partir de ahora acumulan citas — Publicación top (x3) y Publicación fuerte (x2) aceleran la proyección, Publicación emergente (x0.5) la ralentiza. No cambia las citas de los artículos que ya has publicado.",
+    "venuePlaceholder": "ej. NeurIPS, IEEE Transactions...",
+    "venueSuggest": "\"{{venue}}\" parece una publicación de nivel {{tier}} — ¿aplicar?",
+    "venueHint": "Es una heurística aproximada, no una base de datos real de factor de impacto — solo afecta la rapidez con la que los nuevos artículos que publiques acumulan citas.",
+    "save": "Guardar esta predicción",
+    "saving": "Guardando...",
+    "saveLoginRequired": "Inicia sesión y busca un investigador real para guardar predicciones.",
+    "saveSuccess": "Predicción guardada.",
+    "saveFailed": "No se pudo guardar la predicción",
+    "reachedTitle": "Tiempo estimado para alcanzar el índice H {{target}}",
+    "reachedMonths": "{{months}} meses",
+    "reachedYears": "≈ {{years}} años, a las tasas actuales",
+    "notReachedTitle": "No alcanzable en 20 años a esta tasa",
+    "notReachedDesc": "Intenta aumentar el crecimiento de citas o la tasa de publicación.",
+    "pathTitle": "Trayectoria proyectada del índice H",
+    "now": "Ahora"
+  },
+  "actions": {
+    "title": "Tareas recomendadas",
+    "subtitle": "Recomendaciones generadas automáticamente para {{name}} según los datos de citas actuales.",
+    "emptyTitle": "Aún no hay artículos para analizar",
+    "emptyDesc": "Cuando este investigador tenga artículos rastreados con citas, verás aquí recomendaciones priorizadas: artículos cerca de subir el índice, ritmo de publicación y estrategia de publicaciones.",
+    "collabTitle": "Asesor de colaboración",
+    "collabSubtitle": "Tus coautores más frecuentes, clasificados por su propio índice h — historial de colaboración real, no suposiciones."
+  },
+  "actionItems": {
+    "nearMiss": {
+      "title": "Promociona \"{{title}}\"",
+      "desc_one": "Solo falta {{count}} cita más para ayudar a subir tu índice H a {{next}}. Compártelo, preséntalo o cítalo en trabajos futuros.",
+      "desc_other": "Solo faltan {{count}} citas más para ayudar a subir tu índice H a {{next}}. Compártelo, preséntalo o cítalo en trabajos futuros."
+    },
+    "lowCitation": {
+      "title": "Aumenta la visibilidad de artículos con pocas citas",
+      "desc": "{{count}} de tus artículos tienen 0-1 citas. Considera coautorías de seguimiento o publicar preprints en comunidades relevantes."
+    },
+    "venueStrategy": {
+      "title": "Apunta a publicaciones de mayor impacto",
+      "desc": "Prioriza tu trabajo en curso más sólido para la publicación de mayor impacto en tu subárea."
+    },
+    "outputCadence": {
+      "title": "Aumenta el ritmo de publicación",
+      "desc": "Has publicado {{count}} artículo(s) en los últimos 2 años. Apunta a 2-3 envíos por año para un crecimiento sostenido."
+    },
+    "summary": {
+      "title": "Índice H actual: {{h}}",
+      "desc": "{{count}} artículos rastreados. Concéntrate primero en los artículos cercanos a subir el índice, luego en el ritmo de publicación y la estrategia de publicaciones."
+    },
+    "priority": {
+      "high": "alta",
+      "medium": "media",
+      "low": "baja",
+      "info": "info"
+    }
+  },
+  "collaboration": {
+    "analyzing": "Analizando red de coautores...",
+    "notEnough": "Aún no hay suficientes datos de coautoría para sugerir colaboradores.",
+    "papersTogether_one": "{{count}} artículo en conjunto",
+    "papersTogether_other": "{{count}} artículos en conjunto",
+    "strongTrack": "Trayectoria sólida"
+  },
+  "upgrade": {
+    "isPro": "{{feature}} es una función Pro",
+    "desc": "Actualiza a Pro ($4.99/mes) para desbloquear predicciones y el asesor de colaboración.",
+    "cta": "Actualizar a Pro",
+    "redirecting": "Redirigiendo...",
+    "checkoutError": "No se pudo iniciar el pago",
+    "predictorFeature": "El predictor",
+    "collabFeature": "El asesor de colaboración"
+  },
+  "chart": {
+    "historyLabel": "Índice H (historial)",
+    "projectionLabel": "Índice H (proyectado)"
+  },
+  "venueTiers": {
+    "top": "Publicación top",
+    "strong": "Publicación fuerte",
+    "average": "Publicación media",
+    "emerging": "Publicación emergente"
+  }
+}

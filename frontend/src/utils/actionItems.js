@@ -1,5 +1,11 @@
 import { calculateHIndex } from './prediction';
 
+/**
+ * Generates prioritized action items. Returns translation keys + params
+ * instead of baked-in English strings, so the UI layer can render them in
+ * whichever language is active (see src/i18n.js, locales/*.json under the
+ * "actionItems" namespace).
+ */
 export function generateActionItems({ papers }) {
   const citations = papers.map((p) => p.citations || 0);
   const h = calculateHIndex(citations);
@@ -17,8 +23,10 @@ export function generateActionItems({ papers }) {
     items.push({
       type: 'near_miss_paper',
       priority: 'high',
-      title: `Promote "${p.title}"`,
-      description: `Only ${needed} more citation${needed === 1 ? '' : 's'} needed to help push your H-index to ${h + 1}. Share it, present it, or cite it in upcoming work.`,
+      titleKey: 'actionItems.nearMiss.title',
+      titleParams: { title: p.title },
+      descKey: 'actionItems.nearMiss.desc',
+      descParams: { count: needed, next: h + 1 },
     });
   });
 
@@ -27,16 +35,17 @@ export function generateActionItems({ papers }) {
     items.push({
       type: 'collaboration',
       priority: 'medium',
-      title: 'Boost visibility of low-citation papers',
-      description: `${lowCitation.length} of your papers have 0-1 citations. Consider co-authoring follow-ups or posting preprints to relevant communities.`,
+      titleKey: 'actionItems.lowCitation.title',
+      descKey: 'actionItems.lowCitation.desc',
+      descParams: { count: lowCitation.length },
     });
   }
 
   items.push({
     type: 'venue_strategy',
     priority: 'medium',
-    title: 'Target higher-impact venues',
-    description: 'Prioritize your strongest work-in-progress for the highest-impact venue in your subfield.',
+    titleKey: 'actionItems.venueStrategy.title',
+    descKey: 'actionItems.venueStrategy.desc',
   });
 
   const recentYears = papers.map((p) => p.year).filter(Boolean);
@@ -46,16 +55,19 @@ export function generateActionItems({ papers }) {
     items.push({
       type: 'output_cadence',
       priority: 'high',
-      title: 'Increase publication cadence',
-      description: `You've published ${recentCount} paper(s) in the last 2 years. Aim for 2-3 submissions per year for sustained growth.`,
+      titleKey: 'actionItems.outputCadence.title',
+      descKey: 'actionItems.outputCadence.desc',
+      descParams: { count: recentCount },
     });
   }
 
   items.push({
     type: 'priority_summary',
     priority: 'info',
-    title: `Current H-index: ${h}`,
-    description: `${papers.length} tracked papers. Focus on near-miss papers first, then output cadence and venue strategy.`,
+    titleKey: 'actionItems.summary.title',
+    titleParams: { h },
+    descKey: 'actionItems.summary.desc',
+    descParams: { count: papers.length },
   });
 
   const rank = { high: 0, medium: 1, low: 2, info: 3 };
