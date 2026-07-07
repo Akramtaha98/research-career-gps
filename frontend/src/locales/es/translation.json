@@ -124,13 +124,19 @@
     "emptyTitle": "Aún no hay artículos para analizar",
     "emptyDesc": "Cuando este investigador tenga artículos rastreados con citas, verás aquí recomendaciones priorizadas: artículos cerca de subir el índice, ritmo de publicación y estrategia de publicaciones.",
     "collabTitle": "Asesor de colaboración",
-    "collabSubtitle": "Tus coautores más frecuentes, clasificados por su propio índice h — historial de colaboración real, no suposiciones."
+    "collabSubtitle": "Tus coautores más frecuentes, clasificados por su propio índice h — historial de colaboración real, no suposiciones.",
+    "priorityTitle": "Artículos prioritarios para subir tu índice H hoy",
+    "prioritySubtitle": "Tu índice H actual es {{h}}. Enfoca aquí tu esfuerzo primero — estos artículos están más cerca de subirlo.",
+    "priorityRowHint_one": "{{citations}} cita más sube tu índice H a {{next}}",
+    "priorityRowHint_other": "{{citations}} citas más suben tu índice H a {{next}}"
   },
   "actionItems": {
     "nearMiss": {
       "title": "Promociona \"{{title}}\"",
       "desc_one": "Solo falta {{count}} cita más para ayudar a subir tu índice H a {{next}}. Compártelo, preséntalo o cítalo en trabajos futuros.",
-      "desc_other": "Solo faltan {{count}} citas más para ayudar a subir tu índice H a {{next}}. Compártelo, preséntalo o cítalo en trabajos futuros."
+      "desc_other": "Solo faltan {{count}} citas más para ayudar a subir tu índice H a {{next}}. Compártelo, preséntalo o cítalo en trabajos futuros.",
+      "badge_one": "{{count}} cita restante",
+      "badge_other": "{{count}} citas restantes"
     },
     "lowCitation": {
       "title": "Aumenta la visibilidad de artículos con pocas citas",

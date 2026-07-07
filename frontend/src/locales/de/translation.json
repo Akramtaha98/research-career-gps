@@ -124,13 +124,19 @@
     "emptyTitle": "Noch keine Publikationen zum Analysieren",
     "emptyDesc": "Sobald dieser Forscher erfasste Publikationen mit Zitationen hat, siehst du hier priorisierte Empfehlungen — knapp verpasste Publikationen, Publikationsrhythmus und Strategie für Publikationsorte.",
     "collabTitle": "Kollaborationsberater",
-    "collabSubtitle": "Deine häufigsten Koautoren, sortiert nach ihrem eigenen H-Index — echte Kollaborationshistorie, keine Vermutungen."
+    "collabSubtitle": "Deine häufigsten Koautoren, sortiert nach ihrem eigenen H-Index — echte Kollaborationshistorie, keine Vermutungen.",
+    "priorityTitle": "Prioritätspublikationen, um deinen H-Index heute zu steigern",
+    "prioritySubtitle": "Dein H-Index liegt aktuell bei {{h}}. Konzentriere deinen Aufwand zuerst hierauf — diese Publikationen sind am nächsten daran, ihn zu erhöhen.",
+    "priorityRowHint_one": "{{citations}} weitere Zitation hebt deinen H-Index auf {{next}}",
+    "priorityRowHint_other": "{{citations}} weitere Zitationen heben deinen H-Index auf {{next}}"
   },
   "actionItems": {
     "nearMiss": {
       "title": "Bewirb „{{title}}“",
       "desc_one": "Nur noch {{count}} Zitation nötig, um deinen H-Index auf {{next}} zu heben. Teile sie, präsentiere sie oder zitiere sie in kommenden Arbeiten.",
-      "desc_other": "Nur noch {{count}} Zitationen nötig, um deinen H-Index auf {{next}} zu heben. Teile sie, präsentiere sie oder zitiere sie in kommenden Arbeiten."
+      "desc_other": "Nur noch {{count}} Zitationen nötig, um deinen H-Index auf {{next}} zu heben. Teile sie, präsentiere sie oder zitiere sie in kommenden Arbeiten.",
+      "badge_one": "noch {{count}} Zitation",
+      "badge_other": "noch {{count}} Zitationen"
     },
     "lowCitation": {
       "title": "Sichtbarkeit gering zitierter Publikationen erhöhen",

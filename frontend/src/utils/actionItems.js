@@ -27,6 +27,9 @@ export function generateActionItems({ papers }) {
       titleParams: { title: p.title },
       descKey: 'actionItems.nearMiss.desc',
       descParams: { count: needed, next: h + 1 },
+      // Raw values for UI that wants to build its own layout (e.g. the
+      // priority highlight card) instead of the pre-formatted sentence.
+      meta: { paperTitle: p.title, needed, nextH: h + 1, currentH: h },
     });
   });
 

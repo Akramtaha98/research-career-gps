@@ -124,13 +124,19 @@
     "emptyTitle": "Aucun article à analyser pour l'instant",
     "emptyDesc": "Une fois que ce chercheur aura des articles suivis avec des citations, vous verrez ici des recommandations priorisées — articles proches du seuil, rythme de publication et stratégie de publication.",
     "collabTitle": "Conseiller en collaboration",
-    "collabSubtitle": "Vos co-auteurs les plus fréquents, classés selon leur propre indice h — un historique de collaboration réel, pas des suppositions."
+    "collabSubtitle": "Vos co-auteurs les plus fréquents, classés selon leur propre indice h — un historique de collaboration réel, pas des suppositions.",
+    "priorityTitle": "Articles prioritaires pour faire progresser votre indice H dès aujourd'hui",
+    "prioritySubtitle": "Votre indice H est actuellement de {{h}}. Concentrez d'abord vos efforts ici — ces articles sont les plus proches de le faire progresser.",
+    "priorityRowHint_one": "{{citations}} citation de plus fait passer votre indice H à {{next}}",
+    "priorityRowHint_other": "{{citations}} citations de plus font passer votre indice H à {{next}}"
   },
   "actionItems": {
     "nearMiss": {
       "title": "Promouvoir « {{title}} »",
       "desc_one": "Il ne manque que {{count}} citation pour aider à faire passer votre indice H à {{next}}. Partagez-le, présentez-le ou citez-le dans de futurs travaux.",
-      "desc_other": "Il ne manque que {{count}} citations pour aider à faire passer votre indice H à {{next}}. Partagez-le, présentez-le ou citez-le dans de futurs travaux."
+      "desc_other": "Il ne manque que {{count}} citations pour aider à faire passer votre indice H à {{next}}. Partagez-le, présentez-le ou citez-le dans de futurs travaux.",
+      "badge_one": "{{count}} citation restante",
+      "badge_other": "{{count}} citations restantes"
     },
     "lowCitation": {
       "title": "Augmenter la visibilité des articles peu cités",

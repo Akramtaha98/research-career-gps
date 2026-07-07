@@ -124,13 +124,19 @@
     "emptyTitle": "No papers to analyze yet",
     "emptyDesc": "Once this researcher has tracked papers with citations, you'll see prioritized recommendations here — near-miss papers, publication cadence, and venue strategy.",
     "collabTitle": "Collaboration advisor",
-    "collabSubtitle": "Your most frequent co-authors, ranked by their own h-index — real collaboration history, not guesses."
+    "collabSubtitle": "Your most frequent co-authors, ranked by their own h-index — real collaboration history, not guesses.",
+    "priorityTitle": "Priority papers to push your H-index today",
+    "prioritySubtitle": "Your H-index is currently {{h}}. Focus your effort here first — these papers are closest to raising it.",
+    "priorityRowHint_one": "{{citations}} more citation raises your H-index to {{next}}",
+    "priorityRowHint_other": "{{citations}} more citations raises your H-index to {{next}}"
   },
   "actionItems": {
     "nearMiss": {
       "title": "Promote \"{{title}}\"",
       "desc_one": "Only {{count}} more citation needed to help push your H-index to {{next}}. Share it, present it, or cite it in upcoming work.",
-      "desc_other": "Only {{count}} more citations needed to help push your H-index to {{next}}. Share it, present it, or cite it in upcoming work."
+      "desc_other": "Only {{count}} more citations needed to help push your H-index to {{next}}. Share it, present it, or cite it in upcoming work.",
+      "badge_one": "{{count}} citation to go",
+      "badge_other": "{{count}} citations to go"
     },
     "lowCitation": {
       "title": "Boost visibility of low-citation papers",

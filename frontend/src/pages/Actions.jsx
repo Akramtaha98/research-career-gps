@@ -22,6 +22,11 @@ export default function Actions() {
   const items = useMemo(() => generateActionItems({ papers }), [papers]);
   const isGated = source === 'live' && (!user || user.plan !== 'pro');
 
+  const nearMissItems = items.filter((item) => item.type === 'near_miss_paper');
+  // The general list below repeats the story in prose; once it's pulled out
+  // into its own highlighted card up top, showing it twice just adds noise.
+  const otherItems = items.filter((item) => item.type !== 'near_miss_paper');
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-6">
       <div>
@@ -40,21 +45,55 @@ export default function Actions() {
           />
         </div>
       ) : (
-        <div className="space-y-3">
-          {items.map((item, idx) => (
-            <div key={idx} className={`card border ${priorityStyles[item.priority]}`}>
-              <div className="flex items-start justify-between gap-4">
+        <>
+          {nearMissItems.length > 0 && (
+            <div className="card border-2 border-brand-200 bg-gradient-to-br from-brand-50 to-sky-50">
+              <div className="flex items-start gap-2 mb-1">
+                <span className="text-xl shrink-0" aria-hidden>🎯</span>
                 <div>
-                  <p className="font-semibold text-slate-900">{t(item.titleKey, item.titleParams)}</p>
-                  <p className="mt-1 text-sm text-slate-600">{t(item.descKey, item.descParams)}</p>
+                  <h2 className="text-lg font-semibold text-slate-900">{t('actions.priorityTitle')}</h2>
+                  <p className="text-sm text-slate-600 mt-0.5">
+                    {t('actions.prioritySubtitle', { h: nearMissItems[0].meta.currentH })}
+                  </p>
                 </div>
-                <span className={`shrink-0 text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded-full border ${priorityStyles[item.priority]}`}>
-                  {t(`actionItems.priority.${item.priority}`)}
-                </span>
+              </div>
+              <div className="mt-4 space-y-2">
+                {nearMissItems.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-white/80 border border-brand-100"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-medium text-slate-800 truncate">{item.meta.paperTitle}</p>
+                      <p className="text-xs text-slate-500">
+                        {t('actions.priorityRowHint', { citations: item.meta.needed, next: item.meta.nextH })}
+                      </p>
+                    </div>
+                    <span className="shrink-0 text-xs font-bold px-2.5 py-1 rounded-full bg-brand-600 text-white">
+                      {t('actionItems.nearMiss.badge', { count: item.meta.needed })}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
+          )}
+
+          <div className="space-y-3">
+            {otherItems.map((item, idx) => (
+              <div key={idx} className={`card border ${priorityStyles[item.priority]}`}>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="font-semibold text-slate-900">{t(item.titleKey, item.titleParams)}</p>
+                    <p className="mt-1 text-sm text-slate-600">{t(item.descKey, item.descParams)}</p>
+                  </div>
+                  <span className={`shrink-0 text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded-full border ${priorityStyles[item.priority]}`}>
+                    {t(`actionItems.priority.${item.priority}`)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       <div className="card">

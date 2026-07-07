@@ -124,13 +124,19 @@
     "emptyTitle": "Belum ada kertas kerja untuk dianalisis",
     "emptyDesc": "Sebaik sahaja penyelidik ini mempunyai kertas kerja dijejaki dengan petikan, anda akan melihat cadangan mengikut keutamaan di sini — kertas kerja hampir mencapai ambang, kadar penerbitan, dan strategi penerbitan.",
     "collabTitle": "Penasihat Kolaborasi",
-    "collabSubtitle": "Rakan pengarang bersama anda yang paling kerap, disusun mengikut indeks-h mereka sendiri — sejarah kolaborasi sebenar, bukan tekaan."
+    "collabSubtitle": "Rakan pengarang bersama anda yang paling kerap, disusun mengikut indeks-h mereka sendiri — sejarah kolaborasi sebenar, bukan tekaan.",
+    "priorityTitle": "Kertas kerja keutamaan untuk menaikkan indeks-H anda hari ini",
+    "prioritySubtitle": "Indeks-H anda kini {{h}}. Tumpukan usaha anda di sini dahulu — kertas kerja ini paling hampir untuk menaikkannya.",
+    "priorityRowHint_one": "{{citations}} lagi petikan menaikkan indeks-H anda kepada {{next}}",
+    "priorityRowHint_other": "{{citations}} lagi petikan menaikkan indeks-H anda kepada {{next}}"
   },
   "actionItems": {
     "nearMiss": {
       "title": "Promosikan \"{{title}}\"",
       "desc_one": "Hanya {{count}} lagi petikan diperlukan untuk membantu menaikkan indeks-H anda kepada {{next}}. Kongsikannya, bentangkannya, atau petik dalam kerja akan datang.",
-      "desc_other": "Hanya {{count}} lagi petikan diperlukan untuk membantu menaikkan indeks-H anda kepada {{next}}. Kongsikannya, bentangkannya, atau petik dalam kerja akan datang."
+      "desc_other": "Hanya {{count}} lagi petikan diperlukan untuk membantu menaikkan indeks-H anda kepada {{next}}. Kongsikannya, bentangkannya, atau petik dalam kerja akan datang.",
+      "badge_one": "{{count}} petikan lagi",
+      "badge_other": "{{count}} petikan lagi"
     },
     "lowCitation": {
       "title": "Tingkatkan keterlihatan kertas kerja berpetikan rendah",
