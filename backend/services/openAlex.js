@@ -17,13 +17,42 @@ function shortId(fullId) {
   return parts[parts.length - 1];
 }
 
+// Matches a bare ORCID iD (16 digits, optionally dashed, last char can be X)
+// with or without the "https://orcid.org/" prefix the user might paste.
+const ORCID_RE = /^(?:https?:\/\/orcid\.org\/)?(\d{4}-\d{4}-\d{4}-\d{3}[\dX])$/i;
+
+function normalizeOrcid(query) {
+  const match = query.trim().match(ORCID_RE);
+  return match ? match[1] : null;
+}
+
 /**
- * Search OpenAlex for authors matching a name. This is the app's PRIMARY
- * researcher-search source (see researcherSource.js) — OpenAlex is free,
- * requires no API key, and has no IP-based entitlement restriction, unlike
- * Scopus/WOS. Falls back to Semantic Scholar only if this fails/errors.
+ * Search OpenAlex for authors matching a name — OR, if the query is an
+ * ORCID iD, look up that exact author directly. ORCID is a globally unique
+ * researcher ID, so this sidesteps all the "which John Smith?" ambiguity a
+ * name search has; OpenAlex indexes ORCID natively so this needs no extra
+ * API and returns exactly one result when the ORCID is registered there.
+ *
+ * This is the app's PRIMARY researcher-search source (see
+ * researcherSource.js) — OpenAlex is free, requires no API key, and has no
+ * IP-based entitlement restriction, unlike Scopus/WOS. Falls back to
+ * Semantic Scholar only if this fails/errors (Semantic Scholar's author
+ * search endpoint doesn't support ORCID-based lookup, only name).
  */
 async function searchAuthors(query) {
+  const orcid = normalizeOrcid(query);
+  if (orcid) {
+    try {
+      const { data: author } = await client.get(`/authors/https://orcid.org/${orcid}`, {
+        params: { mailto: MAILTO },
+      });
+      return [toCandidate(author)];
+    } catch (err) {
+      if (err.response && err.response.status === 404) return [];
+      throw err;
+    }
+  }
+
   const { data } = await client.get('/authors', {
     params: {
       search: query,
@@ -33,7 +62,11 @@ async function searchAuthors(query) {
     },
   });
 
-  return (data.results || []).map((a) => ({
+  return (data.results || []).map(toCandidate);
+}
+
+function toCandidate(a) {
+  return {
     semanticScholarId: shortId(a.id), // field name kept for wire compatibility with existing frontend/controller code
     source: 'openalex',
     name: a.display_name || 'Unknown',
@@ -51,7 +84,7 @@ async function searchAuthors(query) {
     paperCount: a.works_count || 0,
     citationCount: a.cited_by_count || 0,
     hIndex: a.summary_stats?.h_index || 0,
-  }));
+  };
 }
 
 /**

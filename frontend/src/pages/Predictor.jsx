@@ -34,7 +34,11 @@ export default function Predictor() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [targetH, setTargetH] = useState(researcher.h_index + 5);
+  // Seed the initial target off the manual score when one exists and would
+  // already be used as the baseline — otherwise a researcher with e.g. an
+  // auto H-index of 36 but a verified Scopus H-index of 48 would start on
+  // a target (41) already below their real current number.
+  const [targetH, setTargetH] = useState((researcher.manual_h_index || researcher.h_index) + 5);
   const [monthlyCitationRate, setMonthlyCitationRate] = useState(0.5);
   const [papersPerYear, setPapersPerYear] = useState(2);
   const [venueName, setVenueName] = useState('');
@@ -195,11 +199,26 @@ function PredictorBody({
             </label>
             <input
               type="number"
-              min={effectiveHIndex}
+              min={effectiveHIndex + 1}
               className="input"
               value={targetH}
               onChange={(e) => setTargetH(e.target.value)}
+              onBlur={(e) => {
+                // The `min` attribute only blocks the browser's built-in
+                // spinner/validation, not free typing — clamp explicitly on
+                // blur so a target at or below the current H-index (which
+                // otherwise silently shows a confusing "0 mo, already
+                // reached") can't be left in place.
+                if (e.target.value !== '' && Number(e.target.value) <= effectiveHIndex) {
+                  setTargetH(effectiveHIndex + 1);
+                }
+              }}
             />
+            {Number(targetH) <= effectiveHIndex && (
+              <p className="mt-1 text-xs text-amber-600">
+                {t('predictor.targetTooLow', { current: effectiveHIndex })}
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
