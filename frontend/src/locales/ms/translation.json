@@ -109,6 +109,8 @@
     "notEnoughHistoryDesc": "Kami hanya mempunyai satu tangkapan data setakat ini. Kembali selepas mengemas kini penyelidik ini beberapa kali dalam minggu/bulan akan datang untuk melihat trend pertumbuhan di sini.",
     "topPapersTitle": "Kertas kerja paling banyak dipetik",
     "allPapersTitle": "Semua kertas kerja",
+    "filterPlaceholder": "Tapis mengikut tajuk atau penerbitan...",
+    "filterNoResults": "Tiada kertas kerja sepadan dengan penapis anda.",
     "showMorePapers": "Tunjukkan {{count}} lagi",
     "showLessPapers": "Tunjukkan kurang",
     "colTitle": "Tajuk",

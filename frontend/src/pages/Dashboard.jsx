@@ -41,8 +41,42 @@ export default function Dashboard() {
   }));
 
   const [showAllPapers, setShowAllPapers] = useState(false);
-  const sortedPapers = [...papers].sort((a, b) => (b.citations || 0) - (a.citations || 0));
+  const [paperFilter, setPaperFilter] = useState('');
+  const [sortKey, setSortKey] = useState('citations'); // 'title' | 'year' | 'venue' | 'citations'
+  const [sortDir, setSortDir] = useState('desc'); // 'asc' | 'desc'
+
+  function toggleSort(key) {
+    if (sortKey === key) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortKey(key);
+      // Citations/year make more sense starting high-to-low; title/venue A-Z.
+      setSortDir(key === 'title' || key === 'venue' ? 'asc' : 'desc');
+    }
+  }
+
+  const filteredPapers = paperFilter.trim()
+    ? papers.filter((p) => {
+        const q = paperFilter.trim().toLowerCase();
+        return (p.title || '').toLowerCase().includes(q) || (p.venue || '').toLowerCase().includes(q);
+      })
+    : papers;
+
+  const sortedPapers = [...filteredPapers].sort((a, b) => {
+    let cmp;
+    if (sortKey === 'title') cmp = (a.title || '').localeCompare(b.title || '');
+    else if (sortKey === 'venue') cmp = (a.venue || '').localeCompare(b.venue || '');
+    else if (sortKey === 'year') cmp = (a.year || 0) - (b.year || 0);
+    else cmp = (a.citations || 0) - (b.citations || 0);
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
+
   const visiblePapers = showAllPapers ? sortedPapers : sortedPapers.slice(0, 8);
+
+  function SortArrow({ column }) {
+    if (sortKey !== column) return null;
+    return <span className="ml-1 text-brand-500">{sortDir === 'asc' ? '↑' : '↓'}</span>;
+  }
 
   if (papers.length === 0) {
     return (
@@ -136,15 +170,39 @@ export default function Dashboard() {
       </div>
 
       <div className="card">
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">{t('dashboard.allPapersTitle')}</h2>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+          <h2 className="text-lg font-semibold text-slate-900">{t('dashboard.allPapersTitle')}</h2>
+          <input
+            type="text"
+            value={paperFilter}
+            onChange={(e) => setPaperFilter(e.target.value)}
+            placeholder={t('dashboard.filterPlaceholder')}
+            className="input sm:max-w-xs"
+          />
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-slate-400 border-b border-slate-100">
-                <th className="py-2 pr-4">{t('dashboard.colTitle')}</th>
-                <th className="py-2 pr-4">{t('dashboard.colYear')}</th>
-                <th className="py-2 pr-4">{t('dashboard.colVenue')}</th>
-                <th className="py-2 pr-4 text-right">{t('dashboard.colCitations')}</th>
+              <tr className="text-left text-slate-400 border-b border-slate-100 select-none">
+                <th className="py-2 pr-4 cursor-pointer hover:text-slate-600" onClick={() => toggleSort('title')}>
+                  {t('dashboard.colTitle')}
+                  <SortArrow column="title" />
+                </th>
+                <th className="py-2 pr-4 cursor-pointer hover:text-slate-600" onClick={() => toggleSort('year')}>
+                  {t('dashboard.colYear')}
+                  <SortArrow column="year" />
+                </th>
+                <th className="py-2 pr-4 cursor-pointer hover:text-slate-600" onClick={() => toggleSort('venue')}>
+                  {t('dashboard.colVenue')}
+                  <SortArrow column="venue" />
+                </th>
+                <th
+                  className="py-2 pr-4 text-right cursor-pointer hover:text-slate-600"
+                  onClick={() => toggleSort('citations')}
+                >
+                  {t('dashboard.colCitations')}
+                  <SortArrow column="citations" />
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -156,6 +214,13 @@ export default function Dashboard() {
                   <td className="py-2.5 pr-4 text-right font-semibold text-brand-600">{(p.citations || 0).toLocaleString()}</td>
                 </tr>
               ))}
+              {visiblePapers.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="py-6 text-center text-slate-400">
+                    {t('dashboard.filterNoResults')}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

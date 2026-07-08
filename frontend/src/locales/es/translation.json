@@ -109,6 +109,8 @@
     "notEnoughHistoryDesc": "Por ahora solo tenemos una instantánea. Vuelve después de actualizar este investigador varias veces en las próximas semanas o meses para ver una tendencia de crecimiento aquí.",
     "topPapersTitle": "Artículos más citados",
     "allPapersTitle": "Todos los artículos",
+    "filterPlaceholder": "Filtrar por título o publicación...",
+    "filterNoResults": "Ningún artículo coincide con tu filtro.",
     "showMorePapers": "Mostrar {{count}} más",
     "showLessPapers": "Mostrar menos",
     "colTitle": "Título",

@@ -109,6 +109,8 @@
     "notEnoughHistoryDesc": "We only have one snapshot so far. Come back after refreshing this researcher a few times over the coming weeks/months to see a growth trend here.",
     "topPapersTitle": "Top cited papers",
     "allPapersTitle": "All papers",
+    "filterPlaceholder": "Filter by title or venue...",
+    "filterNoResults": "No papers match your filter.",
     "showMorePapers": "Show {{count}} more",
     "showLessPapers": "Show less",
     "colTitle": "Title",

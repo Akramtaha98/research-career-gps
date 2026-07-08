@@ -109,6 +109,8 @@
     "notEnoughHistoryDesc": "لدينا لقطة واحدة فقط حتى الآن. عد بعد تحديث بيانات هذا الباحث عدة مرات خلال الأسابيع أو الأشهر القادمة لترى منحنى النمو هنا.",
     "topPapersTitle": "الأبحاث الأكثر استشهاداً",
     "allPapersTitle": "جميع الأبحاث",
+    "filterPlaceholder": "تصفية حسب العنوان أو المنشور...",
+    "filterNoResults": "لا توجد أبحاث مطابقة للتصفية.",
     "showMorePapers": "عرض {{count}} إضافية",
     "showLessPapers": "عرض أقل",
     "colTitle": "العنوان",
