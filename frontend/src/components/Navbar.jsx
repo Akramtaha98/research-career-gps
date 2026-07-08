@@ -44,6 +44,7 @@ export default function Navbar() {
           <NavLink to="/dashboard" className={navItem}>{t('nav.dashboard')}</NavLink>
           <NavLink to="/predictor" className={navItem}>{t('nav.predictor')}</NavLink>
           <NavLink to="/actions" className={navItem}>{t('nav.actions')}</NavLink>
+          <NavLink to="/import" className={navItem}>{t('nav.import')}</NavLink>
           {user ? (
             <button onClick={handleLogout} className="ml-2 px-3 py-2 rounded-lg text-sm font-medium text-white/90 hover:bg-white/10 transition">
               {t('nav.logout')}
@@ -84,6 +85,7 @@ export default function Navbar() {
           <NavLink to="/dashboard" onClick={closeMenu} className={mobileNavItem}>{t('nav.dashboard')}</NavLink>
           <NavLink to="/predictor" onClick={closeMenu} className={mobileNavItem}>{t('nav.predictor')}</NavLink>
           <NavLink to="/actions" onClick={closeMenu} className={mobileNavItem}>{t('nav.actions')}</NavLink>
+          <NavLink to="/import" onClick={closeMenu} className={mobileNavItem}>{t('nav.import')}</NavLink>
           {user ? (
             <button onClick={handleLogout} className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-white/90 hover:bg-white/10 transition">
               {t('nav.logout')}

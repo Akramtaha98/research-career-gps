@@ -5,6 +5,7 @@
     "dashboard": "Papan Pemuka",
     "predictor": "Peramal",
     "actions": "Tindakan",
+    "import": "Import",
     "logout": "Log keluar",
     "login": "Log masuk"
   },
@@ -13,6 +14,24 @@
   },
   "common": {
     "loading": "Sedang memuatkan..."
+  },
+  "import": {
+    "title": "Import data Scopus / Web of Science",
+    "subtitle": "Dapatkan nombor petikan sebenar dengan mengeksport fail CSV daripada Scopus atau Web of Science (semasa berada di rangkaian universiti anda) dan memuat naiknya di sini. Semuanya berlaku dalam pelayar anda — fail tidak pernah dimuat naik ke mana-mana pelayan.",
+    "source": {
+      "scopus": "Scopus",
+      "wos": "Web of Science",
+      "other": "Lain-lain"
+    },
+    "instructionsScopus": "Di Scopus (semasa disambungkan ke VPN universiti anda), buka profil pengarang anda, pilih dokumen anda, kemudian Export → CSV — pastikan \"Cited by\" disertakan dalam medan yang dieksport.",
+    "instructionsWos": "Di Web of Science (semasa disambungkan ke VPN universiti anda), buka laporan petikan anda, pilih semua rekod, kemudian Export → Excel/CSV dengan \"Times Cited\" disertakan.",
+    "instructionsOther": "Muat naik mana-mana fail CSV dengan lajur untuk tajuk, tahun, dan bilangan petikan — nama lajur dipadankan secara automatik.",
+    "missingColumns": "Tidak dapat mencari lajur tajuk dan bilangan petikan dalam fail ini. Pastikan eksport menyertakan medan tersebut.",
+    "parseError": "Tidak dapat membaca fail ini. Pastikan ia adalah eksport CSV.",
+    "noRows": "Tiada kertas kerja ditemui dalam fail ini.",
+    "resultsTitle": "Diimport daripada {{source}}",
+    "clear": "Kosongkan",
+    "privacyNote": "Fail ini diproses sepenuhnya dalam pelayar anda dan tidak pernah dimuat naik ke mana-mana."
   },
   "login": {
     "title": "Selamat kembali",

@@ -5,6 +5,7 @@
     "dashboard": "Dashboard",
     "predictor": "Predictor",
     "actions": "Actions",
+    "import": "Import",
     "logout": "Log out",
     "login": "Log in"
   },
@@ -13,6 +14,24 @@
   },
   "common": {
     "loading": "Loading..."
+  },
+  "import": {
+    "title": "Import Scopus / Web of Science data",
+    "subtitle": "Bring in real citation numbers by exporting a CSV from Scopus or Web of Science (while on your university network) and uploading it here. Everything runs in your browser — the file is never uploaded to any server.",
+    "source": {
+      "scopus": "Scopus",
+      "wos": "Web of Science",
+      "other": "Other"
+    },
+    "instructionsScopus": "On Scopus (while connected to your university VPN), open your author profile, select your documents, then Export → CSV — make sure \"Cited by\" is included in the export fields.",
+    "instructionsWos": "On Web of Science (while connected to your university VPN), open your citation report, select all records, then Export → Excel/CSV with \"Times Cited\" included.",
+    "instructionsOther": "Upload any CSV with columns for title, year, and citation count — column names are matched automatically.",
+    "missingColumns": "Couldn't find a title and citation-count column in this file. Make sure the export includes those fields.",
+    "parseError": "Couldn't read this file. Make sure it's a CSV export.",
+    "noRows": "No papers found in this file.",
+    "resultsTitle": "Imported from {{source}}",
+    "clear": "Clear",
+    "privacyNote": "This file was processed entirely in your browser and was never uploaded anywhere."
   },
   "login": {
     "title": "Welcome back",
