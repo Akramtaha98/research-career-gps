@@ -21,14 +21,15 @@ export default function Search() {
     const trimmed = query.trim();
     if (!trimmed) return;
 
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-
-    // A pure number is treated as a direct Semantic Scholar Author ID —
-    // skip the search step and look it up immediately.
+    // A pure number is treated as a direct Semantic Scholar Author ID.
+    // Persisting a tracked researcher requires an account, so gate only
+    // this path — free-text name search below is public on the backend
+    // and should work for anonymous visitors too.
     if (NUMERIC_ID.test(trimmed)) {
+      if (!user) {
+        navigate('/login');
+        return;
+      }
       try {
         await lookupResearcher(trimmed);
         navigate('/dashboard');
@@ -38,7 +39,8 @@ export default function Search() {
       return;
     }
 
-    // Otherwise treat it as a name and search for matching authors.
+    // Name search hits a public, unauthenticated endpoint — no login
+    // required just to see who's out there.
     setSearching(true);
     setCandidates(null);
     try {
@@ -52,6 +54,13 @@ export default function Search() {
   }
 
   async function handlePick(candidate) {
+    // Picking a candidate to actually track/persist does require an
+    // account — gate here instead, after the user has already seen
+    // real search results.
+    if (!user) {
+      navigate('/login');
+      return;
+    }
     setPickingId(candidate.semanticScholarId);
     try {
       await lookupResearcher(candidate.semanticScholarId);
