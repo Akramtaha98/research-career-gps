@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧭 Research Career GPS
+# 🧭 Research GPS
 
 **Track your H-index. Project your growth. Know what to work on next.**
 

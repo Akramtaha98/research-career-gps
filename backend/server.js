@@ -46,7 +46,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Research Career GPS API listening on port ${PORT} (demoMode=${isDemoMode})`);
+  console.log(`Research GPS API listening on port ${PORT} (demoMode=${isDemoMode})`);
 });
 
 module.exports = app;

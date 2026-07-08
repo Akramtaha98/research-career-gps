@@ -1,4 +1,4 @@
--- Research Career GPS - PostgreSQL schema
+-- Research GPS - PostgreSQL schema
 -- Run against Supabase (or any Postgres 13+) instance:
 --   psql "$DATABASE_URL" -f schema.sql
 

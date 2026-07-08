@@ -82,7 +82,7 @@ Predictions and the collaboration advisor are gated behind a Pro subscription. T
 ### 1. Create your Stripe account and a Product
 1. Sign up at dashboard.stripe.com (free).
 2. Stay in **Test mode** (toggle top-right) while developing — test mode uses fake cards, no real money moves.
-3. Products → Add a product, e.g. "Research Career GPS Pro", recurring price $4.99/month. Copy the **Price ID** (starts `price_...`).
+3. Products → Add a product, e.g. "Research GPS Pro", recurring price $4.99/month. Copy the **Price ID** (starts `price_...`).
 
 ### 2. Get your API keys
 1. Developers → API keys → copy the **Secret key** (test mode: starts `sk_test_...`).

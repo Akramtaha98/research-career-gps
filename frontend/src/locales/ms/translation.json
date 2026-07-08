@@ -1,6 +1,6 @@
 {
   "nav": {
-    "brand": "Research Career GPS",
+    "brand": "Research GPS",
     "search": "Cari",
     "dashboard": "Papan Pemuka",
     "predictor": "Peramal",
@@ -9,7 +9,7 @@
     "login": "Log masuk"
   },
   "footer": {
-    "tagline": "Research Career GPS — MVP"
+    "tagline": "Research GPS — MVP"
   },
   "common": {
     "loading": "Sedang memuatkan..."

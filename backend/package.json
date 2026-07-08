@@ -1,7 +1,7 @@
 {
   "name": "research-career-gps-backend",
   "version": "1.0.0",
-  "description": "Backend API for Research Career GPS - H-index tracking and prediction",
+  "description": "Backend API for Research GPS - H-index tracking and prediction",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {

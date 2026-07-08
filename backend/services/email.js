@@ -25,7 +25,7 @@ async function sendPasswordResetEmail({ to, resetUrl }) {
     <div style="font-family: -apple-system, Arial, sans-serif; max-width: 480px; margin: 0 auto;">
       <h2 style="color: #0f172a;">Reset your password</h2>
       <p style="color: #475569;">
-        We received a request to reset the password for your Research Career GPS account.
+        We received a request to reset the password for your Research GPS account.
         This link expires in 1 hour.
       </p>
       <p style="margin: 24px 0;">
@@ -47,7 +47,7 @@ async function sendPasswordResetEmail({ to, resetUrl }) {
     {
       from,
       to,
-      subject: 'Reset your Research Career GPS password',
+      subject: 'Reset your Research GPS password',
       html,
     },
     {

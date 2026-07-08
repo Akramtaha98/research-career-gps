@@ -1,6 +1,6 @@
 {
   "nav": {
-    "brand": "Research Career GPS",
+    "brand": "Research GPS",
     "search": "Search",
     "dashboard": "Dashboard",
     "predictor": "Predictor",
@@ -9,7 +9,7 @@
     "login": "Log in"
   },
   "footer": {
-    "tagline": "Research Career GPS — MVP"
+    "tagline": "Research GPS — MVP"
   },
   "common": {
     "loading": "Loading..."
