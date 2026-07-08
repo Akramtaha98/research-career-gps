@@ -1,6 +1,14 @@
 const store = require('../services/store');
 const { fetchAuthorProfile, searchAuthors, fetchTopCollaborators } = require('../services/semanticScholar');
+const { computeHistoricalHIndex } = require('../services/historicalHIndex');
 const { generateActionItems } = require('../utils/actionItems');
+
+// Computing real historical H-index makes one Semantic Scholar request per
+// paper (rate-limit-sensitive), so cache results per researcher in memory
+// instead of recomputing on every dashboard visit. Cleared on server
+// restart — fine for an MVP; a real deployment might move this to Redis/DB.
+const realHistoryCache = new Map(); // researcherId -> { computedAt, data }
+const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
 
 /**
  * GET /api/researchers/search?q=name
@@ -141,6 +149,41 @@ async function getCollaborators(req, res) {
   }
 }
 
+/**
+ * GET /api/researchers/:id/real-history
+ * Reconstructs the researcher's actual H-index for every year from their
+ * earliest tracked paper to today, using real Semantic Scholar citation
+ * data (not estimated/interpolated). This is slower than the app's normal
+ * snapshot history (one extra Semantic Scholar request per paper, spaced
+ * out to respect rate limits) so it's an explicit opt-in action, cached for
+ * a few hours per researcher.
+ */
+async function getRealHistory(req, res) {
+  try {
+    const { id } = req.params;
+    const researcher = await store.findResearcherById(id);
+    if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
+    if (researcher.user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized to view this researcher' });
+    }
+
+    const cached = realHistoryCache.get(id);
+    if (cached && Date.now() - cached.computedAt < CACHE_TTL_MS) {
+      return res.json({ ...cached.data, cached: true });
+    }
+
+    const papers = await store.listPapers(id);
+    const result = await computeHistoricalHIndex(
+      papers.map((p) => ({ externalId: p.external_id, year: p.year, citations: p.citations }))
+    );
+
+    realHistoryCache.set(id, { computedAt: Date.now(), data: result });
+    return res.json({ ...result, cached: false });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
+}
+
 module.exports = {
   searchResearchers,
   addResearcher,
@@ -148,4 +191,5 @@ module.exports = {
   listPapers,
   getActionItems,
   getCollaborators,
+  getRealHistory,
 };

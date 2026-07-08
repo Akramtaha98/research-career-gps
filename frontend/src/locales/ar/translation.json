@@ -88,6 +88,7 @@
     "matchesFound_one": "نتيجة واحدة — اختر الصحيحة",
     "matchesFound_other": "{{count}} نتائج — اختر الصحيحة",
     "noMatches": "لا توجد نتائج مطابقة",
+    "akaLabel": "يُنشر أيضاً باسم {{name}}",
     "papers": "بحث",
     "citations": "استشهاد",
     "hIndexLabel": "مؤشر H",
@@ -113,7 +114,13 @@
     "colCitations": "الاستشهادات",
     "emptyTitle": "لا توجد أبحاث متتبَّعة بعد لـ {{name}}",
     "emptyDesc": "لا يحتوي Semantic Scholar على أبحاث مفهرسة لهذا الملف بعد، أو أن معرّف الباحث جديد تماماً. ستظهر المقاييس والرسوم البيانية بمجرد فهرسة أبحاث تحمل استشهادات.",
-    "emptyRefresh": "حاول التحديث من Semantic Scholar"
+    "emptyRefresh": "حاول التحديث من Semantic Scholar",
+    "realHistoryTitle": "سجل مؤشر H الحقيقي",
+    "realHistoryCta": "تحميل سجل مؤشر H التاريخي الحقيقي",
+    "realHistoryLoading": "جارٍ الحساب من بيانات الاستشهاد... قد يستغرق هذا دقيقة",
+    "realHistoryError": "تعذّر حساب سجل مؤشر H التاريخي. حاول مرة أخرى بعد قليل.",
+    "realHistoryNote": "محسوب من بيانات استشهاد حقيقية عبر أكثر {{count}} بحث استشهاداً لديك.",
+    "realHistorySkipped": "(تم استبعاد {{count}} بحث بسبب نقص البيانات.)"
   },
   "predictor": {
     "title": "متنبئ مؤشر H",

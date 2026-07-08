@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResearcher } from '../context/ResearcherContext';
 import MetricCard from '../components/MetricCard';
@@ -9,12 +10,34 @@ function formatDate(iso) {
 }
 
 export default function Dashboard() {
-  const { source, researcher, papers, history, loading, refreshResearcher } = useResearcher();
+  const { source, researcher, papers, history, loading, refreshResearcher, getRealHistory } = useResearcher();
   const { t } = useTranslation();
+
+  const [realHistory, setRealHistory] = useState(null); // { history, papersConsidered, papersSkipped, cached }
+  const [realHistoryLoading, setRealHistoryLoading] = useState(false);
+  const [realHistoryError, setRealHistoryError] = useState(null);
+
+  async function handleLoadRealHistory() {
+    setRealHistoryLoading(true);
+    setRealHistoryError(null);
+    try {
+      const data = await getRealHistory();
+      setRealHistory(data);
+    } catch (err) {
+      setRealHistoryError(err.response?.data?.error || t('dashboard.realHistoryError'));
+    } finally {
+      setRealHistoryLoading(false);
+    }
+  }
 
   const chartHistory = history.map((h) => ({
     label: formatDate(h.recorded_at),
     hIndex: h.h_index,
+  }));
+
+  const realChartHistory = realHistory?.history?.map((h) => ({
+    label: String(h.year),
+    hIndex: h.hIndex,
   }));
 
   const topPapers = [...papers].sort((a, b) => (b.citations || 0) - (a.citations || 0)).slice(0, 8);
@@ -68,8 +91,38 @@ export default function Dashboard() {
       </div>
 
       <div className="card">
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">{t('dashboard.growthTitle')}</h2>
-        {chartHistory.length > 1 ? (
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+          <h2 className="text-lg font-semibold text-slate-900">
+            {realChartHistory ? t('dashboard.realHistoryTitle') : t('dashboard.growthTitle')}
+          </h2>
+          {source === 'live' && !realChartHistory && (
+            <button
+              onClick={handleLoadRealHistory}
+              disabled={realHistoryLoading}
+              className="btn-secondary text-xs self-start sm:self-auto"
+            >
+              {realHistoryLoading ? t('dashboard.realHistoryLoading') : t('dashboard.realHistoryCta')}
+            </button>
+          )}
+        </div>
+
+        {realHistoryError && <p className="text-sm text-red-600 mb-3">{realHistoryError}</p>}
+
+        {realChartHistory ? (
+          realChartHistory.length > 1 ? (
+            <>
+              <HIndexChart history={realChartHistory} />
+              <p className="mt-3 text-xs text-slate-400">
+                {t('dashboard.realHistoryNote', { count: realHistory.papersConsidered })}
+                {realHistory.papersSkipped > 0
+                  ? ' ' + t('dashboard.realHistorySkipped', { count: realHistory.papersSkipped })
+                  : ''}
+              </p>
+            </>
+          ) : (
+            <EmptyState icon="📈" title={t('dashboard.notEnoughHistoryTitle')} description={t('dashboard.notEnoughHistoryDesc')} />
+          )
+        ) : chartHistory.length > 1 ? (
           <HIndexChart history={chartHistory} />
         ) : (
           <EmptyState

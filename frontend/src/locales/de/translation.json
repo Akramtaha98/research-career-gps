@@ -88,6 +88,7 @@
     "matchesFound_one": "{{count}} Treffer — wähle den richtigen aus",
     "matchesFound_other": "{{count}} Treffer — wähle den richtigen aus",
     "noMatches": "Keine Treffer gefunden",
+    "akaLabel": "Auch veröffentlicht als {{name}}",
     "papers": "Publikationen",
     "citations": "Zitationen",
     "hIndexLabel": "H-Index",
@@ -113,7 +114,13 @@
     "colCitations": "Zitationen",
     "emptyTitle": "Noch keine Publikationen erfasst für {{name}}",
     "emptyDesc": "Semantic Scholar hat für dieses Profil noch keine Publikationen indexiert, oder es handelt sich um eine brandneue Forscher-ID. Kennzahlen und Diagramme werden gefüllt, sobald Publikationen mit Zitationen indexiert sind.",
-    "emptyRefresh": "Von Semantic Scholar aktualisieren versuchen"
+    "emptyRefresh": "Von Semantic Scholar aktualisieren versuchen",
+    "realHistoryTitle": "Echter H-Index-Verlauf",
+    "realHistoryCta": "Echten H-Index-Verlauf laden",
+    "realHistoryLoading": "Berechnung aus Zitationsdaten... dies kann eine Minute dauern",
+    "realHistoryError": "H-Index-Verlauf konnte nicht berechnet werden. Versuche es gleich noch einmal.",
+    "realHistoryNote": "Berechnet aus echten Zitationsdaten deiner {{count}} meistzitierten Publikationen.",
+    "realHistorySkipped": "({{count}} Publikationen ohne ausreichende Daten wurden ausgeschlossen.)"
   },
   "predictor": {
     "title": "H-Index-Prognose",

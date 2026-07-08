@@ -88,6 +88,7 @@
     "matchesFound_one": "{{count}} résultat — choisissez le bon",
     "matchesFound_other": "{{count}} résultats — choisissez le bon",
     "noMatches": "Aucun résultat trouvé",
+    "akaLabel": "Également publié sous le nom {{name}}",
     "papers": "articles",
     "citations": "citations",
     "hIndexLabel": "indice h",
@@ -113,7 +114,13 @@
     "colCitations": "Citations",
     "emptyTitle": "Aucun article suivi pour l'instant pour {{name}}",
     "emptyDesc": "Semantic Scholar n'a pas encore d'articles indexés pour ce profil, ou il s'agit d'un tout nouvel identifiant de chercheur. Les indicateurs et graphiques se rempliront une fois que des articles avec citations seront indexés.",
-    "emptyRefresh": "Essayer d'actualiser depuis Semantic Scholar"
+    "emptyRefresh": "Essayer d'actualiser depuis Semantic Scholar",
+    "realHistoryTitle": "Historique réel de l'indice H",
+    "realHistoryCta": "Charger l'historique réel de l'indice H",
+    "realHistoryLoading": "Calcul à partir des données de citations... cela peut prendre une minute",
+    "realHistoryError": "Impossible de calculer l'historique de l'indice H. Réessayez dans un instant.",
+    "realHistoryNote": "Calculé à partir de données de citations réelles sur vos {{count}} articles les plus cités.",
+    "realHistorySkipped": "({{count}} articles sans données suffisantes ont été exclus.)"
   },
   "predictor": {
     "title": "Prédicteur d'indice H",

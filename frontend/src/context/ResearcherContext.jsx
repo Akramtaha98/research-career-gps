@@ -69,6 +69,18 @@ export function ResearcherProvider({ children }) {
     return data.collaborators;
   }, [source, researcher]);
 
+  /**
+   * Fetches the researcher's REAL historical H-index (one year at a time,
+   * computed from actual Semantic Scholar citation data — not estimated).
+   * Slower than everything else here since it's one extra request per
+   * paper server-side; the backend caches it for a few hours per researcher.
+   */
+  const getRealHistory = useCallback(async () => {
+    if (source !== 'live' || !researcher?.id) return null;
+    const { data } = await client.get(`/researchers/${researcher.id}/real-history`);
+    return data;
+  }, [source, researcher]);
+
   const refreshResearcher = useCallback(async () => {
     if (source !== 'live' || !researcher?.id) return;
     setLoading(true);
@@ -97,6 +109,7 @@ export function ResearcherProvider({ children }) {
         lookupResearcher,
         refreshResearcher,
         getCollaborators,
+        getRealHistory,
       }}
     >
       {children}

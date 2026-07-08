@@ -6,6 +6,7 @@ const {
   listPapers,
   getActionItems,
   getCollaborators,
+  getRealHistory,
 } = require('../controllers/researcherController');
 const { requireAuth } = require('../middleware/auth');
 const { requirePro } = require('../middleware/requirePro');
@@ -22,5 +23,6 @@ router.get('/:id', getResearcher);
 router.get('/:id/papers', listPapers);
 router.get('/:id/actions', getActionItems);
 router.get('/:id/collaborators', requirePro, getCollaborators);
+router.get('/:id/real-history', getRealHistory);
 
 module.exports = router;

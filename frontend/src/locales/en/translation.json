@@ -88,6 +88,7 @@
     "matchesFound_one": "{{count}} match — pick the right one",
     "matchesFound_other": "{{count}} matches — pick the right one",
     "noMatches": "No matches found",
+    "akaLabel": "Also published as {{name}}",
     "papers": "papers",
     "citations": "citations",
     "hIndexLabel": "h-index",
@@ -113,7 +114,13 @@
     "colCitations": "Citations",
     "emptyTitle": "No papers tracked yet for {{name}}",
     "emptyDesc": "Semantic Scholar doesn't have any papers indexed for this profile yet, or this is a brand-new researcher ID. Metrics and charts will populate once papers with citations are indexed.",
-    "emptyRefresh": "Try refreshing from Semantic Scholar"
+    "emptyRefresh": "Try refreshing from Semantic Scholar",
+    "realHistoryTitle": "Real H-index history",
+    "realHistoryCta": "Load real historical H-index",
+    "realHistoryLoading": "Computing from citation data... this can take a minute",
+    "realHistoryError": "Couldn't compute historical H-index. Try again shortly.",
+    "realHistoryNote": "Computed from real citation data across your {{count}} most-cited papers.",
+    "realHistorySkipped": "({{count}} papers without enough data were excluded.)"
   },
   "predictor": {
     "title": "H-index Predictor",

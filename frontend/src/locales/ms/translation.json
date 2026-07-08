@@ -88,6 +88,7 @@
     "matchesFound_one": "{{count}} padanan — pilih yang betul",
     "matchesFound_other": "{{count}} padanan — pilih yang betul",
     "noMatches": "Tiada padanan ditemui",
+    "akaLabel": "Turut diterbitkan sebagai {{name}}",
     "papers": "kertas kerja",
     "citations": "petikan",
     "hIndexLabel": "indeks-h",
@@ -113,7 +114,13 @@
     "colCitations": "Petikan",
     "emptyTitle": "Belum ada kertas kerja dijejaki untuk {{name}}",
     "emptyDesc": "Semantic Scholar belum mempunyai sebarang kertas kerja diindeks untuk profil ini, atau ini adalah ID penyelidik yang baharu sepenuhnya. Metrik dan carta akan dipenuhi sebaik sahaja kertas kerja dengan petikan diindeks.",
-    "emptyRefresh": "Cuba kemas kini daripada Semantic Scholar"
+    "emptyRefresh": "Cuba kemas kini daripada Semantic Scholar",
+    "realHistoryTitle": "Sejarah indeks-H sebenar",
+    "realHistoryCta": "Muatkan sejarah indeks-H sebenar",
+    "realHistoryLoading": "Mengira daripada data petikan... ini mungkin mengambil masa seminit",
+    "realHistoryError": "Tidak dapat mengira sejarah indeks-H. Cuba lagi sebentar lagi.",
+    "realHistoryNote": "Dikira daripada data petikan sebenar merentasi {{count}} kertas kerja paling banyak dipetik anda.",
+    "realHistorySkipped": "({{count}} kertas kerja tanpa data mencukupi telah dikecualikan.)"
   },
   "predictor": {
     "title": "Peramal Indeks-H",

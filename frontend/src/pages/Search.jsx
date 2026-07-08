@@ -128,11 +128,15 @@ export default function Search() {
                 className="w-full text-left px-4 py-3 rounded-xl border border-slate-100 hover:border-brand-300 hover:bg-brand-50 transition flex items-center justify-between gap-3 disabled:opacity-50"
               >
                 <div>
-                  <p className="font-medium text-slate-800">{c.name}</p>
+                  <p className="font-medium text-slate-800">{c.fullName || c.name}</p>
+                  {c.fullName && c.fullName !== c.name && (
+                    <p className="text-xs text-slate-400">{t('search.akaLabel', { name: c.name })}</p>
+                  )}
                   <p className="text-xs text-slate-500">
                     {c.affiliations?.length ? c.affiliations.join(', ') + ' · ' : ''}
                     {c.paperCount} {t('search.papers')} · {c.citationCount.toLocaleString()} {t('search.citations')} · {t('search.hIndexLabel')} {c.hIndex}
                   </p>
+                  {c.orcid && <p className="text-xs text-slate-400">ORCID: {c.orcid}</p>}
                 </div>
                 <span className="text-xs text-brand-600 font-semibold shrink-0">
                   {pickingId === c.semanticScholarId ? t('search.pickLoading') : t('search.select')}

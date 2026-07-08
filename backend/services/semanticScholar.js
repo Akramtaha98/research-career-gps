@@ -85,21 +85,50 @@ async function fetchAuthorProfile(semanticScholarId, { retry = true } = {}) {
  * is fetched separately via fetchAuthorProfile once the user picks one.
  */
 async function searchAuthors(query, { retry = true } = {}) {
-  const fields = ['name', 'affiliations', 'paperCount', 'citationCount', 'hIndex'].join(',');
+  const fields = [
+    'name',
+    'aliases',
+    'affiliations',
+    'homepage',
+    'externalIds',
+    'paperCount',
+    'citationCount',
+    'hIndex',
+  ].join(',');
 
   try {
     const { data } = await client.get('/author/search', {
       params: { query, fields },
     });
 
-    return (data.data || []).map((a) => ({
-      semanticScholarId: a.authorId,
-      name: a.name || 'Unknown',
-      affiliations: a.affiliations || [],
-      paperCount: a.paperCount || 0,
-      citationCount: a.citationCount || 0,
-      hIndex: a.hIndex || 0,
-    }));
+    return (data.data || []).map((a) => {
+      // Semantic Scholar's primary `name` field is often a truncated
+      // publishing form (e.g. "M. Mohammed") because that's literally how
+      // the author appears on their papers' bylines. `aliases` sometimes
+      // includes a fuller variant of the same person's name (e.g. from a
+      // different paper that spelled it out) — prefer the longest of the
+      // two as the display name, and surface the original as a secondary
+      // "also published as" hint so results aren't all indistinguishable.
+      const rawName = a.name || 'Unknown';
+      const aliases = a.aliases || [];
+      const fullName = [rawName, ...aliases].reduce(
+        (longest, current) => (current && current.length > longest.length ? current : longest),
+        rawName
+      );
+
+      return {
+        semanticScholarId: a.authorId,
+        name: rawName,
+        fullName,
+        aliases,
+        affiliations: a.affiliations || [],
+        homepage: a.homepage || null,
+        orcid: a.externalIds?.ORCID || null,
+        paperCount: a.paperCount || 0,
+        citationCount: a.citationCount || 0,
+        hIndex: a.hIndex || 0,
+      };
+    });
   } catch (err) {
     if (err.response && err.response.status === 429 && retry) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -166,4 +195,50 @@ async function fetchTopCollaborators(semanticScholarId, { limit = 5 } = {}) {
     .slice(0, limit);
 }
 
-module.exports = { fetchAuthorProfile, searchAuthors, fetchTopCollaborators };
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Fetches every citing paper's publication year for one paper, so callers
+ * can reconstruct "how many citations did this paper actually have by year
+ * Y" instead of only knowing today's total. Paginated (Semantic Scholar caps
+ * this endpoint at 1000/page) and retries once on 429 with backoff, same
+ * pattern as fetchAuthorProfile/searchAuthors above.
+ *
+ * @param {string} paperId - Semantic Scholar paper ID (not a DOI)
+ * @returns {Promise<number[]>} publication years of papers citing this one
+ */
+async function fetchPaperCitationYears(paperId, { retry = true } = {}) {
+  const years = [];
+  let offset = 0;
+  const limit = 1000;
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    try {
+      const { data } = await client.get(`/paper/${encodeURIComponent(paperId)}/citations`, {
+        params: { fields: 'year', offset, limit },
+      });
+      const batch = data.data || [];
+      for (const item of batch) {
+        if (item.citingPaper && typeof item.citingPaper.year === 'number') {
+          years.push(item.citingPaper.year);
+        }
+      }
+      if (!data.next || batch.length < limit) break;
+      offset = data.next;
+    } catch (err) {
+      if (err.response && err.response.status === 429 && retry) {
+        await sleep(2000);
+        return fetchPaperCitationYears(paperId, { retry: false });
+      }
+      // A single paper's citation list failing (404, timeout, etc.) shouldn't
+      // abort the whole historical computation — treat it as "no data" for
+      // this paper and let the caller fall back to its known total.
+      return [];
+    }
+  }
+
+  return years;
+}
+
+module.exports = { fetchAuthorProfile, searchAuthors, fetchTopCollaborators, fetchPaperCitationYears };
