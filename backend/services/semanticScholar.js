@@ -85,50 +85,30 @@ async function fetchAuthorProfile(semanticScholarId, { retry = true } = {}) {
  * is fetched separately via fetchAuthorProfile once the user picks one.
  */
 async function searchAuthors(query, { retry = true } = {}) {
-  const fields = [
-    'name',
-    'aliases',
-    'affiliations',
-    'homepage',
-    'externalIds',
-    'paperCount',
-    'citationCount',
-    'hIndex',
-  ].join(',');
+  // NOTE: 'aliases' looks like it should exist on this endpoint (and is
+  // documented in some older references) but Semantic Scholar's live API
+  // actually rejects it with a 400 "Unrecognized or unsupported fields"
+  // error — confirmed directly against their API. Do not add it back
+  // without testing; it will break search entirely, not degrade gracefully.
+  const fields = ['name', 'affiliations', 'homepage', 'externalIds', 'paperCount', 'citationCount', 'hIndex'].join(
+    ','
+  );
 
   try {
     const { data } = await client.get('/author/search', {
       params: { query, fields },
     });
 
-    return (data.data || []).map((a) => {
-      // Semantic Scholar's primary `name` field is often a truncated
-      // publishing form (e.g. "M. Mohammed") because that's literally how
-      // the author appears on their papers' bylines. `aliases` sometimes
-      // includes a fuller variant of the same person's name (e.g. from a
-      // different paper that spelled it out) — prefer the longest of the
-      // two as the display name, and surface the original as a secondary
-      // "also published as" hint so results aren't all indistinguishable.
-      const rawName = a.name || 'Unknown';
-      const aliases = a.aliases || [];
-      const fullName = [rawName, ...aliases].reduce(
-        (longest, current) => (current && current.length > longest.length ? current : longest),
-        rawName
-      );
-
-      return {
-        semanticScholarId: a.authorId,
-        name: rawName,
-        fullName,
-        aliases,
-        affiliations: a.affiliations || [],
-        homepage: a.homepage || null,
-        orcid: a.externalIds?.ORCID || null,
-        paperCount: a.paperCount || 0,
-        citationCount: a.citationCount || 0,
-        hIndex: a.hIndex || 0,
-      };
-    });
+    return (data.data || []).map((a) => ({
+      semanticScholarId: a.authorId,
+      name: a.name || 'Unknown',
+      affiliations: a.affiliations || [],
+      homepage: a.homepage || null,
+      orcid: a.externalIds?.ORCID || null,
+      paperCount: a.paperCount || 0,
+      citationCount: a.citationCount || 0,
+      hIndex: a.hIndex || 0,
+    }));
   } catch (err) {
     if (err.response && err.response.status === 429 && retry) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
