@@ -82,31 +82,31 @@ export function ResearcherProvider({ children }) {
   }, [source, researcher]);
 
   /**
-   * Saves a self-reported official H-index (Scopus/WOS/other) for the
-   * current live researcher. Not auto-verified against the source — see
-   * schema.sql's manual_h_index comment for why (no public Scopus/WOS API
-   * this app can call).
+   * Saves a self-reported official Scopus or WOS H-index for the current
+   * live researcher. Scopus and WOS are independent slots — setting one
+   * never touches the other. Not auto-verified against the source — see
+   * schema.sql's scopus_h_index/wos_h_index comment for why (no public
+   * Scopus/WOS API this app can call).
    */
-  const setManualScore = useCallback(
-    async ({ source: manualSource, profileUrl, hIndex }) => {
+  const setScore = useCallback(
+    async (which, { profileUrl, hIndex }) => {
       if (source !== 'live' || !researcher?.id) return null;
-      const { data } = await client.patch(`/researchers/${researcher.id}/manual-score`, {
-        source: manualSource,
-        profileUrl,
-        hIndex,
-      });
+      const { data } = await client.patch(`/researchers/${researcher.id}/${which}-score`, { profileUrl, hIndex });
       setResearcher(data.researcher);
       return data.researcher;
     },
     [source, researcher]
   );
 
-  const clearManualScore = useCallback(async () => {
-    if (source !== 'live' || !researcher?.id) return null;
-    const { data } = await client.delete(`/researchers/${researcher.id}/manual-score`);
-    setResearcher(data.researcher);
-    return data.researcher;
-  }, [source, researcher]);
+  const clearScore = useCallback(
+    async (which) => {
+      if (source !== 'live' || !researcher?.id) return null;
+      const { data } = await client.delete(`/researchers/${researcher.id}/${which}-score`);
+      setResearcher(data.researcher);
+      return data.researcher;
+    },
+    [source, researcher]
+  );
 
   const refreshResearcher = useCallback(async () => {
     if (source !== 'live' || !researcher?.id) return;
@@ -137,8 +137,8 @@ export function ResearcherProvider({ children }) {
         refreshResearcher,
         getCollaborators,
         getRealHistory,
-        setManualScore,
-        clearManualScore,
+        setScore,
+        clearScore,
       }}
     >
       {children}

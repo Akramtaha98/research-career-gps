@@ -12,6 +12,13 @@ const { query, isDemoMode } = require('../config/db');
 
 const uuid = () => crypto.randomUUID();
 
+// Column-name lookup for pgStore's setScore/clearScore — keeps `which`
+// ('scopus' | 'wos') from ever being interpolated into SQL directly.
+const WHICH_COLUMNS = {
+  scopus: { hIndex: 'scopus_h_index', url: 'scopus_url', updatedAt: 'scopus_updated_at' },
+  wos: { hIndex: 'wos_h_index', url: 'wos_url', updatedAt: 'wos_updated_at' },
+};
+
 // ---------------------------------------------------------------------------
 // In-memory demo store
 // ---------------------------------------------------------------------------
@@ -24,13 +31,14 @@ const memory = {
 };
 
 const memoryStore = {
-  async createUser({ email, name, passwordHash, authProvider = 'local' }) {
+  async createUser({ email, name, passwordHash, authProvider = 'local', orcid = null }) {
     const user = {
       id: uuid(),
       email,
       name,
       password_hash: passwordHash,
       auth_provider: authProvider,
+      orcid,
       stripe_customer_id: null,
       plan: 'free',
       subscription_status: 'inactive',
@@ -42,6 +50,10 @@ const memoryStore = {
 
   async findUserByEmail(email) {
     return memory.users.find((u) => u.email === email) || null;
+  },
+
+  async findUserByOrcid(orcid) {
+    return memory.users.find((u) => u.orcid === orcid) || null;
   },
 
   async findUserById(id) {
@@ -114,10 +126,12 @@ const memoryStore = {
         total_citations: totalCitations,
         paper_count: paperCount,
         source,
-        manual_h_index: null,
-        manual_h_index_source: null,
-        manual_h_index_url: null,
-        manual_h_index_updated_at: null,
+        scopus_h_index: null,
+        scopus_url: null,
+        scopus_updated_at: null,
+        wos_h_index: null,
+        wos_url: null,
+        wos_updated_at: null,
         updated_at: now,
       };
       memory.researchers.push(researcher);
@@ -136,23 +150,21 @@ const memoryStore = {
     return memory.researchers.find((r) => r.id === id) || null;
   },
 
-  async setManualScore(researcherId, { source, profileUrl, hIndex }) {
+  async setScore(researcherId, which, { profileUrl, hIndex }) {
     const researcher = memory.researchers.find((r) => r.id === researcherId);
     if (!researcher) return null;
-    researcher.manual_h_index = hIndex;
-    researcher.manual_h_index_source = source;
-    researcher.manual_h_index_url = profileUrl || null;
-    researcher.manual_h_index_updated_at = new Date().toISOString();
+    researcher[`${which}_h_index`] = hIndex;
+    researcher[`${which}_url`] = profileUrl || null;
+    researcher[`${which}_updated_at`] = new Date().toISOString();
     return researcher;
   },
 
-  async clearManualScore(researcherId) {
+  async clearScore(researcherId, which) {
     const researcher = memory.researchers.find((r) => r.id === researcherId);
     if (!researcher) return null;
-    researcher.manual_h_index = null;
-    researcher.manual_h_index_source = null;
-    researcher.manual_h_index_url = null;
-    researcher.manual_h_index_updated_at = null;
+    researcher[`${which}_h_index`] = null;
+    researcher[`${which}_url`] = null;
+    researcher[`${which}_updated_at`] = null;
     return researcher;
   },
 
@@ -204,16 +216,21 @@ const memoryStore = {
 // Postgres-backed store
 // ---------------------------------------------------------------------------
 const pgStore = {
-  async createUser({ email, name, passwordHash, authProvider = 'local' }) {
+  async createUser({ email, name, passwordHash, authProvider = 'local', orcid = null }) {
     const { rows } = await query(
-      `INSERT INTO users (email, name, password_hash, auth_provider) VALUES ($1, $2, $3, $4) RETURNING *`,
-      [email, name, passwordHash, authProvider]
+      `INSERT INTO users (email, name, password_hash, auth_provider, orcid) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [email, name, passwordHash, authProvider, orcid]
     );
     return rows[0];
   },
 
   async findUserByEmail(email) {
     const { rows } = await query(`SELECT * FROM users WHERE email = $1`, [email]);
+    return rows[0] || null;
+  },
+
+  async findUserByOrcid(orcid) {
+    const { rows } = await query(`SELECT * FROM users WHERE orcid = $1`, [orcid]);
     return rows[0] || null;
   },
 
@@ -287,21 +304,28 @@ const pgStore = {
     return rows[0] || null;
   },
 
-  async setManualScore(researcherId, { source, profileUrl, hIndex }) {
+  // `which` is always a hardcoded 'scopus' or 'wos' literal from the
+  // controller (see WHICH_COLUMNS below) — never raw request input — so
+  // building the column names this way is safe, not a SQL-injection vector.
+  async setScore(researcherId, which, { profileUrl, hIndex }) {
+    const cols = WHICH_COLUMNS[which];
+    if (!cols) throw new Error(`Unknown score source: ${which}`);
     const { rows } = await query(
       `UPDATE researchers
-       SET manual_h_index = $2, manual_h_index_source = $3, manual_h_index_url = $4, manual_h_index_updated_at = now()
+       SET ${cols.hIndex} = $2, ${cols.url} = $3, ${cols.updatedAt} = now()
        WHERE id = $1
        RETURNING *`,
-      [researcherId, hIndex, source, profileUrl || null]
+      [researcherId, hIndex, profileUrl || null]
     );
     return rows[0] || null;
   },
 
-  async clearManualScore(researcherId) {
+  async clearScore(researcherId, which) {
+    const cols = WHICH_COLUMNS[which];
+    if (!cols) throw new Error(`Unknown score source: ${which}`);
     const { rows } = await query(
       `UPDATE researchers
-       SET manual_h_index = NULL, manual_h_index_source = NULL, manual_h_index_url = NULL, manual_h_index_updated_at = NULL
+       SET ${cols.hIndex} = NULL, ${cols.url} = NULL, ${cols.updatedAt} = NULL
        WHERE id = $1
        RETURNING *`,
       [researcherId]

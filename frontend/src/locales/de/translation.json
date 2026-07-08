@@ -33,13 +33,13 @@
     "clear": "Löschen",
     "privacyNote": "Diese Datei wurde vollständig in deinem Browser verarbeitet und nirgendwo hochgeladen."
   },
-  "manualScore": {
+  "scoreBox": {
     "title": "Offizieller H-Index (Scopus / Web of Science)",
-    "subtitle": "Optional. Öffne dein echtes Profil, prüfe die Zahl und trage sie hier ein — selbst gemeldet, nicht automatisch verifiziert.",
+    "subtitle": "Optional. Scopus und Web of Science bieten keine öffentliche API, daher ist dies selbst gemeldet — öffne dein Profil, prüfe die Zahl und trage sie hier ein.",
+    "orcidCrossCheck": "Deine ORCID: {{orcid}} — bestätige vor dem Speichern, dass sie mit der auf der Profilseite angezeigten ORCID übereinstimmt und nicht mit der eines anderen Autors mit ähnlichem Namen.",
     "edit": "Bearbeiten",
-    "sourceLabel": "Quelle",
-    "profileUrlLabel": "Profil-URL (optional)",
-    "profileUrlPlaceholder": "Link zu deinem Scopus-/WOS-Autorenprofil einfügen",
+    "profileUrlLabel": "Profil-URL",
+    "profileUrlPlaceholder": "Link zu deinem {{label}}-Autorenprofil einfügen",
     "openProfile": "Profil öffnen ↗",
     "hIndexLabel": "H-Index",
     "save": "Speichern",
@@ -54,12 +54,17 @@
     "selfReported": "selbst gemeldet",
     "viewProfile": "Profil ansehen",
     "useAsBaseline": "Als Basis für die Prognose verwenden",
-    "source": {
-      "scopus": "Scopus",
-      "wos": "Web of Science",
-      "other": "Andere"
-    },
-    "disclaimer": "Nicht automatisch mit Scopus/WOS abgeglichen — diese App kann deren APIs nicht direkt aufrufen. Zahl und Profil-Link werden einfach so gespeichert, wie du sie eingegeben hast."
+    "disclaimer": "Nicht automatisch mit Scopus/WOS abgeglichen — diese App kann deren APIs nicht direkt aufrufen. Zahlen und Links werden genau so gespeichert, wie du sie eingegeben hast."
+  },
+  "orcidLogin": {
+    "cta": "Weiter mit ORCID",
+    "notConfigured": "Weiter mit ORCID (nicht konfiguriert)",
+    "notConfiguredTitle": "VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI setzen, um dies zu aktivieren — siehe docs/SETUP.md",
+    "signingIn": "Anmeldung läuft...",
+    "lookingUp": "Deine Publikationen werden gesucht...",
+    "failed": "ORCID-Anmeldung fehlgeschlagen",
+    "missingToken": "Beim Abschluss der Anmeldung ist etwas schiefgelaufen. Bitte erneut versuchen.",
+    "backToLogin": "Zurück zur Anmeldung"
   },
   "login": {
     "title": "Willkommen zurück",

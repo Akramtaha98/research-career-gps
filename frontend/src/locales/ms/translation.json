@@ -33,13 +33,13 @@
     "clear": "Kosongkan",
     "privacyNote": "Fail ini diproses sepenuhnya dalam pelayar anda dan tidak pernah dimuat naik ke mana-mana."
   },
-  "manualScore": {
+  "scoreBox": {
     "title": "Indeks-H rasmi (Scopus / Web of Science)",
-    "subtitle": "Pilihan. Buka profil sebenar anda, semak nombor itu, dan masukkannya di sini — dilaporkan sendiri, tidak disahkan secara automatik.",
+    "subtitle": "Pilihan. Scopus dan Web of Science tidak menawarkan API awam, jadi ini dilaporkan sendiri — buka profil anda, semak nombor itu, dan masukkannya di sini.",
+    "orcidCrossCheck": "ORCID anda: {{orcid}} — sebelum menyimpan, sahkan ia sepadan dengan ORCID yang dipaparkan pada halaman profil, bukan pengarang lain dengan nama yang hampir sama.",
     "edit": "Sunting",
-    "sourceLabel": "Sumber",
-    "profileUrlLabel": "URL profil (pilihan)",
-    "profileUrlPlaceholder": "Tampal pautan ke profil pengarang Scopus/WOS anda",
+    "profileUrlLabel": "URL profil",
+    "profileUrlPlaceholder": "Tampal pautan ke profil pengarang {{label}} anda",
     "openProfile": "Buka profil ↗",
     "hIndexLabel": "Indeks-H",
     "save": "Simpan",
@@ -54,12 +54,17 @@
     "selfReported": "dilaporkan sendiri",
     "viewProfile": "Lihat profil",
     "useAsBaseline": "Guna sebagai asas ramalan",
-    "source": {
-      "scopus": "Scopus",
-      "wos": "Web of Science",
-      "other": "Lain-lain"
-    },
-    "disclaimer": "Tidak disahkan secara automatik dengan Scopus/WOS — aplikasi ini tidak dapat memanggil API mereka secara langsung. Nombor dan pautan profil hanya disimpan seperti yang anda masukkan."
+    "disclaimer": "Tidak disahkan secara automatik dengan Scopus/WOS — aplikasi ini tidak dapat memanggil API mereka secara langsung. Nombor dan pautan disimpan seperti yang anda masukkan."
+  },
+  "orcidLogin": {
+    "cta": "Teruskan dengan ORCID",
+    "notConfigured": "Teruskan dengan ORCID (belum dikonfigurasi)",
+    "notConfiguredTitle": "Tetapkan VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI untuk mengaktifkan — lihat docs/SETUP.md",
+    "signingIn": "Sedang log masuk...",
+    "lookingUp": "Sedang mencari penerbitan anda...",
+    "failed": "Log masuk ORCID gagal",
+    "missingToken": "Sesuatu tidak kena semasa menyelesaikan log masuk. Sila cuba lagi.",
+    "backToLogin": "Kembali ke log masuk"
   },
   "login": {
     "title": "Selamat kembali",

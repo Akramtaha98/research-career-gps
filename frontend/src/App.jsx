@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import OrcidCallback from './pages/OrcidCallback';
 import Search from './pages/Search';
 import Dashboard from './pages/Dashboard';
 import Predictor from './pages/Predictor';
@@ -25,6 +26,7 @@ export default function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/auth/orcid/callback" element={<OrcidCallback />} />
             <Route path="/search" element={<Search />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/predictor" element={<Predictor />} />

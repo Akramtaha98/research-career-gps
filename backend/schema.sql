@@ -9,9 +9,16 @@ CREATE TABLE IF NOT EXISTS users (
   email         VARCHAR(255) UNIQUE NOT NULL,
   name          VARCHAR(255) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
-  -- 'local' (email+password) or 'google'. Social accounts get an unusable
-  -- random password_hash placeholder — see authController.js.
+  -- 'local' (email+password), 'google', or 'orcid'. Social accounts get an
+  -- unusable random password_hash placeholder — see authController.js.
   auth_provider VARCHAR(20) NOT NULL DEFAULT 'local',
+  -- Set for auth_provider = 'orcid' — the OAuth-verified ORCID iD (e.g.
+  -- "0000-0002-1825-0097"), returned directly by ORCID's token endpoint on
+  -- sign-in, so this is confirmed-by-ORCID, not user-typed. Used to find-or-
+  -- create the account and, in the UI, as an honest cross-check hint next to
+  -- self-reported Scopus/WOS numbers ("does this match the ORCID on the
+  -- profile page you're copying from?"). See services/orcidAuth.js.
+  orcid         VARCHAR(19) UNIQUE,
   -- Billing (Stripe). plan is 'free' or 'pro'; subscription_status mirrors
   -- Stripe's subscription status ('inactive', 'active', 'past_due',
   -- 'canceled', ...). See services/stripeService.js + controllers/billingController.js.
@@ -39,15 +46,21 @@ CREATE TABLE IF NOT EXISTS researchers (
   -- calls to know which service the stored ID belongs to. See
   -- services/researcherSource.js.
   source                    VARCHAR(20) NOT NULL DEFAULT 'semantic_scholar',
-  -- Optional self-reported official H-index (e.g. from Scopus or Web of
-  -- Science), entered manually because neither offers a public API the app
-  -- can call directly. Not automatically verified — profile_url is stored
-  -- so the number can be spot-checked, and the UI links out to it. See
-  -- controllers/researcherController.js#setManualScore.
-  manual_h_index            INTEGER,
-  manual_h_index_source     VARCHAR(20),
-  manual_h_index_url        TEXT,
-  manual_h_index_updated_at TIMESTAMPTZ,
+  -- Optional self-reported official H-index numbers, entered manually
+  -- because neither Scopus nor Web of Science offers a public API this app
+  -- can call directly (see services/openAlex.js history for why). Scopus
+  -- and WOS are tracked as two independent slots — a researcher may have
+  -- one, both, or neither. Not automatically verified against the source;
+  -- *_url stores the profile link so it can be spot-checked, and when the
+  -- signed-in user authenticated via ORCID, the UI shows their confirmed
+  -- ORCID next to the input as a cross-check hint ("does this match the
+  -- ORCID on the profile page?"). See controllers/researcherController.js.
+  scopus_h_index        INTEGER,
+  scopus_url             TEXT,
+  scopus_updated_at      TIMESTAMPTZ,
+  wos_h_index            INTEGER,
+  wos_url                 TEXT,
+  wos_updated_at          TIMESTAMPTZ,
   updated_at           TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (user_id, semantic_scholar_id)
 );

@@ -33,13 +33,13 @@
     "clear": "Borrar",
     "privacyNote": "Este archivo se procesó completamente en tu navegador y nunca se subió a ningún lugar."
   },
-  "manualScore": {
+  "scoreBox": {
     "title": "Índice H oficial (Scopus / Web of Science)",
-    "subtitle": "Opcional. Abre tu perfil real, comprueba el número e introdúcelo aquí — autodeclarado, no verificado automáticamente.",
+    "subtitle": "Opcional. Scopus y Web of Science no ofrecen una API pública, así que esto es autodeclarado — abre tu perfil, comprueba el número e introdúcelo aquí.",
+    "orcidCrossCheck": "Tu ORCID: {{orcid}} — antes de guardar, confirma que coincide con el ORCID mostrado en la página del perfil, y no el de otro autor con nombre similar.",
     "edit": "Editar",
-    "sourceLabel": "Fuente",
-    "profileUrlLabel": "URL del perfil (opcional)",
-    "profileUrlPlaceholder": "Pega un enlace a tu perfil de autor de Scopus/WOS",
+    "profileUrlLabel": "URL del perfil",
+    "profileUrlPlaceholder": "Pega un enlace a tu perfil de autor de {{label}}",
     "openProfile": "Abrir perfil ↗",
     "hIndexLabel": "Índice H",
     "save": "Guardar",
@@ -54,12 +54,17 @@
     "selfReported": "autodeclarado",
     "viewProfile": "Ver perfil",
     "useAsBaseline": "Usar como base de la predicción",
-    "source": {
-      "scopus": "Scopus",
-      "wos": "Web of Science",
-      "other": "Otro"
-    },
-    "disclaimer": "No se comprueba automáticamente contra Scopus/WOS — esta app no puede llamar directamente a sus APIs. El número y el enlace del perfil se guardan tal como los introdujiste."
+    "disclaimer": "No se comprueba automáticamente contra Scopus/WOS — esta app no puede llamar directamente a sus APIs. Los números y enlaces se guardan tal como los introdujiste."
+  },
+  "orcidLogin": {
+    "cta": "Continuar con ORCID",
+    "notConfigured": "Continuar con ORCID (no configurado)",
+    "notConfiguredTitle": "Configura VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI para activarlo — ver docs/SETUP.md",
+    "signingIn": "Iniciando sesión...",
+    "lookingUp": "Buscando tus publicaciones...",
+    "failed": "Error al iniciar sesión con ORCID",
+    "missingToken": "Algo salió mal al finalizar el inicio de sesión. Inténtalo de nuevo.",
+    "backToLogin": "Volver a iniciar sesión"
   },
   "login": {
     "title": "Bienvenido de nuevo",

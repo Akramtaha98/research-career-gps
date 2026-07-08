@@ -4,6 +4,7 @@ import { useResearcher } from '../context/ResearcherContext';
 import MetricCard from '../components/MetricCard';
 import HIndexChart from '../components/HIndexChart';
 import EmptyState from '../components/EmptyState';
+import ScoreBox from '../components/ScoreBox';
 
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short' });
@@ -95,6 +96,7 @@ export default function Dashboard() {
             }
           />
         </div>
+        {source === 'live' && <div className="mt-6"><ScoreBox researcher={researcher} /></div>}
       </div>
     );
   }
@@ -125,6 +127,8 @@ export default function Dashboard() {
           accent="amber"
         />
       </div>
+
+      {source === 'live' && <ScoreBox researcher={researcher} />}
 
       <div className="card">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">

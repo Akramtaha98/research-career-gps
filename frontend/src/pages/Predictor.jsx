@@ -8,7 +8,7 @@ import { projectHIndex } from '../utils/prediction';
 import { TIERS, getMultiplier, getTierForVenue } from '../utils/venueTiers';
 import HIndexChart from '../components/HIndexChart';
 import UpgradeCTA from '../components/UpgradeCTA';
-import ManualScoreCard from '../components/ManualScoreCard';
+import ScoreBox from '../components/ScoreBox';
 
 export default function Predictor() {
   const { source, researcher, papers } = useResearcher();
@@ -34,11 +34,23 @@ export default function Predictor() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Seed the initial target off the manual score when one exists and would
-  // already be used as the baseline — otherwise a researcher with e.g. an
-  // auto H-index of 36 but a verified Scopus H-index of 48 would start on
-  // a target (41) already below their real current number.
-  const [targetH, setTargetH] = useState((researcher.manual_h_index || researcher.h_index) + 5);
+  // A self-reported official H-index (Scopus/WOS) has no per-paper citation
+  // breakdown behind it, so it can't directly drive the simulation the way
+  // the real papers list does. When the user opts to use one as the
+  // baseline, we approximate with the minimal citation distribution that
+  // produces that H-index (h papers each with exactly h citations) — an
+  // approximation, clearly labeled as such in the UI. null | 'scopus' | 'wos'.
+  const [baselineSource, setBaselineSource] = useState(
+    researcher.scopus_h_index != null ? 'scopus' : researcher.wos_h_index != null ? 'wos' : null
+  );
+
+  const baselineHIndex = baselineSource ? researcher[`${baselineSource}_h_index`] : null;
+
+  // Seed the initial target off the active baseline when one exists —
+  // otherwise a researcher with e.g. an auto H-index of 36 but a verified
+  // Scopus H-index of 48 would start on a target already below their real
+  // current number.
+  const [targetH, setTargetH] = useState((baselineHIndex ?? researcher.h_index) + 5);
   const [monthlyCitationRate, setMonthlyCitationRate] = useState(0.5);
   const [papersPerYear, setPapersPerYear] = useState(2);
   const [venueName, setVenueName] = useState('');
@@ -46,23 +58,12 @@ export default function Predictor() {
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState(null);
 
-  // A self-reported official H-index (Scopus/WOS) has no per-paper citation
-  // breakdown behind it, so it can't directly drive the simulation the way
-  // the real papers list does. When the user opts to use it as the baseline,
-  // we approximate with the minimal citation distribution that produces
-  // that H-index (h papers each with exactly h citations) — an
-  // approximation, clearly labeled as such in the UI.
-  const [useManualBaseline, setUseManualBaseline] = useState(Boolean(researcher.manual_h_index));
-
   const currentCitations = useMemo(() => {
-    if (useManualBaseline && researcher.manual_h_index) {
-      return Array(researcher.manual_h_index).fill(researcher.manual_h_index);
-    }
+    if (baselineHIndex != null) return Array(baselineHIndex).fill(baselineHIndex);
     return papers.map((p) => p.citations || 0);
-  }, [papers, useManualBaseline, researcher.manual_h_index]);
+  }, [papers, baselineHIndex]);
 
-  const effectiveHIndex =
-    useManualBaseline && researcher.manual_h_index ? researcher.manual_h_index : researcher.h_index;
+  const effectiveHIndex = baselineHIndex ?? researcher.h_index;
 
   // If the typed venue name matches a known pattern, suggest its tier —
   // the dropdown remains the source of truth the user can override.
@@ -142,8 +143,8 @@ export default function Predictor() {
           saveMessage={saveMessage}
           handleSave={handleSave}
           effectiveHIndex={effectiveHIndex}
-          useManualBaseline={useManualBaseline}
-          setUseManualBaseline={setUseManualBaseline}
+          baselineSource={baselineSource}
+          setBaselineSource={setBaselineSource}
         />
       )}
     </div>
@@ -171,8 +172,8 @@ function PredictorBody({
   saveMessage,
   handleSave,
   effectiveHIndex,
-  useManualBaseline,
-  setUseManualBaseline,
+  baselineSource,
+  setBaselineSource,
 }) {
   const { t } = useTranslation();
   return (
@@ -184,11 +185,7 @@ function PredictorBody({
       )}
 
       {source === 'live' && (
-        <ManualScoreCard
-          researcher={researcher}
-          useManualBaseline={useManualBaseline}
-          setUseManualBaseline={setUseManualBaseline}
-        />
+        <ScoreBox researcher={researcher} baselineSource={baselineSource} setBaselineSource={setBaselineSource} />
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

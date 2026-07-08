@@ -34,6 +34,16 @@ export function AuthProvider({ children }) {
     setUser(newUser);
   }
 
+  /**
+   * Used by the ORCID callback page, which only has a JWT in hand (ORCID's
+   * redirect carries no user object) — sets the token and lets the existing
+   * loadUser effect above fetch /auth/me once `token` changes.
+   */
+  function loginWithToken(newToken) {
+    localStorage.setItem('rcg_token', newToken);
+    setToken(newToken);
+  }
+
   function logout() {
     localStorage.removeItem('rcg_token');
     setToken(null);
@@ -52,7 +62,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, token, loading, login, loginWithToken, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

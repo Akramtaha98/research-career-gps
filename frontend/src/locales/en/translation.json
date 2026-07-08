@@ -33,13 +33,13 @@
     "clear": "Clear",
     "privacyNote": "This file was processed entirely in your browser and was never uploaded anywhere."
   },
-  "manualScore": {
+  "scoreBox": {
     "title": "Official H-index (Scopus / Web of Science)",
-    "subtitle": "Optional. Open your real profile, check the number, and enter it here — self-reported, not automatically verified.",
+    "subtitle": "Optional. Scopus and Web of Science don't offer a public API, so these are self-reported — open your profile, check the number, and enter it here.",
+    "orcidCrossCheck": "Your ORCID: {{orcid}} — before saving, confirm this matches the ORCID shown on the profile page, not a different author with a similar name.",
     "edit": "Edit",
-    "sourceLabel": "Source",
-    "profileUrlLabel": "Profile URL (optional)",
-    "profileUrlPlaceholder": "Paste a link to your Scopus/WOS author profile",
+    "profileUrlLabel": "Profile URL",
+    "profileUrlPlaceholder": "Paste a link to your {{label}} author profile",
     "openProfile": "Open profile ↗",
     "hIndexLabel": "H-index",
     "save": "Save",
@@ -54,12 +54,17 @@
     "selfReported": "self-reported",
     "viewProfile": "View profile",
     "useAsBaseline": "Use as prediction baseline",
-    "source": {
-      "scopus": "Scopus",
-      "wos": "Web of Science",
-      "other": "Other"
-    },
-    "disclaimer": "Not automatically checked against Scopus/WOS — this app has no way to call their APIs directly. The number and profile link are simply stored as you entered them."
+    "disclaimer": "Not automatically checked against Scopus/WOS — this app has no way to call their APIs directly. Numbers and links are stored exactly as entered."
+  },
+  "orcidLogin": {
+    "cta": "Continue with ORCID",
+    "notConfigured": "Continue with ORCID (not configured)",
+    "notConfiguredTitle": "Set VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI to enable — see docs/SETUP.md",
+    "signingIn": "Signing you in...",
+    "lookingUp": "Looking up your publications...",
+    "failed": "ORCID sign-in failed",
+    "missingToken": "Something went wrong finishing sign-in. Please try again.",
+    "backToLogin": "Back to log in"
   },
   "login": {
     "title": "Welcome back",

@@ -33,13 +33,13 @@
     "clear": "مسح",
     "privacyNote": "تمت معالجة هذا الملف بالكامل داخل متصفحك ولم يُرفع إلى أي مكان."
   },
-  "manualScore": {
+  "scoreBox": {
     "title": "مؤشر H الرسمي (Scopus / Web of Science)",
-    "subtitle": "اختياري. افتح ملفك الشخصي الحقيقي، تحقق من الرقم، وأدخله هنا — يُبلَّغ عنه ذاتياً وليس مُتحقَّقاً منه تلقائياً.",
+    "subtitle": "اختياري. لا يوفر Scopus ولا Web of Science واجهة برمجة عامة، لذا فهذا يُبلَّغ عنه ذاتياً — افتح ملفك الشخصي، تحقق من الرقم، وأدخله هنا.",
+    "orcidCrossCheck": "معرّف ORCID الخاص بك: {{orcid}} — قبل الحفظ، تأكد أنه يطابق ORCID الظاهر في صفحة الملف الشخصي، وليس لباحث آخر بنفس الاسم تقريباً.",
     "edit": "تعديل",
-    "sourceLabel": "المصدر",
-    "profileUrlLabel": "رابط الملف الشخصي (اختياري)",
-    "profileUrlPlaceholder": "الصق رابط ملفك الشخصي كباحث في Scopus/WOS",
+    "profileUrlLabel": "رابط الملف الشخصي",
+    "profileUrlPlaceholder": "الصق رابط ملفك الشخصي كباحث في {{label}}",
     "openProfile": "فتح الملف الشخصي ↗",
     "hIndexLabel": "مؤشر H",
     "save": "حفظ",
@@ -54,12 +54,17 @@
     "selfReported": "مُبلَّغ عنه ذاتياً",
     "viewProfile": "عرض الملف الشخصي",
     "useAsBaseline": "استخدامه كأساس للتنبؤ",
-    "source": {
-      "scopus": "Scopus",
-      "wos": "Web of Science",
-      "other": "أخرى"
-    },
-    "disclaimer": "لا يتم التحقق منه تلقائياً مقابل Scopus/WOS — هذا التطبيق لا يمكنه استدعاء واجهات برمجتهما مباشرة. يُخزَّن الرقم ورابط الملف الشخصي كما أدخلتهما فقط."
+    "disclaimer": "لا يتم التحقق منه تلقائياً مقابل Scopus/WOS — هذا التطبيق لا يمكنه استدعاء واجهات برمجتهما مباشرة. تُخزَّن الأرقام والروابط كما أدخلتها تماماً."
+  },
+  "orcidLogin": {
+    "cta": "المتابعة عبر ORCID",
+    "notConfigured": "المتابعة عبر ORCID (غير مُعدّ)",
+    "notConfiguredTitle": "اضبط VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI للتفعيل — راجع docs/SETUP.md",
+    "signingIn": "جارٍ تسجيل الدخول...",
+    "lookingUp": "جارٍ البحث عن منشوراتك...",
+    "failed": "فشل تسجيل الدخول عبر ORCID",
+    "missingToken": "حدث خطأ ما أثناء إتمام تسجيل الدخول. حاول مرة أخرى.",
+    "backToLogin": "العودة لتسجيل الدخول"
   },
   "login": {
     "title": "مرحباً بعودتك",

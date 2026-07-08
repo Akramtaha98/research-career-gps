@@ -5,8 +5,6 @@ const openAlex = require('../services/openAlex');
 const { computeHistoricalHIndex } = require('../services/historicalHIndex');
 const { generateActionItems } = require('../utils/actionItems');
 
-const VALID_MANUAL_SOURCES = new Set(['scopus', 'wos', 'other']);
-
 // Computing real historical H-index makes one Semantic Scholar request per
 // paper (rate-limit-sensitive), so cache results per researcher in memory
 // instead of recomputing on every dashboard visit. Cleared on server
@@ -208,53 +206,57 @@ async function getRealHistory(req, res) {
 }
 
 /**
- * PATCH /api/researchers/:id/manual-score
- * Body: { source: 'scopus'|'wos'|'other', profileUrl, hIndex }
- * Self-reported official H-index — see schema.sql comment on
- * manual_h_index for why this exists and isn't auto-verified.
+ * PATCH /api/researchers/:id/scopus-score
+ * PATCH /api/researchers/:id/wos-score
+ * Body: { profileUrl, hIndex }
+ * Self-reported official Scopus/WOS H-index — see schema.sql comment on
+ * scopus_h_index/wos_h_index for why this exists and isn't auto-verified.
+ * Scopus and WOS are independent slots (see store.js WHICH_COLUMNS); which
+ * one this touches is fixed by the route, never taken from the body.
  */
-async function setManualScore(req, res) {
-  try {
-    const { id } = req.params;
-    const researcher = await store.findResearcherById(id);
-    if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
-    if (researcher.user_id !== req.user.id) {
-      return res.status(403).json({ error: 'Not authorized to update this researcher' });
-    }
+function setScore(which) {
+  return async function (req, res) {
+    try {
+      const { id } = req.params;
+      const researcher = await store.findResearcherById(id);
+      if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
+      if (researcher.user_id !== req.user.id) {
+        return res.status(403).json({ error: 'Not authorized to update this researcher' });
+      }
 
-    const { source, profileUrl, hIndex } = req.body;
-    if (!VALID_MANUAL_SOURCES.has(source)) {
-      return res.status(400).json({ error: 'source must be one of scopus, wos, other' });
-    }
-    const parsedH = Number(hIndex);
-    if (!Number.isInteger(parsedH) || parsedH < 0 || parsedH > 1000) {
-      return res.status(400).json({ error: 'hIndex must be a whole number between 0 and 1000' });
-    }
-    if (profileUrl && !/^https?:\/\//i.test(profileUrl)) {
-      return res.status(400).json({ error: 'profileUrl must start with http:// or https://' });
-    }
+      const { profileUrl, hIndex } = req.body;
+      const parsedH = Number(hIndex);
+      if (!Number.isInteger(parsedH) || parsedH < 0 || parsedH > 1000) {
+        return res.status(400).json({ error: 'hIndex must be a whole number between 0 and 1000' });
+      }
+      if (profileUrl && !/^https?:\/\//i.test(profileUrl)) {
+        return res.status(400).json({ error: 'profileUrl must start with http:// or https://' });
+      }
 
-    const updated = await store.setManualScore(id, { source, profileUrl: profileUrl || null, hIndex: parsedH });
-    return res.json({ researcher: updated });
-  } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
-  }
+      const updated = await store.setScore(id, which, { profileUrl: profileUrl || null, hIndex: parsedH });
+      return res.json({ researcher: updated });
+    } catch (err) {
+      return res.status(err.statusCode || 500).json({ error: err.message });
+    }
+  };
 }
 
-/** DELETE /api/researchers/:id/manual-score — removes the self-reported override. */
-async function clearManualScore(req, res) {
-  try {
-    const { id } = req.params;
-    const researcher = await store.findResearcherById(id);
-    if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
-    if (researcher.user_id !== req.user.id) {
-      return res.status(403).json({ error: 'Not authorized to update this researcher' });
+/** DELETE /api/researchers/:id/scopus-score | wos-score — removes that self-reported number. */
+function clearScore(which) {
+  return async function (req, res) {
+    try {
+      const { id } = req.params;
+      const researcher = await store.findResearcherById(id);
+      if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
+      if (researcher.user_id !== req.user.id) {
+        return res.status(403).json({ error: 'Not authorized to update this researcher' });
+      }
+      const updated = await store.clearScore(id, which);
+      return res.json({ researcher: updated });
+    } catch (err) {
+      return res.status(err.statusCode || 500).json({ error: err.message });
     }
-    const updated = await store.clearManualScore(id);
-    return res.json({ researcher: updated });
-  } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
-  }
+  };
 }
 
 module.exports = {
@@ -265,6 +267,8 @@ module.exports = {
   getActionItems,
   getCollaborators,
   getRealHistory,
-  setManualScore,
-  clearManualScore,
+  setScopusScore: setScore('scopus'),
+  clearScopusScore: clearScore('scopus'),
+  setWosScore: setScore('wos'),
+  clearWosScore: clearScore('wos'),
 };

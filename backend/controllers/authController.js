@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const store = require('../services/store');
 const { verifyGoogleToken } = require('../services/socialAuth');
+const { exchangeOrcidCode } = require('../services/orcidAuth');
 const { sendPasswordResetEmail } = require('../services/email');
 
 function signToken(user) {
@@ -17,6 +18,9 @@ function sanitizeUser(user) {
     email: user.email,
     name: user.name,
     authProvider: user.auth_provider || 'local',
+    // OAuth-confirmed ORCID iD (not user-typed) — used client-side as a
+    // cross-check hint next to self-reported Scopus/WOS numbers.
+    orcid: user.orcid || null,
     plan: user.plan || 'free',
     subscriptionStatus: user.subscription_status || 'inactive',
     created_at: user.created_at,
@@ -117,6 +121,57 @@ async function googleLogin(req, res) {
 }
 
 /**
+ * Finds the user by ORCID iD, or creates one. ORCID's /authenticate scope
+ * only guarantees an ORCID iD + display name — no email — so unlike Google
+ * sign-in, accounts are keyed by orcid rather than email, and get a
+ * placeholder, never-shown, non-colliding email so the existing NOT NULL
+ * UNIQUE email column stays satisfied.
+ */
+async function findOrCreateOrcidUser({ orcid, name }) {
+  const existing = await store.findUserByOrcid(orcid);
+  if (existing) return existing;
+
+  const placeholderPassword = crypto.randomUUID() + crypto.randomUUID();
+  const passwordHash = await bcrypt.hash(placeholderPassword, 10);
+  return store.createUser({
+    email: `orcid-${orcid}@orcid.researchgps.local`,
+    name: name || `ORCID ${orcid}`,
+    passwordHash,
+    authProvider: 'orcid',
+    orcid,
+  });
+}
+
+/**
+ * GET /api/auth/orcid/callback?code=...
+ * Where ORCID redirects the browser back to after the user approves sign-in
+ * at orcid.org/oauth/authorize. Runs entirely server-side (the code-for-
+ * token exchange needs the Client Secret), then hands off to the frontend
+ * by redirecting again with the app's own JWT in the URL fragment — a
+ * fragment (not a query string) so the token never lands in server access
+ * logs or gets forwarded via a Referer header.
+ */
+async function orcidCallback(req, res) {
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const failRedirect = (message) =>
+    res.redirect(`${frontendUrl}/auth/orcid/callback#error=${encodeURIComponent(message)}`);
+
+  try {
+    const { code, error, error_description: errorDescription } = req.query;
+    if (error) return failRedirect(errorDescription || error);
+    if (!code) return failRedirect('missing_code');
+    if (!process.env.ORCID_REDIRECT_URI) return failRedirect('ORCID_REDIRECT_URI is not configured on the server');
+
+    const { orcid, name } = await exchangeOrcidCode(code, process.env.ORCID_REDIRECT_URI);
+    const user = await findOrCreateOrcidUser({ orcid, name });
+    const token = signToken(user);
+    return res.redirect(`${frontendUrl}/auth/orcid/callback#token=${encodeURIComponent(token)}`);
+  } catch (err) {
+    return failRedirect(err.message);
+  }
+}
+
+/**
  * POST /api/auth/forgot-password
  * Body: { email }
  *
@@ -189,4 +244,4 @@ async function resetPassword(req, res) {
   }
 }
 
-module.exports = { signup, login, me, googleLogin, forgotPassword, resetPassword };
+module.exports = { signup, login, me, googleLogin, orcidCallback, forgotPassword, resetPassword };

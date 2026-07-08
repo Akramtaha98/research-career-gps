@@ -33,13 +33,13 @@
     "clear": "Effacer",
     "privacyNote": "Ce fichier a été entièrement traité dans votre navigateur et n'a jamais été téléversé nulle part."
   },
-  "manualScore": {
+  "scoreBox": {
     "title": "Indice H officiel (Scopus / Web of Science)",
-    "subtitle": "Optionnel. Ouvrez votre vrai profil, vérifiez le chiffre et saisissez-le ici — auto-déclaré, non vérifié automatiquement.",
+    "subtitle": "Optionnel. Scopus et Web of Science n'offrent pas d'API publique, donc ceci est auto-déclaré — ouvrez votre profil, vérifiez le chiffre et saisissez-le ici.",
+    "orcidCrossCheck": "Votre ORCID : {{orcid}} — avant d'enregistrer, vérifiez qu'il correspond à l'ORCID affiché sur la page du profil, et non à celui d'un autre auteur au nom similaire.",
     "edit": "Modifier",
-    "sourceLabel": "Source",
-    "profileUrlLabel": "URL du profil (optionnel)",
-    "profileUrlPlaceholder": "Collez un lien vers votre profil d'auteur Scopus/WOS",
+    "profileUrlLabel": "URL du profil",
+    "profileUrlPlaceholder": "Collez un lien vers votre profil d'auteur {{label}}",
     "openProfile": "Ouvrir le profil ↗",
     "hIndexLabel": "Indice H",
     "save": "Enregistrer",
@@ -54,12 +54,17 @@
     "selfReported": "auto-déclaré",
     "viewProfile": "Voir le profil",
     "useAsBaseline": "Utiliser comme base de prédiction",
-    "source": {
-      "scopus": "Scopus",
-      "wos": "Web of Science",
-      "other": "Autre"
-    },
-    "disclaimer": "Non vérifié automatiquement auprès de Scopus/WOS — cette application ne peut pas appeler directement leurs API. Le chiffre et le lien du profil sont simplement enregistrés tels que vous les avez saisis."
+    "disclaimer": "Non vérifié automatiquement auprès de Scopus/WOS — cette application ne peut pas appeler directement leurs API. Les chiffres et liens sont enregistrés tels que vous les avez saisis."
+  },
+  "orcidLogin": {
+    "cta": "Continuer avec ORCID",
+    "notConfigured": "Continuer avec ORCID (non configuré)",
+    "notConfiguredTitle": "Définissez VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI pour activer — voir docs/SETUP.md",
+    "signingIn": "Connexion en cours...",
+    "lookingUp": "Recherche de vos publications...",
+    "failed": "Échec de la connexion avec ORCID",
+    "missingToken": "Un problème est survenu à la fin de la connexion. Réessayez.",
+    "backToLogin": "Retour à la connexion"
   },
   "login": {
     "title": "Content de vous revoir",

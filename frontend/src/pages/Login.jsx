@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import client from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import SocialLogin from '../components/SocialLogin';
+import OrcidButton from '../components/OrcidButton';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -84,6 +85,7 @@ export default function Login() {
           }}
           onError={setError}
         />
+        <OrcidButton />
 
         <p className="mt-6 text-sm text-slate-500 text-center">
           {t('login.noAccount')} <Link to="/signup" className="text-brand-600 font-semibold">{t('login.signUp')}</Link>
