@@ -61,6 +61,35 @@ const memoryStore = {
     return user;
   },
 
+  async setResetToken(userId, { tokenHash, expiresAt }) {
+    const user = memory.users.find((u) => u.id === userId);
+    if (!user) return null;
+    user.reset_token_hash = tokenHash;
+    user.reset_token_expires = expiresAt;
+    return user;
+  },
+
+  async findUserByValidResetToken(tokenHash) {
+    const now = Date.now();
+    return (
+      memory.users.find(
+        (u) =>
+          u.reset_token_hash === tokenHash &&
+          u.reset_token_expires &&
+          new Date(u.reset_token_expires).getTime() > now
+      ) || null
+    );
+  },
+
+  async resetPassword(userId, passwordHash) {
+    const user = memory.users.find((u) => u.id === userId);
+    if (!user) return null;
+    user.password_hash = passwordHash;
+    user.reset_token_hash = null;
+    user.reset_token_expires = null;
+    return user;
+  },
+
   async upsertResearcher({ userId, semanticScholarId, name, hIndex, totalCitations, paperCount }) {
     let researcher = memory.researchers.find(
       (r) => r.user_id === userId && r.semantic_scholar_id === semanticScholarId
@@ -181,6 +210,31 @@ const pgStore = {
        WHERE id = $1
        RETURNING *`,
       [userId, stripeCustomerId ?? null, plan ?? null, subscriptionStatus ?? null]
+    );
+    return rows[0] || null;
+  },
+
+  async setResetToken(userId, { tokenHash, expiresAt }) {
+    const { rows } = await query(
+      `UPDATE users SET reset_token_hash = $2, reset_token_expires = $3 WHERE id = $1 RETURNING *`,
+      [userId, tokenHash, expiresAt]
+    );
+    return rows[0] || null;
+  },
+
+  async findUserByValidResetToken(tokenHash) {
+    const { rows } = await query(
+      `SELECT * FROM users WHERE reset_token_hash = $1 AND reset_token_expires > now()`,
+      [tokenHash]
+    );
+    return rows[0] || null;
+  },
+
+  async resetPassword(userId, passwordHash) {
+    const { rows } = await query(
+      `UPDATE users SET password_hash = $2, reset_token_hash = NULL, reset_token_expires = NULL
+       WHERE id = $1 RETURNING *`,
+      [userId, passwordHash]
     );
     return rows[0] || null;
   },

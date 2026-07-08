@@ -18,6 +18,11 @@ CREATE TABLE IF NOT EXISTS users (
   stripe_customer_id  VARCHAR(255),
   plan                VARCHAR(20) NOT NULL DEFAULT 'free',
   subscription_status VARCHAR(20) NOT NULL DEFAULT 'inactive',
+  -- Forgot-password flow: a SHA-256 hash of the emailed reset token (never
+  -- the raw token) plus its expiry. Both are cleared after a successful
+  -- reset or when a new request overwrites them. See authController.js.
+  reset_token_hash    VARCHAR(64),
+  reset_token_expires TIMESTAMPTZ,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

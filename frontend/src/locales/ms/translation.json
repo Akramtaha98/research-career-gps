@@ -29,7 +29,30 @@
     "demoPrompt": "Sekadar meninjau?",
     "demoLink": "Lihat papan pemuka demo",
     "demoSuffix": "— tiada log masuk diperlukan.",
-    "errorFallback": "Log masuk gagal"
+    "errorFallback": "Log masuk gagal",
+    "forgotPassword": "Lupa kata laluan?"
+  },
+  "forgotPassword": {
+    "title": "Lupa kata laluan?",
+    "subtitle": "Masukkan e-mel anda dan kami akan menghantar pautan untuk menetapkannya semula.",
+    "email": "E-mel",
+    "submit": "Hantar pautan tetap semula",
+    "submitting": "Sedang menghantar...",
+    "sent": "Jika akaun wujud untuk e-mel tersebut, kami telah menghantar pautan tetap semula. Sila semak peti masuk anda.",
+    "errorFallback": "Sesuatu tidak kena. Sila cuba lagi.",
+    "backToLogin": "Kembali ke log masuk"
+  },
+  "resetPassword": {
+    "title": "Tetapkan semula kata laluan anda",
+    "subtitle": "Pilih kata laluan baharu untuk akaun anda.",
+    "newPassword": "Kata laluan baharu",
+    "confirmPassword": "Sahkan kata laluan baharu",
+    "submit": "Tetapkan semula kata laluan",
+    "submitting": "Sedang menetapkan semula...",
+    "success": "Kata laluan ditetapkan semula! Anda sedang dialihkan ke log masuk...",
+    "errorFallback": "Tidak dapat menetapkan semula kata laluan. Pautan mungkin tidak sah atau telah tamat tempoh.",
+    "mismatch": "Kata laluan tidak sepadan",
+    "missingToken": "Pautan tetap semula ini tidak sah. Sila minta pautan baharu."
   },
   "signup": {
     "title": "Cipta akaun anda",

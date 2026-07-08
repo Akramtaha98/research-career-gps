@@ -48,7 +48,12 @@ export default function Login() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">{t('login.password')}</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-medium text-slate-700">{t('login.password')}</label>
+              <Link to="/forgot-password" className="text-xs text-brand-600 font-semibold">
+                {t('login.forgotPassword')}
+              </Link>
+            </div>
             <input
               type="password"
               required

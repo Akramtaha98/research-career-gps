@@ -29,7 +29,30 @@
     "demoPrompt": "Nur am Erkunden?",
     "demoLink": "Demo-Dashboard ansehen",
     "demoSuffix": "— keine Anmeldung nötig.",
-    "errorFallback": "Anmeldung fehlgeschlagen"
+    "errorFallback": "Anmeldung fehlgeschlagen",
+    "forgotPassword": "Passwort vergessen?"
+  },
+  "forgotPassword": {
+    "title": "Passwort vergessen?",
+    "subtitle": "Gib deine E-Mail-Adresse ein und wir senden dir einen Link zum Zurücksetzen.",
+    "email": "E-Mail",
+    "submit": "Reset-Link senden",
+    "submitting": "Wird gesendet...",
+    "sent": "Falls ein Konto mit dieser E-Mail existiert, haben wir einen Reset-Link gesendet. Prüfe dein Postfach.",
+    "errorFallback": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "backToLogin": "Zurück zur Anmeldung"
+  },
+  "resetPassword": {
+    "title": "Passwort zurücksetzen",
+    "subtitle": "Wähle ein neues Passwort für dein Konto.",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Neues Passwort bestätigen",
+    "submit": "Passwort zurücksetzen",
+    "submitting": "Wird zurückgesetzt...",
+    "success": "Passwort zurückgesetzt! Du wirst zur Anmeldung weitergeleitet...",
+    "errorFallback": "Passwort konnte nicht zurückgesetzt werden. Der Link ist möglicherweise ungültig oder abgelaufen.",
+    "mismatch": "Passwörter stimmen nicht überein",
+    "missingToken": "Dieser Reset-Link ist ungültig. Bitte fordere einen neuen an."
   },
   "signup": {
     "title": "Konto erstellen",

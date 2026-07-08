@@ -29,7 +29,30 @@
     "demoPrompt": "Just exploring?",
     "demoLink": "View demo dashboard",
     "demoSuffix": "— no login needed.",
-    "errorFallback": "Login failed"
+    "errorFallback": "Login failed",
+    "forgotPassword": "Forgot password?"
+  },
+  "forgotPassword": {
+    "title": "Forgot your password?",
+    "subtitle": "Enter your email and we'll send you a link to reset it.",
+    "email": "Email",
+    "submit": "Send reset link",
+    "submitting": "Sending...",
+    "sent": "If an account exists for that email, we've sent a reset link. Check your inbox.",
+    "errorFallback": "Something went wrong. Please try again.",
+    "backToLogin": "Back to log in"
+  },
+  "resetPassword": {
+    "title": "Reset your password",
+    "subtitle": "Choose a new password for your account.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "submit": "Reset password",
+    "submitting": "Resetting...",
+    "success": "Password reset! Redirecting you to log in...",
+    "errorFallback": "Could not reset password. The link may be invalid or expired.",
+    "mismatch": "Passwords don't match",
+    "missingToken": "This reset link is invalid. Please request a new one."
   },
   "signup": {
     "title": "Create your account",

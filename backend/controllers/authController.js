@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const store = require('../services/store');
 const { verifyGoogleToken } = require('../services/socialAuth');
+const { sendPasswordResetEmail } = require('../services/email');
 
 function signToken(user) {
   return jwt.sign({ sub: user.id, email: user.email }, process.env.JWT_SECRET, {
@@ -115,4 +116,77 @@ async function googleLogin(req, res) {
   }
 }
 
-module.exports = { signup, login, me, googleLogin };
+/**
+ * POST /api/auth/forgot-password
+ * Body: { email }
+ *
+ * Always responds 200 with a generic message, whether or not the email
+ * matches an account — this avoids leaking which emails are registered.
+ * Social-only accounts (auth_provider !== 'local') don't have a usable
+ * password to reset, so they're silently skipped too (same generic response).
+ */
+async function forgotPassword(req, res) {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'email is required' });
+    }
+
+    const genericMessage = 'If an account exists for that email, a reset link has been sent.';
+    const user = await store.findUserByEmail(email.toLowerCase());
+
+    if (user && user.auth_provider === 'local') {
+      const rawToken = crypto.randomBytes(32).toString('hex');
+      const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+      await store.setResetToken(user.id, { tokenHash, expiresAt });
+
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const resetUrl = `${frontendUrl}/reset-password?token=${rawToken}`;
+
+      try {
+        await sendPasswordResetEmail({ to: user.email, resetUrl });
+      } catch (emailErr) {
+        console.error('Failed to send password reset email:', emailErr.message);
+        // Don't leak email-sending failures to the client — still return the
+        // generic message so we don't reveal account existence or internals.
+      }
+    }
+
+    return res.json({ message: genericMessage });
+  } catch (err) {
+    return res.status(500).json({ error: 'Request failed', detail: err.message });
+  }
+}
+
+/**
+ * POST /api/auth/reset-password
+ * Body: { token, password }
+ */
+async function resetPassword(req, res) {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) {
+      return res.status(400).json({ error: 'token and password are required' });
+    }
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'password must be at least 8 characters' });
+    }
+
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await store.findUserByValidResetToken(tokenHash);
+    if (!user) {
+      return res.status(400).json({ error: 'This reset link is invalid or has expired' });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    await store.resetPassword(user.id, passwordHash);
+
+    return res.json({ message: 'Password reset successfully' });
+  } catch (err) {
+    return res.status(500).json({ error: 'Reset failed', detail: err.message });
+  }
+}
+
+module.exports = { signup, login, me, googleLogin, forgotPassword, resetPassword };

@@ -29,7 +29,30 @@
     "demoPrompt": "Juste en train d'explorer ?",
     "demoLink": "Voir le tableau de bord de démonstration",
     "demoSuffix": "— aucune connexion requise.",
-    "errorFallback": "Échec de la connexion"
+    "errorFallback": "Échec de la connexion",
+    "forgotPassword": "Mot de passe oublié ?"
+  },
+  "forgotPassword": {
+    "title": "Mot de passe oublié ?",
+    "subtitle": "Saisissez votre e-mail et nous vous enverrons un lien pour le réinitialiser.",
+    "email": "E-mail",
+    "submit": "Envoyer le lien de réinitialisation",
+    "submitting": "Envoi en cours...",
+    "sent": "Si un compte existe pour cet e-mail, nous avons envoyé un lien de réinitialisation. Vérifiez votre boîte de réception.",
+    "errorFallback": "Une erreur s'est produite. Veuillez réessayer.",
+    "backToLogin": "Retour à la connexion"
+  },
+  "resetPassword": {
+    "title": "Réinitialisez votre mot de passe",
+    "subtitle": "Choisissez un nouveau mot de passe pour votre compte.",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmez le nouveau mot de passe",
+    "submit": "Réinitialiser le mot de passe",
+    "submitting": "Réinitialisation en cours...",
+    "success": "Mot de passe réinitialisé ! Redirection vers la connexion...",
+    "errorFallback": "Impossible de réinitialiser le mot de passe. Le lien est peut-être invalide ou expiré.",
+    "mismatch": "Les mots de passe ne correspondent pas",
+    "missingToken": "Ce lien de réinitialisation n'est pas valide. Veuillez en demander un nouveau."
   },
   "signup": {
     "title": "Créez votre compte",

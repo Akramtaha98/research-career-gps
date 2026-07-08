@@ -29,7 +29,30 @@
     "demoPrompt": "¿Solo estás explorando?",
     "demoLink": "Ver panel de demostración",
     "demoSuffix": "— no necesitas iniciar sesión.",
-    "errorFallback": "Error al iniciar sesión"
+    "errorFallback": "Error al iniciar sesión",
+    "forgotPassword": "¿Olvidaste tu contraseña?"
+  },
+  "forgotPassword": {
+    "title": "¿Olvidaste tu contraseña?",
+    "subtitle": "Ingresa tu correo y te enviaremos un enlace para restablecerla.",
+    "email": "Correo electrónico",
+    "submit": "Enviar enlace de restablecimiento",
+    "submitting": "Enviando...",
+    "sent": "Si existe una cuenta con ese correo, te hemos enviado un enlace de restablecimiento. Revisa tu bandeja de entrada.",
+    "errorFallback": "Algo salió mal. Inténtalo de nuevo.",
+    "backToLogin": "Volver a iniciar sesión"
+  },
+  "resetPassword": {
+    "title": "Restablece tu contraseña",
+    "subtitle": "Elige una nueva contraseña para tu cuenta.",
+    "newPassword": "Nueva contraseña",
+    "confirmPassword": "Confirma la nueva contraseña",
+    "submit": "Restablecer contraseña",
+    "submitting": "Restableciendo...",
+    "success": "¡Contraseña restablecida! Te estamos redirigiendo al inicio de sesión...",
+    "errorFallback": "No se pudo restablecer la contraseña. El enlace puede ser inválido o haber expirado.",
+    "mismatch": "Las contraseñas no coinciden",
+    "missingToken": "Este enlace de restablecimiento no es válido. Solicita uno nuevo."
   },
   "signup": {
     "title": "Crea tu cuenta",
