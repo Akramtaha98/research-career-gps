@@ -118,6 +118,19 @@ async function fetchAuthorProfile(openAlexId) {
     throw wrapped;
   }
 
+  // OpenAlex's author disambiguation isn't perfect — the same real person
+  // can get split into two+ separate Author IDs when their name is spelled
+  // differently across papers (e.g. "Akram Taha Zeyad" vs "Akram T. Zeyad"),
+  // each only holding a subset of their actual papers. Filtering works by
+  // `author.id` inherits that split. ORCID is a person-level identifier
+  // stamped directly on each paper's authorship line, independent of which
+  // Author entity OpenAlex clustered it into — so when this author has an
+  // ORCID on file, filter works by THAT instead, which pulls in papers from
+  // every name-variant/split entity that carries the same ORCID. Falls back
+  // to author.id only when no ORCID is on record.
+  const orcid = author.orcid ? author.orcid.replace('https://orcid.org/', '') : null;
+  const worksFilter = orcid ? `author.orcid:${orcid}` : `author.id:${id}`;
+
   const works = [];
   let cursor = '*';
   const perPage = 200;
@@ -126,7 +139,7 @@ async function fetchAuthorProfile(openAlexId) {
   while (cursor && works.length < MAX_WORKS) {
     const { data } = await client.get('/works', {
       params: {
-        filter: `author.id:${id}`,
+        filter: worksFilter,
         per_page: perPage,
         cursor,
         select: 'id,title,publication_year,cited_by_count,primary_location,counts_by_year',
