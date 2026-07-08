@@ -71,7 +71,14 @@ export default function HIndexChart({ history = [], projection = [] }) {
   };
 
   return (
-    <div style={{ height: 320 }}>
+    // Chart.js's canvas resize logic (ResizeObserver-based) misbehaves
+    // inside RTL ancestors — the canvas ends up pinned to one side with a
+    // huge blank gap instead of stretching to fill the container. Forcing
+    // dir="ltr" + explicit width/relative positioning on this wrapper
+    // (independent of the page's language direction) is the standard fix;
+    // it only affects the chart's internal layout, not the legend/label
+    // text, which stays fully translated.
+    <div dir="ltr" style={{ height: 320, width: '100%', position: 'relative' }}>
       <Line data={data} options={options} />
     </div>
   );
