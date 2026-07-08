@@ -40,7 +40,9 @@ export default function Dashboard() {
     hIndex: h.hIndex,
   }));
 
-  const topPapers = [...papers].sort((a, b) => (b.citations || 0) - (a.citations || 0)).slice(0, 8);
+  const [showAllPapers, setShowAllPapers] = useState(false);
+  const sortedPapers = [...papers].sort((a, b) => (b.citations || 0) - (a.citations || 0));
+  const visiblePapers = showAllPapers ? sortedPapers : sortedPapers.slice(0, 8);
 
   if (papers.length === 0) {
     return (
@@ -134,7 +136,7 @@ export default function Dashboard() {
       </div>
 
       <div className="card">
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">{t('dashboard.topPapersTitle')}</h2>
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">{t('dashboard.allPapersTitle')}</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -146,7 +148,7 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {topPapers.map((p) => (
+              {visiblePapers.map((p) => (
                 <tr key={p.id} className="border-b border-slate-50 last:border-0">
                   <td className="py-2.5 pr-4 font-medium text-slate-700">{p.title}</td>
                   <td className="py-2.5 pr-4 text-slate-500">{p.year || '—'}</td>
@@ -157,6 +159,15 @@ export default function Dashboard() {
             </tbody>
           </table>
         </div>
+        {sortedPapers.length > 8 && (
+          <div className="mt-4 text-center">
+            <button onClick={() => setShowAllPapers((v) => !v)} className="btn-secondary text-xs">
+              {showAllPapers
+                ? t('dashboard.showLessPapers')
+                : t('dashboard.showMorePapers', { count: sortedPapers.length - 8 })}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

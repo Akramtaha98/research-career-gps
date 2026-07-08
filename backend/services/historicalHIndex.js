@@ -50,7 +50,7 @@ async function computeHistoricalHIndex(papers) {
   const perPaperYears = [];
   for (const paper of topPapers) {
     const citingYears = await fetchPaperCitationYears(paper.externalId);
-    perPaperYears.push({ paperYear: paper.year, citingYears });
+    perPaperYears.push({ paperYear: paper.year, citingYears, currentCitations: paper.citations || 0 });
     await sleep(REQUEST_DELAY_MS);
   }
 
@@ -58,7 +58,18 @@ async function computeHistoricalHIndex(papers) {
   for (let year = earliestYear; year <= currentYear; year += 1) {
     const citationCountsByYear = perPaperYears
       .filter((p) => p.paperYear <= year)
-      .map((p) => p.citingYears.filter((y) => y <= year).length);
+      .map((p) => {
+        // For the current year, use Semantic Scholar's own authoritative
+        // citation total instead of counting dated citing papers — some
+        // citing papers have no publication year on file, so counting only
+        // dated ones systematically UNDER-counts "now" and disagrees with
+        // the official H-index shown elsewhere in the app. Past years have
+        // no better source, so they still rely on dated citations only
+        // (meaning they're a reconstructed lower bound, most accurate for
+        // well-indexed recent papers).
+        if (year === currentYear) return p.currentCitations;
+        return p.citingYears.filter((y) => y <= year).length;
+      });
 
     if (citationCountsByYear.length === 0) continue;
     history.push({ year, hIndex: calculateHIndex(citationCountsByYear) });
