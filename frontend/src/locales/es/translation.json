@@ -33,6 +33,34 @@
     "clear": "Borrar",
     "privacyNote": "Este archivo se procesó completamente en tu navegador y nunca se subió a ningún lugar."
   },
+  "manualScore": {
+    "title": "Índice H oficial (Scopus / Web of Science)",
+    "subtitle": "Opcional. Abre tu perfil real, comprueba el número e introdúcelo aquí — autodeclarado, no verificado automáticamente.",
+    "edit": "Editar",
+    "sourceLabel": "Fuente",
+    "profileUrlLabel": "URL del perfil (opcional)",
+    "profileUrlPlaceholder": "Pega un enlace a tu perfil de autor de Scopus/WOS",
+    "openProfile": "Abrir perfil ↗",
+    "hIndexLabel": "Índice H",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "cancel": "Cancelar",
+    "remove": "Quitar",
+    "removing": "Quitando...",
+    "invalidNumber": "Introduce un número entero, 0 o mayor.",
+    "saved": "Guardado.",
+    "saveFailed": "No se pudo guardar. Inténtalo de nuevo.",
+    "removeFailed": "No se pudo quitar. Inténtalo de nuevo.",
+    "selfReported": "autodeclarado",
+    "viewProfile": "Ver perfil",
+    "useAsBaseline": "Usar como base de la predicción",
+    "source": {
+      "scopus": "Scopus",
+      "wos": "Web of Science",
+      "other": "Otro"
+    },
+    "disclaimer": "No se comprueba automáticamente contra Scopus/WOS — esta app no puede llamar directamente a sus APIs. El número y el enlace del perfil se guardan tal como los introdujiste."
+  },
   "login": {
     "title": "Bienvenido de nuevo",
     "subtitle": "Inicia sesión para seguir y predecir el crecimiento de tu índice H.",

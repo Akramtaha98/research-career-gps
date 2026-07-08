@@ -1,7 +1,11 @@
 const store = require('../services/store');
-const { fetchAuthorProfile, searchAuthors, fetchTopCollaborators } = require('../services/semanticScholar');
+const researcherSource = require('../services/researcherSource');
+const { fetchTopCollaborators } = require('../services/semanticScholar');
+const openAlex = require('../services/openAlex');
 const { computeHistoricalHIndex } = require('../services/historicalHIndex');
 const { generateActionItems } = require('../utils/actionItems');
+
+const VALID_MANUAL_SOURCES = new Set(['scopus', 'wos', 'other']);
 
 // Computing real historical H-index makes one Semantic Scholar request per
 // paper (rate-limit-sensitive), so cache results per researcher in memory
@@ -22,7 +26,7 @@ async function searchResearchers(req, res) {
     if (!q) return res.status(400).json({ error: 'q is required' });
     if (q.length < 2) return res.status(400).json({ error: 'q must be at least 2 characters' });
 
-    const candidates = await searchAuthors(q);
+    const candidates = await researcherSource.searchAuthors(q);
     return res.json({ candidates });
   } catch (err) {
     return res.status(err.statusCode || 500).json({ error: err.message });
@@ -37,12 +41,12 @@ async function searchResearchers(req, res) {
  */
 async function addResearcher(req, res) {
   try {
-    const { semanticScholarId } = req.body;
+    const { semanticScholarId, source } = req.body;
     if (!semanticScholarId) {
       return res.status(400).json({ error: 'semanticScholarId is required' });
     }
 
-    const profile = await fetchAuthorProfile(semanticScholarId);
+    const profile = await researcherSource.fetchAuthorProfile(semanticScholarId, source);
 
     const researcher = await store.upsertResearcher({
       userId: req.user.id,
@@ -51,6 +55,7 @@ async function addResearcher(req, res) {
       hIndex: profile.hIndex,
       totalCitations: profile.totalCitations,
       paperCount: profile.paperCount,
+      source: profile.source,
     });
 
     await store.replacePapers(researcher.id, profile.papers);
@@ -76,7 +81,7 @@ async function getResearcher(req, res) {
     }
 
     if (req.query.refresh === 'true') {
-      const profile = await fetchAuthorProfile(researcher.semantic_scholar_id);
+      const profile = await researcherSource.fetchAuthorProfile(researcher.semantic_scholar_id, researcher.source);
       researcher = await store.upsertResearcher({
         userId: req.user.id,
         semanticScholarId: profile.semanticScholarId,
@@ -84,6 +89,7 @@ async function getResearcher(req, res) {
         hIndex: profile.hIndex,
         totalCitations: profile.totalCitations,
         paperCount: profile.paperCount,
+        source: profile.source,
       });
       await store.replacePapers(researcher.id, profile.papers);
     }
@@ -142,6 +148,12 @@ async function getCollaborators(req, res) {
     if (researcher.user_id !== req.user.id) {
       return res.status(403).json({ error: 'Not authorized to view this researcher' });
     }
+    // Collaborator suggestions walk Semantic Scholar's co-authorship graph
+    // specifically — an OpenAlex author ID isn't a valid Semantic Scholar ID,
+    // so this isn't available for OpenAlex-sourced profiles yet.
+    if (researcher.source === 'openalex') {
+      return res.json({ collaborators: [], unavailable: true });
+    }
     const collaborators = await fetchTopCollaborators(researcher.semantic_scholar_id);
     return res.json({ collaborators });
   } catch (err) {
@@ -172,13 +184,74 @@ async function getRealHistory(req, res) {
       return res.json({ ...cached.data, cached: true });
     }
 
-    const papers = await store.listPapers(id);
-    const result = await computeHistoricalHIndex(
-      papers.map((p) => ({ externalId: p.external_id, year: p.year, citations: p.citations }))
-    );
+    let result;
+    if (researcher.source === 'openalex') {
+      // OpenAlex works carry per-year citation counts directly, so this is a
+      // fresh profile fetch + a local computation — no per-paper request
+      // loop needed (unlike the Semantic Scholar path below). Limited to
+      // roughly the last 10 years, which is all OpenAlex retains.
+      const profile = await openAlex.fetchAuthorProfile(researcher.semantic_scholar_id);
+      const { history } = openAlex.computeYearlyHistory(profile.papers);
+      result = { history, papersConsidered: profile.papers.length, papersSkipped: 0, limitedToRecentYears: true };
+    } else {
+      const papers = await store.listPapers(id);
+      result = await computeHistoricalHIndex(
+        papers.map((p) => ({ externalId: p.external_id, year: p.year, citations: p.citations }))
+      );
+    }
 
     realHistoryCache.set(id, { computedAt: Date.now(), data: result });
     return res.json({ ...result, cached: false });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
+}
+
+/**
+ * PATCH /api/researchers/:id/manual-score
+ * Body: { source: 'scopus'|'wos'|'other', profileUrl, hIndex }
+ * Self-reported official H-index — see schema.sql comment on
+ * manual_h_index for why this exists and isn't auto-verified.
+ */
+async function setManualScore(req, res) {
+  try {
+    const { id } = req.params;
+    const researcher = await store.findResearcherById(id);
+    if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
+    if (researcher.user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized to update this researcher' });
+    }
+
+    const { source, profileUrl, hIndex } = req.body;
+    if (!VALID_MANUAL_SOURCES.has(source)) {
+      return res.status(400).json({ error: 'source must be one of scopus, wos, other' });
+    }
+    const parsedH = Number(hIndex);
+    if (!Number.isInteger(parsedH) || parsedH < 0 || parsedH > 1000) {
+      return res.status(400).json({ error: 'hIndex must be a whole number between 0 and 1000' });
+    }
+    if (profileUrl && !/^https?:\/\//i.test(profileUrl)) {
+      return res.status(400).json({ error: 'profileUrl must start with http:// or https://' });
+    }
+
+    const updated = await store.setManualScore(id, { source, profileUrl: profileUrl || null, hIndex: parsedH });
+    return res.json({ researcher: updated });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
+}
+
+/** DELETE /api/researchers/:id/manual-score — removes the self-reported override. */
+async function clearManualScore(req, res) {
+  try {
+    const { id } = req.params;
+    const researcher = await store.findResearcherById(id);
+    if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
+    if (researcher.user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized to update this researcher' });
+    }
+    const updated = await store.clearManualScore(id);
+    return res.json({ researcher: updated });
   } catch (err) {
     return res.status(err.statusCode || 500).json({ error: err.message });
   }
@@ -192,4 +265,6 @@ module.exports = {
   getActionItems,
   getCollaborators,
   getRealHistory,
+  setManualScore,
+  clearManualScore,
 };

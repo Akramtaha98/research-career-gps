@@ -33,6 +33,34 @@
     "clear": "Löschen",
     "privacyNote": "Diese Datei wurde vollständig in deinem Browser verarbeitet und nirgendwo hochgeladen."
   },
+  "manualScore": {
+    "title": "Offizieller H-Index (Scopus / Web of Science)",
+    "subtitle": "Optional. Öffne dein echtes Profil, prüfe die Zahl und trage sie hier ein — selbst gemeldet, nicht automatisch verifiziert.",
+    "edit": "Bearbeiten",
+    "sourceLabel": "Quelle",
+    "profileUrlLabel": "Profil-URL (optional)",
+    "profileUrlPlaceholder": "Link zu deinem Scopus-/WOS-Autorenprofil einfügen",
+    "openProfile": "Profil öffnen ↗",
+    "hIndexLabel": "H-Index",
+    "save": "Speichern",
+    "saving": "Wird gespeichert...",
+    "cancel": "Abbrechen",
+    "remove": "Entfernen",
+    "removing": "Wird entfernt...",
+    "invalidNumber": "Gib eine ganze Zahl ≥ 0 ein.",
+    "saved": "Gespeichert.",
+    "saveFailed": "Speichern fehlgeschlagen. Bitte erneut versuchen.",
+    "removeFailed": "Entfernen fehlgeschlagen. Bitte erneut versuchen.",
+    "selfReported": "selbst gemeldet",
+    "viewProfile": "Profil ansehen",
+    "useAsBaseline": "Als Basis für die Prognose verwenden",
+    "source": {
+      "scopus": "Scopus",
+      "wos": "Web of Science",
+      "other": "Andere"
+    },
+    "disclaimer": "Nicht automatisch mit Scopus/WOS abgeglichen — diese App kann deren APIs nicht direkt aufrufen. Zahl und Profil-Link werden einfach so gespeichert, wie du sie eingegeben hast."
+  },
   "login": {
     "title": "Willkommen zurück",
     "subtitle": "Melde dich an, um dein H-Index-Wachstum zu verfolgen und vorherzusagen.",

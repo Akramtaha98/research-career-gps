@@ -8,6 +8,7 @@ import { projectHIndex } from '../utils/prediction';
 import { TIERS, getMultiplier, getTierForVenue } from '../utils/venueTiers';
 import HIndexChart from '../components/HIndexChart';
 import UpgradeCTA from '../components/UpgradeCTA';
+import ManualScoreCard from '../components/ManualScoreCard';
 
 export default function Predictor() {
   const { source, researcher, papers } = useResearcher();
@@ -41,7 +42,23 @@ export default function Predictor() {
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState(null);
 
-  const currentCitations = useMemo(() => papers.map((p) => p.citations || 0), [papers]);
+  // A self-reported official H-index (Scopus/WOS) has no per-paper citation
+  // breakdown behind it, so it can't directly drive the simulation the way
+  // the real papers list does. When the user opts to use it as the baseline,
+  // we approximate with the minimal citation distribution that produces
+  // that H-index (h papers each with exactly h citations) — an
+  // approximation, clearly labeled as such in the UI.
+  const [useManualBaseline, setUseManualBaseline] = useState(Boolean(researcher.manual_h_index));
+
+  const currentCitations = useMemo(() => {
+    if (useManualBaseline && researcher.manual_h_index) {
+      return Array(researcher.manual_h_index).fill(researcher.manual_h_index);
+    }
+    return papers.map((p) => p.citations || 0);
+  }, [papers, useManualBaseline, researcher.manual_h_index]);
+
+  const effectiveHIndex =
+    useManualBaseline && researcher.manual_h_index ? researcher.manual_h_index : researcher.h_index;
 
   // If the typed venue name matches a known pattern, suggest its tier —
   // the dropdown remains the source of truth the user can override.
@@ -102,6 +119,7 @@ export default function Predictor() {
       ) : (
         <PredictorBody
           researcher={researcher}
+          source={source}
           papers={papers}
           targetH={targetH}
           setTargetH={setTargetH}
@@ -119,6 +137,9 @@ export default function Predictor() {
           saving={saving}
           saveMessage={saveMessage}
           handleSave={handleSave}
+          effectiveHIndex={effectiveHIndex}
+          useManualBaseline={useManualBaseline}
+          setUseManualBaseline={setUseManualBaseline}
         />
       )}
     </div>
@@ -127,6 +148,7 @@ export default function Predictor() {
 
 function PredictorBody({
   researcher,
+  source,
   papers,
   targetH,
   setTargetH,
@@ -144,6 +166,9 @@ function PredictorBody({
   saving,
   saveMessage,
   handleSave,
+  effectiveHIndex,
+  useManualBaseline,
+  setUseManualBaseline,
 }) {
   const { t } = useTranslation();
   return (
@@ -154,15 +179,23 @@ function PredictorBody({
         </div>
       )}
 
+      {source === 'live' && (
+        <ManualScoreCard
+          researcher={researcher}
+          useManualBaseline={useManualBaseline}
+          setUseManualBaseline={setUseManualBaseline}
+        />
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="card space-y-5 lg:col-span-1">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              {t('predictor.targetH', { current: researcher.h_index })}
+              {t('predictor.targetH', { current: effectiveHIndex })}
             </label>
             <input
               type="number"
-              min={researcher.h_index}
+              min={effectiveHIndex}
               className="input"
               value={targetH}
               onChange={(e) => setTargetH(e.target.value)}
@@ -258,7 +291,7 @@ function PredictorBody({
       <div className="card">
         <h2 className="text-lg font-semibold text-slate-900 mb-4">{t('predictor.pathTitle')}</h2>
         <HIndexChart
-          history={[{ label: t('predictor.now'), hIndex: researcher.h_index }]}
+          history={[{ label: t('predictor.now'), hIndex: effectiveHIndex }]}
           projection={projection.path.filter((_, i) => i % Math.max(Math.floor(projection.path.length / 24), 1) === 0)}
         />
       </div>

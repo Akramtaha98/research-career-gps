@@ -31,7 +31,7 @@ export default function Search() {
         return;
       }
       try {
-        await lookupResearcher(trimmed);
+        await lookupResearcher(trimmed, 'semantic_scholar');
         navigate('/dashboard');
       } catch {
         // error surfaced via context
@@ -63,7 +63,7 @@ export default function Search() {
     }
     setPickingId(candidate.semanticScholarId);
     try {
-      await lookupResearcher(candidate.semanticScholarId);
+      await lookupResearcher(candidate.semanticScholarId, candidate.source);
       navigate('/dashboard');
     } catch {
       // error surfaced via context

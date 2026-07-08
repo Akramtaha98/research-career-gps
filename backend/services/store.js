@@ -90,7 +90,7 @@ const memoryStore = {
     return user;
   },
 
-  async upsertResearcher({ userId, semanticScholarId, name, hIndex, totalCitations, paperCount }) {
+  async upsertResearcher({ userId, semanticScholarId, name, hIndex, totalCitations, paperCount, source = 'semantic_scholar' }) {
     let researcher = memory.researchers.find(
       (r) => r.user_id === userId && r.semantic_scholar_id === semanticScholarId
     );
@@ -101,6 +101,7 @@ const memoryStore = {
         h_index: hIndex,
         total_citations: totalCitations,
         paper_count: paperCount,
+        source,
         updated_at: now,
       });
     } else {
@@ -112,6 +113,11 @@ const memoryStore = {
         h_index: hIndex,
         total_citations: totalCitations,
         paper_count: paperCount,
+        source,
+        manual_h_index: null,
+        manual_h_index_source: null,
+        manual_h_index_url: null,
+        manual_h_index_updated_at: null,
         updated_at: now,
       };
       memory.researchers.push(researcher);
@@ -128,6 +134,26 @@ const memoryStore = {
 
   async findResearcherById(id) {
     return memory.researchers.find((r) => r.id === id) || null;
+  },
+
+  async setManualScore(researcherId, { source, profileUrl, hIndex }) {
+    const researcher = memory.researchers.find((r) => r.id === researcherId);
+    if (!researcher) return null;
+    researcher.manual_h_index = hIndex;
+    researcher.manual_h_index_source = source;
+    researcher.manual_h_index_url = profileUrl || null;
+    researcher.manual_h_index_updated_at = new Date().toISOString();
+    return researcher;
+  },
+
+  async clearManualScore(researcherId) {
+    const researcher = memory.researchers.find((r) => r.id === researcherId);
+    if (!researcher) return null;
+    researcher.manual_h_index = null;
+    researcher.manual_h_index_source = null;
+    researcher.manual_h_index_url = null;
+    researcher.manual_h_index_updated_at = null;
+    return researcher;
   },
 
   async replacePapers(researcherId, papers) {
@@ -239,14 +265,14 @@ const pgStore = {
     return rows[0] || null;
   },
 
-  async upsertResearcher({ userId, semanticScholarId, name, hIndex, totalCitations, paperCount }) {
+  async upsertResearcher({ userId, semanticScholarId, name, hIndex, totalCitations, paperCount, source = 'semantic_scholar' }) {
     const { rows } = await query(
-      `INSERT INTO researchers (user_id, semantic_scholar_id, name, h_index, total_citations, paper_count)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO researchers (user_id, semantic_scholar_id, name, h_index, total_citations, paper_count, source)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        ON CONFLICT (user_id, semantic_scholar_id)
-       DO UPDATE SET name = $3, h_index = $4, total_citations = $5, paper_count = $6, updated_at = now()
+       DO UPDATE SET name = $3, h_index = $4, total_citations = $5, paper_count = $6, source = $7, updated_at = now()
        RETURNING *`,
-      [userId, semanticScholarId, name, hIndex, totalCitations, paperCount]
+      [userId, semanticScholarId, name, hIndex, totalCitations, paperCount, source]
     );
     const researcher = rows[0];
     await query(
@@ -258,6 +284,28 @@ const pgStore = {
 
   async findResearcherById(id) {
     const { rows } = await query(`SELECT * FROM researchers WHERE id = $1`, [id]);
+    return rows[0] || null;
+  },
+
+  async setManualScore(researcherId, { source, profileUrl, hIndex }) {
+    const { rows } = await query(
+      `UPDATE researchers
+       SET manual_h_index = $2, manual_h_index_source = $3, manual_h_index_url = $4, manual_h_index_updated_at = now()
+       WHERE id = $1
+       RETURNING *`,
+      [researcherId, hIndex, source, profileUrl || null]
+    );
+    return rows[0] || null;
+  },
+
+  async clearManualScore(researcherId) {
+    const { rows } = await query(
+      `UPDATE researchers
+       SET manual_h_index = NULL, manual_h_index_source = NULL, manual_h_index_url = NULL, manual_h_index_updated_at = NULL
+       WHERE id = $1
+       RETURNING *`,
+      [researcherId]
+    );
     return rows[0] || null;
   },
 

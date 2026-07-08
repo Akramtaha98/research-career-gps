@@ -34,6 +34,20 @@ CREATE TABLE IF NOT EXISTS researchers (
   h_index              INTEGER NOT NULL DEFAULT 0,
   total_citations      INTEGER NOT NULL DEFAULT 0,
   paper_count          INTEGER NOT NULL DEFAULT 0,
+  -- Which upstream API this snapshot came from — 'openalex' (primary) or
+  -- 'semantic_scholar' (fallback). Needed on refresh/history/collaborators
+  -- calls to know which service the stored ID belongs to. See
+  -- services/researcherSource.js.
+  source                    VARCHAR(20) NOT NULL DEFAULT 'semantic_scholar',
+  -- Optional self-reported official H-index (e.g. from Scopus or Web of
+  -- Science), entered manually because neither offers a public API the app
+  -- can call directly. Not automatically verified — profile_url is stored
+  -- so the number can be spot-checked, and the UI links out to it. See
+  -- controllers/researcherController.js#setManualScore.
+  manual_h_index            INTEGER,
+  manual_h_index_source     VARCHAR(20),
+  manual_h_index_url        TEXT,
+  manual_h_index_updated_at TIMESTAMPTZ,
   updated_at           TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (user_id, semantic_scholar_id)
 );

@@ -7,6 +7,8 @@ const {
   getActionItems,
   getCollaborators,
   getRealHistory,
+  setManualScore,
+  clearManualScore,
 } = require('../controllers/researcherController');
 const { requireAuth } = require('../middleware/auth');
 const { requirePro } = require('../middleware/requirePro');
@@ -24,5 +26,7 @@ router.get('/:id/papers', listPapers);
 router.get('/:id/actions', getActionItems);
 router.get('/:id/collaborators', requirePro, getCollaborators);
 router.get('/:id/real-history', getRealHistory);
+router.patch('/:id/manual-score', setManualScore);
+router.delete('/:id/manual-score', clearManualScore);
 
 module.exports = router;

@@ -33,12 +33,12 @@ export function ResearcherProvider({ children }) {
     }
   }, []);
 
-  /** Look up (and persist, if logged in) a real Semantic Scholar author. */
-  const lookupResearcher = useCallback(async (semanticScholarId) => {
+  /** Look up (and persist, if logged in) a real researcher — OpenAlex primary, Semantic Scholar fallback. */
+  const lookupResearcher = useCallback(async (semanticScholarId, source) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await client.post('/researchers', { semanticScholarId });
+      const { data } = await client.post('/researchers', { semanticScholarId, source });
       const papersRes = await client.get(`/researchers/${data.researcher.id}/papers`);
       const detailRes = await client.get(`/researchers/${data.researcher.id}`);
       setSource('live');
@@ -81,6 +81,33 @@ export function ResearcherProvider({ children }) {
     return data;
   }, [source, researcher]);
 
+  /**
+   * Saves a self-reported official H-index (Scopus/WOS/other) for the
+   * current live researcher. Not auto-verified against the source — see
+   * schema.sql's manual_h_index comment for why (no public Scopus/WOS API
+   * this app can call).
+   */
+  const setManualScore = useCallback(
+    async ({ source: manualSource, profileUrl, hIndex }) => {
+      if (source !== 'live' || !researcher?.id) return null;
+      const { data } = await client.patch(`/researchers/${researcher.id}/manual-score`, {
+        source: manualSource,
+        profileUrl,
+        hIndex,
+      });
+      setResearcher(data.researcher);
+      return data.researcher;
+    },
+    [source, researcher]
+  );
+
+  const clearManualScore = useCallback(async () => {
+    if (source !== 'live' || !researcher?.id) return null;
+    const { data } = await client.delete(`/researchers/${researcher.id}/manual-score`);
+    setResearcher(data.researcher);
+    return data.researcher;
+  }, [source, researcher]);
+
   const refreshResearcher = useCallback(async () => {
     if (source !== 'live' || !researcher?.id) return;
     setLoading(true);
@@ -110,6 +137,8 @@ export function ResearcherProvider({ children }) {
         refreshResearcher,
         getCollaborators,
         getRealHistory,
+        setManualScore,
+        clearManualScore,
       }}
     >
       {children}

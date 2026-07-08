@@ -33,6 +33,34 @@
     "clear": "Kosongkan",
     "privacyNote": "Fail ini diproses sepenuhnya dalam pelayar anda dan tidak pernah dimuat naik ke mana-mana."
   },
+  "manualScore": {
+    "title": "Indeks-H rasmi (Scopus / Web of Science)",
+    "subtitle": "Pilihan. Buka profil sebenar anda, semak nombor itu, dan masukkannya di sini — dilaporkan sendiri, tidak disahkan secara automatik.",
+    "edit": "Sunting",
+    "sourceLabel": "Sumber",
+    "profileUrlLabel": "URL profil (pilihan)",
+    "profileUrlPlaceholder": "Tampal pautan ke profil pengarang Scopus/WOS anda",
+    "openProfile": "Buka profil ↗",
+    "hIndexLabel": "Indeks-H",
+    "save": "Simpan",
+    "saving": "Menyimpan...",
+    "cancel": "Batal",
+    "remove": "Buang",
+    "removing": "Membuang...",
+    "invalidNumber": "Masukkan nombor bulat, 0 atau lebih.",
+    "saved": "Disimpan.",
+    "saveFailed": "Gagal menyimpan. Cuba lagi.",
+    "removeFailed": "Gagal membuang. Cuba lagi.",
+    "selfReported": "dilaporkan sendiri",
+    "viewProfile": "Lihat profil",
+    "useAsBaseline": "Guna sebagai asas ramalan",
+    "source": {
+      "scopus": "Scopus",
+      "wos": "Web of Science",
+      "other": "Lain-lain"
+    },
+    "disclaimer": "Tidak disahkan secara automatik dengan Scopus/WOS — aplikasi ini tidak dapat memanggil API mereka secara langsung. Nombor dan pautan profil hanya disimpan seperti yang anda masukkan."
+  },
   "login": {
     "title": "Selamat kembali",
     "subtitle": "Log masuk untuk menjejaki dan meramal pertumbuhan indeks-H anda.",

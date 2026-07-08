@@ -33,6 +33,34 @@
     "clear": "Effacer",
     "privacyNote": "Ce fichier a été entièrement traité dans votre navigateur et n'a jamais été téléversé nulle part."
   },
+  "manualScore": {
+    "title": "Indice H officiel (Scopus / Web of Science)",
+    "subtitle": "Optionnel. Ouvrez votre vrai profil, vérifiez le chiffre et saisissez-le ici — auto-déclaré, non vérifié automatiquement.",
+    "edit": "Modifier",
+    "sourceLabel": "Source",
+    "profileUrlLabel": "URL du profil (optionnel)",
+    "profileUrlPlaceholder": "Collez un lien vers votre profil d'auteur Scopus/WOS",
+    "openProfile": "Ouvrir le profil ↗",
+    "hIndexLabel": "Indice H",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "cancel": "Annuler",
+    "remove": "Supprimer",
+    "removing": "Suppression...",
+    "invalidNumber": "Saisissez un nombre entier, 0 ou plus.",
+    "saved": "Enregistré.",
+    "saveFailed": "Échec de l'enregistrement. Réessayez.",
+    "removeFailed": "Échec de la suppression. Réessayez.",
+    "selfReported": "auto-déclaré",
+    "viewProfile": "Voir le profil",
+    "useAsBaseline": "Utiliser comme base de prédiction",
+    "source": {
+      "scopus": "Scopus",
+      "wos": "Web of Science",
+      "other": "Autre"
+    },
+    "disclaimer": "Non vérifié automatiquement auprès de Scopus/WOS — cette application ne peut pas appeler directement leurs API. Le chiffre et le lien du profil sont simplement enregistrés tels que vous les avez saisis."
+  },
   "login": {
     "title": "Content de vous revoir",
     "subtitle": "Connectez-vous pour suivre et prédire la croissance de votre indice H.",

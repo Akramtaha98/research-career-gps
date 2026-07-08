@@ -51,6 +51,7 @@ async function fetchAuthorProfile(semanticScholarId, { retry = true } = {}) {
 
     return {
       semanticScholarId,
+      source: 'semantic_scholar',
       name: data.name || 'Unknown',
       hIndex,
       totalCitations,
@@ -101,6 +102,7 @@ async function searchAuthors(query, { retry = true } = {}) {
 
     return (data.data || []).map((a) => ({
       semanticScholarId: a.authorId,
+      source: 'semantic_scholar',
       name: a.name || 'Unknown',
       affiliations: a.affiliations || [],
       homepage: a.homepage || null,
