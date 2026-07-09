@@ -20,44 +20,11 @@ const client = axios.create({
  * an API key. On 429 we retry once with backoff before giving up.
  */
 async function fetchAuthorProfile(semanticScholarId, { retry = true } = {}) {
-  const fields = [
-    'name',
-    'hIndex',
-    'citationCount',
-    'paperCount',
-    'papers.title',
-    'papers.year',
-    'papers.citationCount',
-    'papers.venue',
-    'papers.externalIds',
-  ].join(',');
-
   try {
     const { data } = await client.get(`/author/${encodeURIComponent(semanticScholarId)}`, {
-      params: { fields },
+      params: { fields: AUTHOR_FIELDS },
     });
-
-    const papers = (data.papers || []).map((p) => ({
-      externalId: p.paperId || (p.externalIds && p.externalIds.DOI) || null,
-      title: p.title || 'Untitled',
-      year: p.year || null,
-      citations: p.citationCount || 0,
-      venue: p.venue || null,
-    }));
-
-    const citations = papers.map((p) => p.citations);
-    const hIndex = calculateHIndex(citations);
-    const totalCitations = citations.reduce((a, b) => a + b, 0);
-
-    return {
-      semanticScholarId,
-      source: 'semantic_scholar',
-      name: data.name || 'Unknown',
-      hIndex,
-      totalCitations,
-      paperCount: papers.length,
-      papers,
-    };
+    return mapAuthorResponse(semanticScholarId, data);
   } catch (err) {
     if (err.response && err.response.status === 429 && retry) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -76,6 +43,65 @@ async function fetchAuthorProfile(semanticScholarId, { retry = true } = {}) {
     const wrapped = new Error(`Semantic Scholar request failed: ${err.message}`);
     wrapped.statusCode = err.response ? err.response.status : 502;
     throw wrapped;
+  }
+}
+
+const AUTHOR_FIELDS = [
+  'name',
+  'hIndex',
+  'citationCount',
+  'paperCount',
+  'papers.title',
+  'papers.year',
+  'papers.citationCount',
+  'papers.venue',
+  'papers.externalIds',
+].join(',');
+
+function mapAuthorResponse(id, data) {
+  const papers = (data.papers || []).map((p) => ({
+    externalId: p.paperId || (p.externalIds && p.externalIds.DOI) || null,
+    title: p.title || 'Untitled',
+    year: p.year || null,
+    citations: p.citationCount || 0,
+    venue: p.venue || null,
+    doi: (p.externalIds && p.externalIds.DOI) || null,
+  }));
+  const citations = papers.map((p) => p.citations);
+  return {
+    semanticScholarId: id,
+    source: 'semantic_scholar',
+    name: data.name || 'Unknown',
+    hIndex: calculateHIndex(citations),
+    totalCitations: citations.reduce((a, b) => a + b, 0),
+    paperCount: papers.length,
+    papers,
+  };
+}
+
+/**
+ * Best-effort ORCID bridge used by researcherSource.js's cross-source merge:
+ * Semantic Scholar's own name-based author disambiguation is often BETTER
+ * than OpenAlex's (it correctly reunites name-variant spellings that
+ * OpenAlex sometimes splits into separate Author entities — see
+ * researcherSource.js for the full story), so when OpenAlex is primary but
+ * has an ORCID on file, this tries to pull in whatever Semantic Scholar has
+ * under that same ORCID to fill in gaps.
+ *
+ * Deliberately NOT wrapped in the aggressive retry-on-429 behavior the rest
+ * of this file uses — this is a nice-to-have enrichment, not a page the user
+ * is blocked on, so on any failure (404, rate limit, timeout) it just
+ * returns null and the caller falls back to the primary source alone.
+ */
+async function fetchAuthorProfileByOrcid(orcid) {
+  try {
+    const { data } = await client.get(`/author/ORCID:${orcid}`, {
+      params: { fields: AUTHOR_FIELDS },
+      timeout: 6000,
+    });
+    return mapAuthorResponse(data.authorId || `ORCID:${orcid}`, data);
+  } catch {
+    return null;
   }
 }
 
@@ -223,4 +249,10 @@ async function fetchPaperCitationYears(paperId, { retry = true } = {}) {
   return years;
 }
 
-module.exports = { fetchAuthorProfile, searchAuthors, fetchTopCollaborators, fetchPaperCitationYears };
+module.exports = {
+  fetchAuthorProfile,
+  fetchAuthorProfileByOrcid,
+  searchAuthors,
+  fetchTopCollaborators,
+  fetchPaperCitationYears,
+};

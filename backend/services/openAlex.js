@@ -142,7 +142,7 @@ async function fetchAuthorProfile(openAlexId) {
         filter: worksFilter,
         per_page: perPage,
         cursor,
-        select: 'id,title,publication_year,cited_by_count,primary_location,counts_by_year',
+        select: 'id,doi,title,publication_year,cited_by_count,primary_location,counts_by_year',
         mailto: MAILTO,
       },
     });
@@ -156,6 +156,10 @@ async function fetchAuthorProfile(openAlexId) {
     year: w.publication_year || null,
     citations: w.cited_by_count || 0,
     venue: w.primary_location?.source?.display_name || null,
+    // Normalized to bare "10.xxxx/..." (OpenAlex returns full
+    // "https://doi.org/10.xxxx/..." URLs) so it matches Semantic Scholar's
+    // DOI format directly when researcherSource.js merges the two sources.
+    doi: w.doi ? w.doi.replace('https://doi.org/', '').toLowerCase() : null,
     countsByYear: w.counts_by_year || [], // kept for computeYearlyHistory, not persisted to the papers table
   }));
 
@@ -167,6 +171,7 @@ async function fetchAuthorProfile(openAlexId) {
     semanticScholarId: id, // field name kept for wire compatibility
     source: 'openalex',
     name: author.display_name || 'Unknown',
+    orcid, // exposed so researcherSource.js can bridge to Semantic Scholar's ORCID lookup when merging
     hIndex,
     totalCitations,
     paperCount: papers.length,
