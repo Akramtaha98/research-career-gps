@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResearcher } from '../context/ResearcherContext';
 import { useAuth } from '../context/AuthContext';
+import Modal from './Modal';
 
 const GENERIC_PROFILE_LINK = {
   scopus: 'https://www.scopus.com/freelookup/form/author.uri',
@@ -93,6 +94,7 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
   const [message, setMessage] = useState(null);
   const [claiming, setClaiming] = useState(false);
   const [claimMessage, setClaimMessage] = useState(null);
+  const [claimModalOpen, setClaimModalOpen] = useState(false);
 
   const openHref = profileUrl.trim() || GENERIC_PROFILE_LINK[which];
 
@@ -104,17 +106,20 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
   // check the number against directly (see scoreBox.disclaimer).
   const isOwner = Boolean(user?.orcid) && Boolean(researcher?.orcid) && user.orcid === researcher.orcid;
 
-  async function handleClaim() {
-    // Always let the user open their real profile to self-check the number,
-    // regardless of ORCID status — this part never depends on verification.
-    if (openHref) window.open(openHref, '_blank', 'noopener,noreferrer');
+  function openClaimModal() {
+    setClaimMessage(null);
+    setClaimModalOpen(true);
+  }
 
+  // Split from the submit step on purpose — the modal presents these as two
+  // separate, explicit choices instead of one click silently doing both.
+  function handleOpenProfile() {
+    if (openHref) window.open(openHref, '_blank', 'noopener,noreferrer');
+  }
+
+  async function handleConfirmClaim() {
     if (!hasValue) {
       setClaimMessage(t('scoreBox.claimNeedsNumbers'));
-      return;
-    }
-    if (!isOwner) {
-      setClaimMessage(t('scoreBox.claimNeedsOrcid'));
       return;
     }
     setClaiming(true);
@@ -244,22 +249,43 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
 
       {hasValue && !editing && (
         <div className="mt-2 flex items-center gap-2 flex-wrap">
-          <button
-            type="button"
-            onClick={handleClaim}
-            disabled={claiming}
-            className="btn-secondary text-xs px-3 py-1.5"
-          >
-            {claiming ? t('scoreBox.claiming') : t('scoreBox.claimProfile')}
+          <button type="button" onClick={openClaimModal} className="btn-secondary text-xs px-3 py-1.5">
+            {t('scoreBox.claimProfile')}
           </button>
           {isOwner && (
             <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
               {t('scoreBox.claimedBadge')}
             </span>
           )}
-          {claimMessage && <p className="text-xs text-slate-500 basis-full">{claimMessage}</p>}
         </div>
       )}
+
+      <Modal open={claimModalOpen} onClose={() => setClaimModalOpen(false)} title={t('scoreBox.claimModalTitle')}>
+        <p className="text-sm text-slate-600">{t('scoreBox.claimModalBody')}</p>
+        {currentUrl && <p className="mt-2 text-xs text-slate-500 break-all">{currentUrl}</p>}
+
+        <div className="mt-4 flex flex-col gap-2">
+          <button type="button" onClick={handleOpenProfile} className="btn-secondary w-full text-sm">
+            {t('scoreBox.claimModalOpen')}
+          </button>
+          {isOwner ? (
+            <button
+              type="button"
+              onClick={handleConfirmClaim}
+              disabled={claiming}
+              className="btn-primary w-full text-sm"
+            >
+              {claiming ? t('scoreBox.claiming') : t('scoreBox.claimModalConfirm')}
+            </button>
+          ) : (
+            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+              {t('scoreBox.claimNeedsOrcid')}
+            </p>
+          )}
+        </div>
+
+        {claimMessage && <p className="mt-3 text-xs text-slate-500">{claimMessage}</p>}
+      </Modal>
 
       {!(hasValue && !editing) && (
         <form onSubmit={handleSave} className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">

@@ -11,8 +11,9 @@
     "contact": "Contact"
   },
   "footer": {
-    "tagline": "Research GPS — MVP",
-    "builtWithLove": "Fait avec ❤️"
+    "tagline": "© {{year}} Research GPS",
+    "builtWithLove": "Fait avec ❤️",
+    "contactLink": "Contactez-nous"
   },
   "common": {
     "loading": "Chargement..."
@@ -44,6 +45,10 @@
     "disclaimer": "Non vérifié automatiquement auprès de Scopus/WOS — cette application ne peut pas appeler directement leurs API. Les chiffres et liens sont enregistrés tels que vous les avez saisis.",
     "hIndexExceedsPapers": "L'indice H ({{hIndex}}) ne peut pas être supérieur au nombre d'articles ({{paperCount}}).",
     "claimProfile": "Revendiquer mon profil ↗",
+    "claimModalTitle": "Revendiquez votre profil",
+    "claimModalBody": "Cela ouvrira votre profil Scopus/Web of Science dans un nouvel onglet afin que vous puissiez vérifier le chiffre. Si vous êtes connecté avec l'ORCID correspondant à ce chercheur, vous pouvez aussi le confirmer comme valeur communautaire vérifiée.",
+    "claimModalOpen": "Ouvrir le profil ↗",
+    "claimModalConfirm": "Confirmer et vérifier",
     "claiming": "Vérification...",
     "claimVerified": "Vérifié : ceci est désormais la valeur communautaire confirmée pour ce chercheur.",
     "claimSubmitted": "Profil ouvert. Soumis, mais affiché comme non vérifié tant que vous ne vous connectez pas avec l'ORCID correspondant à ce chercheur.",

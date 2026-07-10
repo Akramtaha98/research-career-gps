@@ -11,8 +11,9 @@
     "contact": "Hubungi"
   },
   "footer": {
-    "tagline": "Research GPS — MVP",
-    "builtWithLove": "Dibina dengan ❤️"
+    "tagline": "© {{year}} Research GPS",
+    "builtWithLove": "Dibina dengan ❤️",
+    "contactLink": "Hubungi kami"
   },
   "common": {
     "loading": "Sedang memuatkan..."
@@ -44,6 +45,10 @@
     "disclaimer": "Tidak disahkan secara automatik dengan Scopus/WOS — aplikasi ini tidak dapat memanggil API mereka secara langsung. Nombor dan pautan disimpan seperti yang anda masukkan.",
     "hIndexExceedsPapers": "Indeks-H ({{hIndex}}) tidak boleh melebihi bilangan kertas kerja ({{paperCount}}).",
     "claimProfile": "Tuntut profil saya ↗",
+    "claimModalTitle": "Tuntut profil anda",
+    "claimModalBody": "Ini akan membuka profil Scopus/Web of Science anda dalam tab baharu supaya anda boleh menyemak semula nombor tersebut. Jika anda log masuk dengan ORCID yang sepadan dengan penyelidik ini, anda juga boleh mengesahkannya sebagai nilai komuniti yang disahkan.",
+    "claimModalOpen": "Buka profil ↗",
+    "claimModalConfirm": "Sahkan & tentusahkan",
     "claiming": "Mengesahkan...",
     "claimVerified": "Disahkan — ini kini nilai komuniti yang disahkan untuk penyelidik ini.",
     "claimSubmitted": "Profil dibuka. Dihantar, tetapi dipaparkan sebagai belum disahkan sehingga anda log masuk dengan ORCID yang sepadan dengan penyelidik ini.",

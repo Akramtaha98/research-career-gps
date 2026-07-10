@@ -38,12 +38,12 @@ export default function App() {
           </Routes>
         </main>
         <footer className="text-center text-xs text-slate-400 py-6 space-y-1">
-          <p>{t('footer.tagline')}</p>
+          <p>{t('footer.tagline', { year: new Date().getFullYear() })}</p>
           <p>
             {t('footer.builtWithLove')}
             {' · '}
             <Link to="/contact" className="underline hover:text-slate-500">
-              {t('nav.contact')}
+              {t('footer.contactLink')}
             </Link>
           </p>
         </footer>

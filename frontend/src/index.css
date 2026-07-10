@@ -10,6 +10,25 @@ html.dark {
   color-scheme: dark;
 }
 
+/*
+ * Makes the light/dark toggle fade instead of snap: every element's color,
+ * background, and border animate over the same short duration whenever the
+ * `dark` class flips on <html> (see ThemeContext.jsx). `*` is broad on
+ * purpose — the whole point is that the swap feels like one smooth
+ * transition rather than needing every single dark-mode override rule in
+ * this file to carry its own `transition` declaration. Excludes width/
+ * height/transform-ish properties implicitly by only listing color
+ * properties, so it won't animate layout or interfere with existing hover/
+ * focus transitions on buttons and inputs.
+ */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 300ms;
+  transition-timing-function: ease;
+}
+
 body {
   @apply bg-slate-50 text-slate-900;
 }

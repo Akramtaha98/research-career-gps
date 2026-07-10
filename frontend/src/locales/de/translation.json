@@ -11,8 +11,9 @@
     "contact": "Kontakt"
   },
   "footer": {
-    "tagline": "Research GPS — MVP",
-    "builtWithLove": "Erstellt mit ❤️"
+    "tagline": "© {{year}} Research GPS",
+    "builtWithLove": "Erstellt mit ❤️",
+    "contactLink": "Kontaktiere uns"
   },
   "common": {
     "loading": "Wird geladen..."
@@ -44,6 +45,10 @@
     "disclaimer": "Nicht automatisch mit Scopus/WOS abgeglichen — diese App kann deren APIs nicht direkt aufrufen. Zahlen und Links werden genau so gespeichert, wie du sie eingegeben hast.",
     "hIndexExceedsPapers": "Der H-Index ({{hIndex}}) darf nicht größer sein als die Anzahl der Arbeiten ({{paperCount}}).",
     "claimProfile": "Mein Profil beanspruchen ↗",
+    "claimModalTitle": "Profil beanspruchen",
+    "claimModalBody": "Dadurch wird dein Scopus-/Web-of-Science-Profil in einem neuen Tab geöffnet, damit du die Zahl überprüfen kannst. Wenn du mit der zu diesem Forscher passenden ORCID angemeldet bist, kannst du sie auch als verifizierten Community-Wert bestätigen.",
+    "claimModalOpen": "Profil öffnen ↗",
+    "claimModalConfirm": "Bestätigen & verifizieren",
     "claiming": "Wird überprüft...",
     "claimVerified": "Verifiziert – dies ist jetzt der bestätigte Community-Wert für diesen Forscher.",
     "claimSubmitted": "Profil geöffnet. Übermittelt, wird aber als unbestätigt angezeigt, bis Sie sich mit der zu diesem Forscher passenden ORCID anmelden.",
