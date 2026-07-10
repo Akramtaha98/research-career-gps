@@ -48,6 +48,7 @@ const memory = {
   verifiedAuthorMetrics: [], // { id, author_id, submitted_h_index, verified_h_index, submitted_paper_count, verified_paper_count, submitted_citation_count, verified_citation_count, source, verification_status, submitted_by, verified_at }
   verifiedPapers: [], // { id, author_id, external_id, doi, title, year, venue, citation_count, source, updated_at }
   verifiedComparisonResults: [], // { id, author_metrics_id, field_name, submitted_value, verified_value, difference, match, created_at }
+  contactMessages: [], // { id, name, email, message, user_id, read_at, created_at } — public "Contact us" form, see schema.sql
 };
 
 // Monotonic counter so shared-score history sorts deterministically even
@@ -336,6 +337,21 @@ const memoryStore = {
     return memory.sharedScoresHistory
       .filter((h) => h.orcid === orcid && h.which === which)
       .sort((a, b) => b.seq - a.seq);
+  },
+
+  /** Public "Contact us" form submission — see schema.sql's contact_messages comment. */
+  async createContactMessage({ name, email, message, userId }) {
+    const row = {
+      id: uuid(),
+      name,
+      email,
+      message,
+      user_id: userId || null,
+      read_at: null,
+      created_at: new Date().toISOString(),
+    };
+    memory.contactMessages.push(row);
+    return row;
   },
 
   // Only clears previously auto-fetched rows (origin='auto') — the papers
@@ -752,6 +768,15 @@ const pgStore = {
       [orcid, which]
     );
     return rows;
+  },
+
+  /** Public "Contact us" form submission — see schema.sql's contact_messages comment. */
+  async createContactMessage({ name, email, message, userId }) {
+    const { rows } = await query(
+      `INSERT INTO contact_messages (name, email, message, user_id) VALUES ($1, $2, $3, $4) RETURNING *`,
+      [name, email, message, userId || null]
+    );
+    return rows[0];
   },
 
   // Only clears previously auto-fetched rows — see memoryStore's version of

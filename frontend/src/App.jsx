@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import Predictor from './pages/Predictor';
 import Actions from './pages/Actions';
 import Verify from './pages/Verify';
+import Contact from './pages/Contact';
 import { ResearcherProvider } from './context/ResearcherContext';
 
 export default function App() {
@@ -32,11 +33,19 @@ export default function App() {
             <Route path="/predictor" element={<Predictor />} />
             <Route path="/actions" element={<Actions />} />
             <Route path="/verify" element={<Verify />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<Navigate to="/search" replace />} />
           </Routes>
         </main>
-        <footer className="text-center text-xs text-slate-400 py-6">
-          {t('footer.tagline')}
+        <footer className="text-center text-xs text-slate-400 py-6 space-y-1">
+          <p>{t('footer.tagline')}</p>
+          <p>
+            {t('footer.builtWithLove')}
+            {' · '}
+            <Link to="/contact" className="underline hover:text-slate-500">
+              {t('nav.contact')}
+            </Link>
+          </p>
         </footer>
       </div>
     </ResearcherProvider>

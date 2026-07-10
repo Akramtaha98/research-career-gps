@@ -262,6 +262,25 @@ CREATE TABLE IF NOT EXISTS verified_comparison_results (
   created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Public "Contact us" form submissions (Footer / Navbar link, no auth
+-- required to submit — anyone visiting the site should be able to leave a
+-- message). user_id is nullable and only set when the sender happens to be
+-- signed in at the time; the form itself never requires an account. No
+-- outbound email sending is wired up (no SMTP/Resend/SendGrid credentials
+-- configured for this project) — messages are simply stored here for Akram
+-- to read directly via the Supabase SQL editor, same workflow already used
+-- for every other admin-facing table in this schema. read_at lets that
+-- review pass mark a message as handled without deleting it.
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name        VARCHAR(200) NOT NULL,
+  email       VARCHAR(255) NOT NULL,
+  message     TEXT NOT NULL,
+  user_id     UUID REFERENCES users(id) ON DELETE SET NULL,
+  read_at     TIMESTAMPTZ,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE INDEX IF NOT EXISTS idx_researchers_user_id ON researchers(user_id);
 CREATE INDEX IF NOT EXISTS idx_researchers_orcid ON researchers(orcid);
 CREATE INDEX IF NOT EXISTS idx_papers_researcher_id ON papers(researcher_id);
@@ -274,3 +293,4 @@ CREATE INDEX IF NOT EXISTS idx_verified_authors_orcid ON verified_authors(orcid)
 CREATE INDEX IF NOT EXISTS idx_verified_author_metrics_author_id ON verified_author_metrics(author_id);
 CREATE INDEX IF NOT EXISTS idx_verified_papers_author_id ON verified_papers(author_id);
 CREATE INDEX IF NOT EXISTS idx_verified_comparison_results_metrics_id ON verified_comparison_results(author_metrics_id);
+CREATE INDEX IF NOT EXISTS idx_contact_messages_created_at ON contact_messages(created_at);

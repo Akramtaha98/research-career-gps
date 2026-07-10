@@ -7,10 +7,12 @@
     "actions": "Tindakan",
     "verify": "Sahkan",
     "logout": "Log keluar",
-    "login": "Log masuk"
+    "login": "Log masuk",
+    "contact": "Hubungi"
   },
   "footer": {
-    "tagline": "Research GPS — MVP"
+    "tagline": "Research GPS — MVP",
+    "builtWithLove": "Dibina dengan ❤️"
   },
   "common": {
     "loading": "Sedang memuatkan..."
@@ -335,5 +337,23 @@
     "ownerSubmitSuccess": "Disimpan sebagai rekod disahkan-ORCID anda — kini dipaparkan sebagai nilai yang disahkan untuk sesiapa yang mencari ORCID ini.",
     "ownerCorrectionHint": "Nombor ini datang daripada Semantic Scholar/OpenAlex dan mungkin sudah lapuk. Jika ini ORCID anda, log masuk dengan \"Teruskan dengan ORCID\" (sepadan dengan iD ini) dan hantar nombor sebenar anda di atas — setelah disahkan, ia akan menggantikan nombor ini sebagai rekod rasmi anda.",
     "comparisonSourceNote": "Membandingkan apa yang anda dakwa dengan data mentah Semantic Scholar/OpenAlex — tanpa mengira sebarang rekod yang disahkan oleh pemilik ORCID di atas."
+  },
+  "theme": {
+    "switchToLight": "Tukar ke mod cerah",
+    "switchToDark": "Tukar ke mod gelap"
+  },
+  "contact": {
+    "title": "Hubungi kami",
+    "subtitle": "Ada maklum balas, temui pepijat, atau cuma nak bertegur sapa? Tinggalkan mesej di bawah.",
+    "nameLabel": "Nama",
+    "namePlaceholder": "Nama anda",
+    "emailLabel": "E-mel",
+    "emailPlaceholder": "anda@contoh.com",
+    "messageLabel": "Mesej",
+    "messagePlaceholder": "Apa yang anda fikirkan?",
+    "submit": "Hantar mesej",
+    "submitting": "Menghantar...",
+    "sent": "Terima kasih — mesej anda telah dihantar.",
+    "submitFailed": "Gagal menghantar. Cuba lagi."
   }
 }

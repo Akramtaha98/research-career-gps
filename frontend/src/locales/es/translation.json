@@ -7,10 +7,12 @@
     "actions": "Acciones",
     "verify": "Verificar",
     "logout": "Cerrar sesión",
-    "login": "Iniciar sesión"
+    "login": "Iniciar sesión",
+    "contact": "Contacto"
   },
   "footer": {
-    "tagline": "Research GPS — MVP"
+    "tagline": "Research GPS — MVP",
+    "builtWithLove": "Hecho con ❤️"
   },
   "common": {
     "loading": "Cargando..."
@@ -335,5 +337,23 @@
     "ownerSubmitSuccess": "Guardado como tu registro confirmado por ORCID — ahora se muestra como el valor confirmado para cualquiera que busque este ORCID.",
     "ownerCorrectionHint": "Estos números provienen de Semantic Scholar/OpenAlex y pueden estar desactualizados. Si este es tu ORCID, inicia sesión con \"Continuar con ORCID\" (que coincida con este iD) y envía tus números reales arriba — una vez confirmados, reemplazarán estos como tu registro oficial.",
     "comparisonSourceNote": "Compara lo que declaraste con los datos brutos de Semantic Scholar/OpenAlex — independiente de cualquier registro confirmado por el propietario del ORCID de arriba."
+  },
+  "theme": {
+    "switchToLight": "Cambiar a modo claro",
+    "switchToDark": "Cambiar a modo oscuro"
+  },
+  "contact": {
+    "title": "Contáctanos",
+    "subtitle": "¿Tienes comentarios, encontraste un error o simplemente quieres saludar? Deja un mensaje a continuación.",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "Tu nombre",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "tu@ejemplo.com",
+    "messageLabel": "Mensaje",
+    "messagePlaceholder": "¿Qué tienes en mente?",
+    "submit": "Enviar mensaje",
+    "submitting": "Enviando...",
+    "sent": "Gracias, tu mensaje ha sido enviado.",
+    "submitFailed": "No se pudo enviar. Inténtalo de nuevo."
   }
 }

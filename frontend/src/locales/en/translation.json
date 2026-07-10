@@ -7,10 +7,12 @@
     "actions": "Actions",
     "verify": "Verify",
     "logout": "Log out",
-    "login": "Log in"
+    "login": "Log in",
+    "contact": "Contact"
   },
   "footer": {
-    "tagline": "Research GPS — MVP"
+    "tagline": "Research GPS — MVP",
+    "builtWithLove": "Built with ❤️"
   },
   "common": {
     "loading": "Loading..."
@@ -335,5 +337,23 @@
     "ownerSubmitSuccess": "Saved as your ORCID-confirmed record — this now shows as the confirmed value for anyone who looks up this ORCID.",
     "ownerCorrectionHint": "These numbers come from Semantic Scholar/OpenAlex and may be out of date. If this is your ORCID, sign in with \"Continue with ORCID\" (matching this iD) and submit your real numbers above — once confirmed, they'll replace these as your official record.",
     "comparisonSourceNote": "Compares what you claimed against the raw Semantic Scholar/OpenAlex snapshot — independent of any ORCID-owner-confirmed record above."
+  },
+  "theme": {
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode"
+  },
+  "contact": {
+    "title": "Contact us",
+    "subtitle": "Have feedback, found a bug, or just want to say hi? Leave a message below.",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "messageLabel": "Message",
+    "messagePlaceholder": "What's on your mind?",
+    "submit": "Send message",
+    "submitting": "Sending...",
+    "sent": "Thanks — your message has been sent.",
+    "submitFailed": "Couldn't send. Try again."
   }
 }

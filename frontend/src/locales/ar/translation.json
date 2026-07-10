@@ -7,10 +7,12 @@
     "actions": "المهام",
     "verify": "التحقق",
     "logout": "تسجيل الخروج",
-    "login": "تسجيل الدخول"
+    "login": "تسجيل الدخول",
+    "contact": "اتصل بنا"
   },
   "footer": {
-    "tagline": "بوصلة البحث — نسخة أولية"
+    "tagline": "بوصلة البحث — نسخة أولية",
+    "builtWithLove": "صُنع بحب ❤️"
   },
   "common": {
     "loading": "جارٍ التحميل..."
@@ -335,5 +337,23 @@
     "ownerSubmitSuccess": "تم الحفظ كسجلّك المؤكَّد عبر ORCID — يظهر الآن كقيمة مؤكَّدة لأي شخص يبحث عن هذا الـORCID.",
     "ownerCorrectionHint": "هذه الأرقام مصدرها Semantic Scholar/OpenAlex وقد تكون قديمة. إذا كان هذا هو الـORCID الخاص بك، سجّل الدخول عبر \"المتابعة باستخدام ORCID\" (بما يطابق هذا المعرّف) وأرسل أرقامك الحقيقية أعلاه — بعد التأكيد، ستحل محل هذه الأرقام كسجلّك الرسمي.",
     "comparisonSourceNote": "يقارن ما أدخلته ببيانات Semantic Scholar/OpenAlex الخام — بمعزل عن أي سجل مؤكَّد من مالك الـORCID أعلاه."
+  },
+  "theme": {
+    "switchToLight": "التبديل إلى الوضع الفاتح",
+    "switchToDark": "التبديل إلى الوضع الداكن"
+  },
+  "contact": {
+    "title": "اتصل بنا",
+    "subtitle": "لديك ملاحظات، وجدت خطأً، أو تريد فقط أن تقول مرحباً؟ اترك رسالة أدناه.",
+    "nameLabel": "الاسم",
+    "namePlaceholder": "اسمك",
+    "emailLabel": "البريد الإلكتروني",
+    "emailPlaceholder": "you@example.com",
+    "messageLabel": "الرسالة",
+    "messagePlaceholder": "ما الذي يدور في ذهنك؟",
+    "submit": "إرسال الرسالة",
+    "submitting": "جارٍ الإرسال...",
+    "sent": "شكراً — تم إرسال رسالتك.",
+    "submitFailed": "تعذّر الإرسال. حاول مرة أخرى."
   }
 }

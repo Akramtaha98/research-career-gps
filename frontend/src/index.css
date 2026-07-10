@@ -6,6 +6,10 @@ html {
   scroll-behavior: smooth;
 }
 
+html.dark {
+  color-scheme: dark;
+}
+
 body {
   @apply bg-slate-50 text-slate-900;
 }
@@ -25,3 +29,78 @@ body {
 .input {
   @apply w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm shadow-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition;
 }
+
+/*
+ * Dark mode overrides.
+ *
+ * Rather than hand-adding a `dark:` variant to every single Tailwind class
+ * across every page (Search/Dashboard/Predictor/Actions/Verify/ScoreBox/...),
+ * which all consistently draw from the same small slate/brand palette, this
+ * retargets those exact utility classes globally whenever an ancestor has
+ * the `dark` class (toggled by ThemeContext — see tailwind.config.js's
+ * `darkMode: 'class'`). This gives near-complete coverage of the existing
+ * app with one change instead of touching ~15 component files, at the cost
+ * of being a little unconventional versus writing `dark:` variants inline.
+ * New components should still prefer explicit `dark:` classes where they
+ * diverge from this shared palette.
+ */
+.dark body {
+  @apply bg-slate-950 text-slate-100;
+}
+
+.dark .card {
+  @apply bg-slate-900 border-slate-800;
+}
+
+.dark .btn-secondary {
+  @apply bg-slate-900 text-slate-100 border-slate-700 hover:bg-slate-800;
+}
+
+.dark .input {
+  @apply bg-slate-900 border-slate-700 text-slate-100;
+}
+
+/*
+ * Plain CSS color values below, deliberately NOT `@apply` — a couple of
+ * these pairs retarget in both directions (e.g. slate-500 <-> slate-400),
+ * which Tailwind's @apply rejects as a circular dependency since it resolves
+ * utility names by class, not by selector context. Values are Tailwind's
+ * own default palette hex codes, so this stays visually identical to using
+ * the utility classes directly.
+ */
+.dark .text-slate-900 { color: #f1f5f9; } /* slate-100 */
+.dark .text-slate-800 { color: #e2e8f0; } /* slate-200 */
+.dark .text-slate-700 { color: #e2e8f0; } /* slate-200 */
+.dark .text-slate-600 { color: #cbd5e1; } /* slate-300 */
+.dark .text-slate-500 { color: #94a3b8; } /* slate-400 */
+.dark .text-slate-400 { color: #64748b; } /* slate-500 */
+
+.dark .bg-white { background-color: #0f172a; } /* slate-900 */
+.dark .bg-slate-50 { background-color: #020617; } /* slate-950 */
+.dark .bg-slate-100 { background-color: #1e293b; } /* slate-800 */
+.dark .bg-slate-200 { background-color: #334155; } /* slate-700 */
+
+.dark .border-slate-50 { border-color: #1e293b; } /* slate-800 */
+.dark .border-slate-100 { border-color: #1e293b; } /* slate-800 */
+.dark .border-slate-200 { border-color: #334155; } /* slate-700 */
+
+.dark .bg-brand-50 { background-color: rgba(109, 40, 217, 0.2); } /* brand-700/20 */
+.dark .border-brand-100 { border-color: rgba(109, 40, 217, 0.4); } /* brand-700/40 */
+.dark .border-brand-200 { border-color: rgba(109, 40, 217, 0.4); } /* brand-700/40 */
+
+.dark .bg-amber-50 { background-color: rgba(120, 53, 15, 0.2); } /* amber-900/20 */
+.dark .border-amber-100 { border-color: rgba(146, 64, 14, 0.4); } /* amber-800/40 */
+.dark .border-amber-200 { border-color: rgba(146, 64, 14, 0.4); } /* amber-800/40 */
+.dark .text-amber-600 { color: #fbbf24; } /* amber-400 */
+.dark .text-amber-700 { color: #fcd34d; } /* amber-300 */
+
+.dark .bg-emerald-50 { background-color: rgba(6, 78, 59, 0.2); } /* emerald-900/20 */
+.dark .bg-emerald-100 { background-color: rgba(6, 78, 59, 0.3); } /* emerald-900/30 */
+.dark .border-emerald-100 { border-color: rgba(6, 95, 70, 0.4); } /* emerald-800/40 */
+.dark .border-emerald-200 { border-color: rgba(6, 95, 70, 0.4); } /* emerald-800/40 */
+.dark .text-emerald-600 { color: #34d399; } /* emerald-400 */
+.dark .text-emerald-700 { color: #6ee7b7; } /* emerald-300 */
+
+.dark .bg-red-50 { background-color: rgba(127, 29, 29, 0.2); } /* red-900/20 */
+.dark .border-red-100 { border-color: rgba(153, 27, 27, 0.4); } /* red-800/40 */
+.dark .text-red-700 { color: #fca5a5; } /* red-300 */
