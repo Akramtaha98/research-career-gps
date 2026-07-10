@@ -5,14 +5,28 @@ import MetricCard from '../components/MetricCard';
 import HIndexChart from '../components/HIndexChart';
 import EmptyState from '../components/EmptyState';
 import ScoreBox from '../components/ScoreBox';
+import { computeEffectiveMetrics } from '../utils/effectiveMetrics';
 
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short' });
 }
 
 export default function Dashboard() {
-  const { source, researcher, papers, history, loading, refreshResearcher, getRealHistory } = useResearcher();
+  const { source, researcher, papers, history, loading, refreshResearcher, getRealHistory, sharedScores } =
+    useResearcher();
   const { t } = useTranslation();
+
+  // Scopus is the "base" source whenever any Scopus data exists (private or
+  // community-verified), falling back to WOS, then to the raw OpenAlex/
+  // Semantic Scholar snapshot — see utils/effectiveMetrics.js for the exact
+  // per-field priority rules the user chose.
+  const effective = computeEffectiveMetrics(researcher, sharedScores);
+  const sourceLabel =
+    effective.source === 'scopus'
+      ? 'Scopus'
+      : effective.source === 'wos'
+      ? t('dashboard.wosShort')
+      : null;
 
   const [realHistory, setRealHistory] = useState(null); // { history, papersConsidered, papersSkipped, cached }
   const [realHistoryLoading, setRealHistoryLoading] = useState(false);
@@ -117,13 +131,28 @@ export default function Dashboard() {
         )}
       </div>
 
+      {source === 'live' && sourceLabel && (
+        <p className="text-xs text-slate-500 -mb-4">
+          {t('dashboard.showingSourceNumbers', { source: sourceLabel })}
+          {effective.verified && (
+            <span className="ml-1.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+              {t('scoreBox.community.verified')}
+            </span>
+          )}
+        </p>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard label={t('dashboard.hIndex')} value={researcher.h_index} accent="brand" />
-        <MetricCard label={t('dashboard.totalCitations')} value={researcher.total_citations?.toLocaleString?.() ?? researcher.total_citations} accent="sky" />
-        <MetricCard label={t('dashboard.trackedPapers')} value={researcher.paper_count ?? papers.length} accent="emerald" />
+        <MetricCard label={t('dashboard.hIndex')} value={effective.hIndex} accent="brand" />
+        <MetricCard
+          label={t('dashboard.totalCitations')}
+          value={effective.totalCitations?.toLocaleString?.() ?? effective.totalCitations}
+          accent="sky"
+        />
+        <MetricCard label={t('dashboard.trackedPapers')} value={effective.paperCount ?? papers.length} accent="emerald" />
         <MetricCard
           label={t('dashboard.avgCitations')}
-          value={(papers.length ? Math.round((researcher.total_citations || 0) / papers.length) : 0).toLocaleString()}
+          value={(papers.length ? Math.round((effective.totalCitations || 0) / papers.length) : 0).toLocaleString()}
           accent="amber"
         />
       </div>

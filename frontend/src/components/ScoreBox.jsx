@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResearcher } from '../context/ResearcherContext';
 import { useAuth } from '../context/AuthContext';
@@ -9,12 +9,13 @@ const GENERIC_PROFILE_LINK = {
 };
 
 /**
- * One box, two independent slots: self-reported official H-index numbers
- * from Scopus and Web of Science. Separate because a researcher may have
- * one, both, or neither, and the two are unrelated citation databases with
- * their own (usually different) numbers — see backend/schema.sql comment on
- * scopus_h_index/wos_h_index for why this is self-reported instead of
- * fetched automatically (no public API either service offers).
+ * One box, two independent slots: self-reported official numbers from Scopus
+ * and Web of Science (h-index, paper count, citations). Separate because a
+ * researcher may have one, both, or neither, and the two are unrelated
+ * citation databases with their own (usually different) numbers — see
+ * backend/schema.sql comment on scopus_h_index/wos_h_index for why this is
+ * self-reported instead of fetched automatically (no public API either
+ * service offers).
  *
  * Verification: there's no API to check the number against, so the best
  * this can honestly do is help the user check it *themselves* — open the
@@ -23,28 +24,16 @@ const GENERIC_PROFILE_LINK = {
  * a concrete thing to cross-check against the ORCID badge on that profile
  * page before saving. That doesn't prove the number, but it does catch the
  * "grabbed a same-named stranger's profile" mistake.
+ *
+ * Below each private entry is the CommunityRow — the shared/crowdsourced
+ * counterpart (see backend/schema.sql's shared_scores comment) — reading
+ * from ResearcherContext's `sharedScores`, a single fetch shared with
+ * Dashboard's effective-metrics computation rather than fetching separately.
  */
 export default function ScoreBox({ researcher, baselineSource, setBaselineSource }) {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { getSharedScores } = useResearcher();
-  const [shared, setShared] = useState(null); // { orcid, scopus, wos } | null while loading
-
-  useEffect(() => {
-    let cancelled = false;
-    setShared(null);
-    getSharedScores()
-      .then((data) => {
-        if (!cancelled) setShared(data);
-      })
-      .catch(() => {
-        if (!cancelled) setShared({ orcid: null, scopus: null, wos: null });
-      });
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [researcher?.id]);
+  const { sharedScores } = useResearcher();
 
   return (
     <div className="card border border-brand-100 bg-brand-50/40">
@@ -64,9 +53,8 @@ export default function ScoreBox({ researcher, baselineSource, setBaselineSource
           researcher={researcher}
           baselineSource={baselineSource}
           setBaselineSource={setBaselineSource}
-          shared={shared?.scopus}
-          sharedOrcid={shared?.orcid}
-          onSharedChange={(row) => setShared((prev) => ({ ...prev, scopus: row }))}
+          shared={sharedScores?.scopus}
+          sharedOrcid={sharedScores?.orcid}
         />
         <ScoreRow
           which="wos"
@@ -74,9 +62,8 @@ export default function ScoreBox({ researcher, baselineSource, setBaselineSource
           researcher={researcher}
           baselineSource={baselineSource}
           setBaselineSource={setBaselineSource}
-          shared={shared?.wos}
-          sharedOrcid={shared?.orcid}
-          onSharedChange={(row) => setShared((prev) => ({ ...prev, wos: row }))}
+          shared={sharedScores?.wos}
+          sharedOrcid={sharedScores?.orcid}
         />
       </div>
 
@@ -85,34 +72,56 @@ export default function ScoreBox({ researcher, baselineSource, setBaselineSource
   );
 }
 
-function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource, shared, sharedOrcid, onSharedChange }) {
+function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource, shared, sharedOrcid }) {
   const { t } = useTranslation();
   const { setScore, clearScore } = useResearcher();
 
   const currentH = researcher[`${which}_h_index`];
+  const currentPaperCount = researcher[`${which}_paper_count`];
+  const currentCitations = researcher[`${which}_citations`];
   const currentUrl = researcher[`${which}_url`];
   const hasValue = currentH != null;
 
   const [editing, setEditing] = useState(!hasValue);
   const [profileUrl, setProfileUrl] = useState(currentUrl || '');
   const [hIndexInput, setHIndexInput] = useState(currentH ?? '');
+  const [paperCountInput, setPaperCountInput] = useState(currentPaperCount ?? '');
+  const [citationsInput, setCitationsInput] = useState(currentCitations ?? '');
   const [saving, setSaving] = useState(false);
   const [removing, setRemoving] = useState(false);
   const [message, setMessage] = useState(null);
 
   const openHref = profileUrl.trim() || GENERIC_PROFILE_LINK[which];
 
+  function parseOptionalInt(value) {
+    if (value === '' || value === null || value === undefined) return { ok: true, value: null };
+    const parsed = Number(value);
+    if (!Number.isInteger(parsed) || parsed < 0) return { ok: false };
+    return { ok: true, value: parsed };
+  }
+
   async function handleSave(e) {
     e.preventDefault();
-    const parsed = Number(hIndexInput);
-    if (!Number.isInteger(parsed) || parsed < 0) {
+    const parsedH = Number(hIndexInput);
+    if (!Number.isInteger(parsedH) || parsedH < 0) {
+      setMessage(t('scoreBox.invalidNumber'));
+      return;
+    }
+    const parsedPaperCount = parseOptionalInt(paperCountInput);
+    const parsedCitations = parseOptionalInt(citationsInput);
+    if (!parsedPaperCount.ok || !parsedCitations.ok) {
       setMessage(t('scoreBox.invalidNumber'));
       return;
     }
     setSaving(true);
     setMessage(null);
     try {
-      await setScore(which, { profileUrl: profileUrl.trim() || null, hIndex: parsed });
+      await setScore(which, {
+        profileUrl: profileUrl.trim() || null,
+        hIndex: parsedH,
+        paperCount: parsedPaperCount.value,
+        citations: parsedCitations.value,
+      });
       if (setBaselineSource) setBaselineSource(which);
       setEditing(false);
       setMessage(t('scoreBox.saved'));
@@ -130,6 +139,8 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
       await clearScore(which);
       setEditing(true);
       setHIndexInput('');
+      setPaperCountInput('');
+      setCitationsInput('');
       setProfileUrl('');
     } catch (err) {
       setMessage(err.response?.data?.error || t('scoreBox.removeFailed'));
@@ -152,7 +163,14 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
       {hasValue && !editing ? (
         <div className="mt-1.5 flex items-center justify-between gap-3 flex-wrap">
           <div className="text-sm text-slate-700">
-            <span className="font-semibold">{currentH}</span>{' '}
+            <span className="font-semibold">{t('scoreBox.hIndexLabel')} {currentH}</span>
+            {currentPaperCount != null && (
+              <span className="text-slate-500"> · {t('scoreBox.paperCountLabel')} {currentPaperCount}</span>
+            )}
+            {currentCitations != null && (
+              <span className="text-slate-500"> · {t('scoreBox.citationsLabel')} {currentCitations}</span>
+            )}
+            {' '}
             <span className="text-slate-500">({t('scoreBox.selfReported')})</span>
             {currentUrl && (
               <>
@@ -177,7 +195,7 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
         </div>
       ) : (
         <form onSubmit={handleSave} className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
-          <div className="sm:col-span-2">
+          <div className="sm:col-span-3">
             <label className="block text-xs font-medium text-slate-600 mb-1">{t('scoreBox.profileUrlLabel')}</label>
             <div className="flex gap-2">
               <input
@@ -209,6 +227,28 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
               required
             />
           </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t('scoreBox.paperCountLabel')}</label>
+            <input
+              type="number"
+              min="0"
+              className="input"
+              placeholder={t('scoreBox.optional')}
+              value={paperCountInput}
+              onChange={(e) => setPaperCountInput(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t('scoreBox.citationsLabel')}</label>
+            <input
+              type="number"
+              min="0"
+              className="input"
+              placeholder={t('scoreBox.optional')}
+              value={citationsInput}
+              onChange={(e) => setCitationsInput(e.target.value)}
+            />
+          </div>
           <div className="sm:col-span-3 flex items-center gap-3">
             <button type="submit" disabled={saving} className="btn-primary text-xs px-3 py-1.5">
               {saving ? t('scoreBox.saving') : t('scoreBox.save')}
@@ -234,7 +274,7 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
 
       {message && <p className="mt-1 text-xs text-slate-500">{message}</p>}
 
-      <CommunityRow which={which} shared={shared} orcid={sharedOrcid} onChange={onSharedChange} />
+      <CommunityRow which={which} shared={shared} orcid={sharedOrcid} />
     </div>
   );
 }
@@ -248,8 +288,11 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
  * guarantee the value becomes canonical — see the result message after
  * submit, which reflects exactly what the backend's ORCID-owner-override
  * verification rule decided (verified / unverified / suggestion-only).
+ * Updates flow back into ResearcherContext's `sharedScores` directly (see
+ * submitSharedScore there), so this component doesn't need its own
+ * onChange callback anymore.
  */
-function CommunityRow({ which, shared, orcid, onChange }) {
+function CommunityRow({ which, shared, orcid }) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { submitSharedScore } = useResearcher();
@@ -257,10 +300,19 @@ function CommunityRow({ which, shared, orcid, onChange }) {
   const [open, setOpen] = useState(false);
   const [profileUrl, setProfileUrl] = useState('');
   const [hIndexInput, setHIndexInput] = useState('');
+  const [paperCountInput, setPaperCountInput] = useState('');
+  const [citationsInput, setCitationsInput] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [resultMessage, setResultMessage] = useState(null);
 
   const isOwner = Boolean(user?.orcid) && Boolean(orcid) && user.orcid === orcid;
+
+  function parseOptionalInt(value) {
+    if (value === '' || value === null || value === undefined) return { ok: true, value: null };
+    const parsed = Number(value);
+    if (!Number.isInteger(parsed) || parsed < 0) return { ok: false };
+    return { ok: true, value: parsed };
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -269,11 +321,21 @@ function CommunityRow({ which, shared, orcid, onChange }) {
       setResultMessage(t('scoreBox.invalidNumber'));
       return;
     }
+    const parsedPaperCount = parseOptionalInt(paperCountInput);
+    const parsedCitations = parseOptionalInt(citationsInput);
+    if (!parsedPaperCount.ok || !parsedCitations.ok) {
+      setResultMessage(t('scoreBox.invalidNumber'));
+      return;
+    }
     setSubmitting(true);
     setResultMessage(null);
     try {
-      const result = await submitSharedScore(which, { profileUrl: profileUrl.trim() || null, hIndex: parsed });
-      onChange?.(result.current);
+      const result = await submitSharedScore(which, {
+        profileUrl: profileUrl.trim() || null,
+        hIndex: parsed,
+        paperCount: parsedPaperCount.value,
+        citations: parsedCitations.value,
+      });
       setResultMessage(
         t(
           result.resultStatus === 'verified'
@@ -286,6 +348,8 @@ function CommunityRow({ which, shared, orcid, onChange }) {
       setOpen(false);
       setProfileUrl('');
       setHIndexInput('');
+      setPaperCountInput('');
+      setCitationsInput('');
     } catch (err) {
       setResultMessage(err.response?.data?.error || t('scoreBox.community.submitFailed'));
     } finally {
@@ -326,7 +390,13 @@ function CommunityRow({ which, shared, orcid, onChange }) {
       {shared ? (
         <div className="mt-1 flex items-center justify-between gap-3 flex-wrap">
           <div className="text-sm text-slate-700">
-            <span className="font-semibold">{shared.h_index}</span>
+            <span className="font-semibold">{t('scoreBox.hIndexLabel')} {shared.h_index}</span>
+            {shared.paper_count != null && (
+              <span className="text-slate-500"> · {t('scoreBox.paperCountLabel')} {shared.paper_count}</span>
+            )}
+            {shared.citations != null && (
+              <span className="text-slate-500"> · {t('scoreBox.citationsLabel')} {shared.citations}</span>
+            )}
             {shared.profile_url && (
               <>
                 {' · '}
@@ -361,7 +431,7 @@ function CommunityRow({ which, shared, orcid, onChange }) {
 
       {open && (
         <form onSubmit={handleSubmit} className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
-          <div className="sm:col-span-2">
+          <div className="sm:col-span-3">
             <label className="block text-xs font-medium text-slate-600 mb-1">{t('scoreBox.profileUrlLabel')}</label>
             <input
               className="input"
@@ -379,6 +449,28 @@ function CommunityRow({ which, shared, orcid, onChange }) {
               value={hIndexInput}
               onChange={(e) => setHIndexInput(e.target.value)}
               required
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t('scoreBox.paperCountLabel')}</label>
+            <input
+              type="number"
+              min="0"
+              className="input"
+              placeholder={t('scoreBox.optional')}
+              value={paperCountInput}
+              onChange={(e) => setPaperCountInput(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t('scoreBox.citationsLabel')}</label>
+            <input
+              type="number"
+              min="0"
+              className="input"
+              placeholder={t('scoreBox.optional')}
+              value={citationsInput}
+              onChange={(e) => setCitationsInput(e.target.value)}
             />
           </div>
           <div className="sm:col-span-3 flex items-center gap-3">

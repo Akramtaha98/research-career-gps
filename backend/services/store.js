@@ -15,8 +15,20 @@ const uuid = () => crypto.randomUUID();
 // Column-name lookup for pgStore's setScore/clearScore — keeps `which`
 // ('scopus' | 'wos') from ever being interpolated into SQL directly.
 const WHICH_COLUMNS = {
-  scopus: { hIndex: 'scopus_h_index', url: 'scopus_url', updatedAt: 'scopus_updated_at' },
-  wos: { hIndex: 'wos_h_index', url: 'wos_url', updatedAt: 'wos_updated_at' },
+  scopus: {
+    hIndex: 'scopus_h_index',
+    paperCount: 'scopus_paper_count',
+    citations: 'scopus_citations',
+    url: 'scopus_url',
+    updatedAt: 'scopus_updated_at',
+  },
+  wos: {
+    hIndex: 'wos_h_index',
+    paperCount: 'wos_paper_count',
+    citations: 'wos_citations',
+    url: 'wos_url',
+    updatedAt: 'wos_updated_at',
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -47,7 +59,10 @@ let sharedScoresHistorySeq = 0;
  * @param {{orcid, which, hIndex, profileUrl, submittedByUserId, isOwner}} submission
  * @returns {{ nextCurrent: object, resultStatus: 'verified'|'unverified'|'suggestion', applied: boolean }}
  */
-function resolveSharedScoreSubmission(current, { orcid, which, hIndex, profileUrl, submittedByUserId, isOwner }) {
+function resolveSharedScoreSubmission(
+  current,
+  { orcid, which, hIndex, paperCount, citations, profileUrl, submittedByUserId, isOwner }
+) {
   const now = new Date().toISOString();
 
   if (isOwner) {
@@ -57,6 +72,8 @@ function resolveSharedScoreSubmission(current, { orcid, which, hIndex, profileUr
       nextCurrent: {
         ...(current || { id: uuid(), orcid, which }),
         h_index: hIndex,
+        paper_count: paperCount ?? null,
+        citations: citations ?? null,
         profile_url: profileUrl || null,
         status: 'verified',
         submitted_by: submittedByUserId,
@@ -81,6 +98,8 @@ function resolveSharedScoreSubmission(current, { orcid, which, hIndex, profileUr
     nextCurrent: {
       ...(current || { id: uuid(), orcid, which }),
       h_index: hIndex,
+      paper_count: paperCount ?? null,
+      citations: citations ?? null,
       profile_url: profileUrl || null,
       status: 'unverified',
       submitted_by: submittedByUserId,
@@ -192,9 +211,13 @@ const memoryStore = {
         source,
         orcid,
         scopus_h_index: null,
+        scopus_paper_count: null,
+        scopus_citations: null,
         scopus_url: null,
         scopus_updated_at: null,
         wos_h_index: null,
+        wos_paper_count: null,
+        wos_citations: null,
         wos_url: null,
         wos_updated_at: null,
         updated_at: now,
@@ -215,10 +238,12 @@ const memoryStore = {
     return memory.researchers.find((r) => r.id === id) || null;
   },
 
-  async setScore(researcherId, which, { profileUrl, hIndex }) {
+  async setScore(researcherId, which, { profileUrl, hIndex, paperCount, citations }) {
     const researcher = memory.researchers.find((r) => r.id === researcherId);
     if (!researcher) return null;
     researcher[`${which}_h_index`] = hIndex;
+    researcher[`${which}_paper_count`] = paperCount ?? null;
+    researcher[`${which}_citations`] = citations ?? null;
     researcher[`${which}_url`] = profileUrl || null;
     researcher[`${which}_updated_at`] = new Date().toISOString();
     return researcher;
@@ -228,6 +253,8 @@ const memoryStore = {
     const researcher = memory.researchers.find((r) => r.id === researcherId);
     if (!researcher) return null;
     researcher[`${which}_h_index`] = null;
+    researcher[`${which}_paper_count`] = null;
+    researcher[`${which}_citations`] = null;
     researcher[`${which}_url`] = null;
     researcher[`${which}_updated_at`] = null;
     return researcher;
@@ -242,12 +269,14 @@ const memoryStore = {
     };
   },
 
-  async submitSharedScore({ orcid, which, hIndex, profileUrl, submittedByUserId, isOwner }) {
+  async submitSharedScore({ orcid, which, hIndex, paperCount, citations, profileUrl, submittedByUserId, isOwner }) {
     const current = memory.sharedScores.find((s) => s.orcid === orcid && s.which === which) || null;
     const { nextCurrent, resultStatus, applied } = resolveSharedScoreSubmission(current, {
       orcid,
       which,
       hIndex,
+      paperCount,
+      citations,
       profileUrl,
       submittedByUserId,
       isOwner,
@@ -266,6 +295,8 @@ const memoryStore = {
       orcid,
       which,
       h_index: hIndex,
+      paper_count: paperCount ?? null,
+      citations: citations ?? null,
       profile_url: profileUrl || null,
       result_status: resultStatus,
       submitted_by: submittedByUserId,
@@ -428,15 +459,15 @@ const pgStore = {
   // `which` is always a hardcoded 'scopus' or 'wos' literal from the
   // controller (see WHICH_COLUMNS below) — never raw request input — so
   // building the column names this way is safe, not a SQL-injection vector.
-  async setScore(researcherId, which, { profileUrl, hIndex }) {
+  async setScore(researcherId, which, { profileUrl, hIndex, paperCount, citations }) {
     const cols = WHICH_COLUMNS[which];
     if (!cols) throw new Error(`Unknown score source: ${which}`);
     const { rows } = await query(
       `UPDATE researchers
-       SET ${cols.hIndex} = $2, ${cols.url} = $3, ${cols.updatedAt} = now()
+       SET ${cols.hIndex} = $2, ${cols.paperCount} = $3, ${cols.citations} = $4, ${cols.url} = $5, ${cols.updatedAt} = now()
        WHERE id = $1
        RETURNING *`,
-      [researcherId, hIndex, profileUrl || null]
+      [researcherId, hIndex, paperCount ?? null, citations ?? null, profileUrl || null]
     );
     return rows[0] || null;
   },
@@ -446,7 +477,7 @@ const pgStore = {
     if (!cols) throw new Error(`Unknown score source: ${which}`);
     const { rows } = await query(
       `UPDATE researchers
-       SET ${cols.hIndex} = NULL, ${cols.url} = NULL, ${cols.updatedAt} = NULL
+       SET ${cols.hIndex} = NULL, ${cols.paperCount} = NULL, ${cols.citations} = NULL, ${cols.url} = NULL, ${cols.updatedAt} = NULL
        WHERE id = $1
        RETURNING *`,
       [researcherId]
@@ -467,7 +498,7 @@ const pgStore = {
   // Reuses the same resolveSharedScoreSubmission branching logic as
   // memoryStore (see its definition above) so both backends apply
   // identical verification rules — only the persistence differs.
-  async submitSharedScore({ orcid, which, hIndex, profileUrl, submittedByUserId, isOwner }) {
+  async submitSharedScore({ orcid, which, hIndex, paperCount, citations, profileUrl, submittedByUserId, isOwner }) {
     const { rows: currentRows } = await query(
       `SELECT * FROM shared_scores WHERE orcid = $1 AND which = $2`,
       [orcid, which]
@@ -478,6 +509,8 @@ const pgStore = {
       orcid,
       which,
       hIndex,
+      paperCount,
+      citations,
       profileUrl,
       submittedByUserId,
       isOwner,
@@ -486,16 +519,18 @@ const pgStore = {
     let finalCurrent = current;
     if (applied) {
       const { rows } = await query(
-        `INSERT INTO shared_scores (orcid, which, h_index, profile_url, status, submitted_by, submitted_at, verified_by, verified_at)
-         VALUES ($1, $2, $3, $4, $5, $6, now(), $7, $8)
+        `INSERT INTO shared_scores (orcid, which, h_index, paper_count, citations, profile_url, status, submitted_by, submitted_at, verified_by, verified_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, now(), $9, $10)
          ON CONFLICT (orcid, which)
-         DO UPDATE SET h_index = $3, profile_url = $4, status = $5, submitted_by = $6,
-           submitted_at = now(), verified_by = $7, verified_at = $8
+         DO UPDATE SET h_index = $3, paper_count = $4, citations = $5, profile_url = $6, status = $7, submitted_by = $8,
+           submitted_at = now(), verified_by = $9, verified_at = $10
          RETURNING *`,
         [
           orcid,
           which,
           hIndex,
+          paperCount ?? null,
+          citations ?? null,
           profileUrl || null,
           nextCurrent.status,
           submittedByUserId,
@@ -507,9 +542,9 @@ const pgStore = {
     }
 
     await query(
-      `INSERT INTO shared_scores_history (orcid, which, h_index, profile_url, result_status, submitted_by)
-       VALUES ($1, $2, $3, $4, $5, $6)`,
-      [orcid, which, hIndex, profileUrl || null, resultStatus, submittedByUserId]
+      `INSERT INTO shared_scores_history (orcid, which, h_index, paper_count, citations, profile_url, result_status, submitted_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      [orcid, which, hIndex, paperCount ?? null, citations ?? null, profileUrl || null, resultStatus, submittedByUserId]
     );
 
     return { current: finalCurrent, resultStatus, applied };

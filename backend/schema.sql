@@ -64,9 +64,17 @@ CREATE TABLE IF NOT EXISTS researchers (
   -- ORCID next to the input as a cross-check hint ("does this match the
   -- ORCID on the profile page?"). See controllers/researcherController.js.
   scopus_h_index        INTEGER,
+  -- Full Scopus/WOS document + citation counts, alongside h-index. Optional —
+  -- a user may only know their h-index, or may fill in all three. Lets the
+  -- Dashboard show "4 documents, 3 citations, h-index 1" instead of just the
+  -- h-index, matching what the real Scopus/WOS profile page shows.
+  scopus_paper_count     INTEGER,
+  scopus_citations       INTEGER,
   scopus_url             TEXT,
   scopus_updated_at      TIMESTAMPTZ,
   wos_h_index            INTEGER,
+  wos_paper_count        INTEGER,
+  wos_citations          INTEGER,
   wos_url                 TEXT,
   wos_updated_at          TIMESTAMPTZ,
   updated_at           TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -119,6 +127,10 @@ CREATE TABLE IF NOT EXISTS shared_scores (
   orcid         VARCHAR(19) NOT NULL,
   which         VARCHAR(10) NOT NULL CHECK (which IN ('scopus', 'wos')),
   h_index       INTEGER NOT NULL,
+  -- Full document + citation counts, alongside h-index — optional, same
+  -- reasoning as researchers.scopus_paper_count above.
+  paper_count   INTEGER,
+  citations     INTEGER,
   profile_url   TEXT,
   status        VARCHAR(20) NOT NULL DEFAULT 'unverified' CHECK (status IN ('unverified', 'verified')),
   submitted_by  UUID REFERENCES users(id) ON DELETE SET NULL,
@@ -140,6 +152,8 @@ CREATE TABLE IF NOT EXISTS shared_scores_history (
   orcid         VARCHAR(19) NOT NULL,
   which         VARCHAR(10) NOT NULL CHECK (which IN ('scopus', 'wos')),
   h_index       INTEGER NOT NULL,
+  paper_count   INTEGER,
+  citations     INTEGER,
   profile_url   TEXT,
   -- 'verified' | 'unverified' | 'suggestion' — what this specific submission
   -- resulted in (a 'suggestion' is one that was recorded but did NOT become

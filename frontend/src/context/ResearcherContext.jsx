@@ -11,13 +11,29 @@ export function ResearcherProvider({ children }) {
   const [history, setHistory] = useState(demoHistory);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  // { orcid, scopus, wos } | null while not yet fetched — single source of
+  // truth shared by ScoreBox and Dashboard's effective-metrics computation
+  // (see computeEffectiveMetrics below), instead of each fetching it separately.
+  const [sharedScores, setSharedScores] = useState(null);
 
   const useDemo = useCallback(() => {
     setSource('demo');
     setResearcher(demoResearcher);
     setPapers(demoPapers);
     setHistory(demoHistory);
+    setSharedScores(null);
     setError(null);
+  }, []);
+
+  /** Fetches (and caches in context) the crowdsourced Scopus/WOS values for a researcher id. */
+  const loadSharedScores = useCallback(async (researcherId) => {
+    if (!researcherId) return;
+    try {
+      const { data } = await client.get(`/researchers/${researcherId}/shared-scores`);
+      setSharedScores(data);
+    } catch {
+      setSharedScores({ orcid: null, scopus: null, wos: null });
+    }
   }, []);
 
   /** Search Semantic Scholar by name — returns lightweight candidates, no auth required. */
@@ -51,6 +67,7 @@ export function ResearcherProvider({ children }) {
           total_citations: h.total_citations,
         }))
       );
+      loadSharedScores(data.researcher.id);
       return data.researcher;
     } catch (err) {
       const message = err.response?.data?.error || err.message || 'Lookup failed';
@@ -59,7 +76,7 @@ export function ResearcherProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [loadSharedScores]);
 
   /** Top collaborators ranked by h-index (real data for 'live', canned example for 'demo'). */
   const getCollaborators = useCallback(async () => {
@@ -89,9 +106,14 @@ export function ResearcherProvider({ children }) {
    * Scopus/WOS API this app can call).
    */
   const setScore = useCallback(
-    async (which, { profileUrl, hIndex }) => {
+    async (which, { profileUrl, hIndex, paperCount, citations }) => {
       if (source !== 'live' || !researcher?.id) return null;
-      const { data } = await client.patch(`/researchers/${researcher.id}/${which}-score`, { profileUrl, hIndex });
+      const { data } = await client.patch(`/researchers/${researcher.id}/${which}-score`, {
+        profileUrl,
+        hIndex,
+        paperCount,
+        citations,
+      });
       setResearcher(data.researcher);
       return data.researcher;
     },
@@ -109,18 +131,17 @@ export function ResearcherProvider({ children }) {
   );
 
   /**
-   * Fetches the CROWDSOURCED Scopus/WOS values for the current live
-   * researcher — shared across every user, not just whoever added them (see
-   * backend/schema.sql's shared_scores comment). Returns
-   * { orcid, scopus, wos } where scopus/wos are null if nothing's been
-   * submitted yet, or if this researcher has no ORCID on file (crowdsourcing
-   * needs a stable cross-user key).
+   * Re-fetches the CROWDSOURCED Scopus/WOS values for the current live
+   * researcher into context state (see sharedScores above) — shared across
+   * every user, not just whoever added them (see backend/schema.sql's
+   * shared_scores comment). Most callers should just read `sharedScores`
+   * directly; this is for an explicit manual refresh.
    */
   const getSharedScores = useCallback(async () => {
     if (source !== 'live' || !researcher?.id) return { orcid: null, scopus: null, wos: null };
-    const { data } = await client.get(`/researchers/${researcher.id}/shared-scores`);
-    return data;
-  }, [source, researcher]);
+    await loadSharedScores(researcher.id);
+    return sharedScores;
+  }, [source, researcher, sharedScores, loadSharedScores]);
 
   /**
    * Submits a value to the shared/community pool. Verification model: if the
@@ -129,15 +150,22 @@ export function ResearcherProvider({ children }) {
    * it's recorded as unverified, and can't silently overwrite an
    * already-verified value — see backend's resolveSharedScoreSubmission.
    * Returns { current, resultStatus, applied } so the UI can tell the user
-   * exactly what happened to their submission.
+   * exactly what happened to their submission. Updates context state
+   * immediately from the response so Dashboard's effective-metrics
+   * computation reflects it without a second round-trip.
    */
   const submitSharedScore = useCallback(
-    async (which, { profileUrl, hIndex }) => {
+    async (which, { profileUrl, hIndex, paperCount, citations }) => {
       if (source !== 'live' || !researcher?.id) return null;
       const { data } = await client.post(`/researchers/${researcher.id}/shared-scores/${which}`, {
         profileUrl,
         hIndex,
+        paperCount,
+        citations,
       });
+      if (data.applied) {
+        setSharedScores((prev) => ({ ...(prev || { orcid: researcher.orcid }), [which]: data.current }));
+      }
       return data;
     },
     [source, researcher]
@@ -152,10 +180,11 @@ export function ResearcherProvider({ children }) {
       setResearcher(detailRes.data.researcher);
       setPapers(papersRes.data.papers);
       setHistory(detailRes.data.history);
+      loadSharedScores(researcher.id);
     } finally {
       setLoading(false);
     }
-  }, [source, researcher]);
+  }, [source, researcher, loadSharedScores]);
 
   return (
     <ResearcherContext.Provider
@@ -166,6 +195,7 @@ export function ResearcherProvider({ children }) {
         history,
         loading,
         error,
+        sharedScores,
         useDemo,
         searchByName,
         lookupResearcher,

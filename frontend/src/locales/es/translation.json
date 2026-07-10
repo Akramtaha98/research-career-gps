@@ -42,6 +42,9 @@
     "profileUrlPlaceholder": "Pega un enlace a tu perfil de autor de {{label}}",
     "openProfile": "Abrir perfil ↗",
     "hIndexLabel": "Índice H",
+    "paperCountLabel": "Artículos",
+    "citationsLabel": "Citas",
+    "optional": "Opcional",
     "save": "Guardar",
     "saving": "Guardando...",
     "cancel": "Cancelar",
@@ -194,7 +197,9 @@
     "realHistoryLoading": "Calculando a partir de datos de citas... esto puede tardar un minuto",
     "realHistoryError": "No se pudo calcular el historial del índice H. Inténtalo de nuevo en breve.",
     "realHistoryNote": "Calculado a partir de datos de citas reales de tus {{count}} artículos más citados.",
-    "realHistorySkipped": "({{count}} artículos sin datos suficientes fueron excluidos.)"
+    "realHistorySkipped": "({{count}} artículos sin datos suficientes fueron excluidos.)",
+    "showingSourceNumbers": "Mostrando los números reportados por {{source}}",
+    "wosShort": "WOS"
   },
   "predictor": {
     "title": "Predictor de índice H",

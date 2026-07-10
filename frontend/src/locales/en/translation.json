@@ -42,6 +42,9 @@
     "profileUrlPlaceholder": "Paste a link to your {{label}} author profile",
     "openProfile": "Open profile ↗",
     "hIndexLabel": "H-index",
+    "paperCountLabel": "Papers",
+    "citationsLabel": "Citations",
+    "optional": "Optional",
     "save": "Save",
     "saving": "Saving...",
     "cancel": "Cancel",
@@ -194,7 +197,9 @@
     "realHistoryLoading": "Computing from citation data... this can take a minute",
     "realHistoryError": "Couldn't compute historical H-index. Try again shortly.",
     "realHistoryNote": "Computed from real citation data across your {{count}} most-cited papers.",
-    "realHistorySkipped": "({{count}} papers without enough data were excluded.)"
+    "realHistorySkipped": "({{count}} papers without enough data were excluded.)",
+    "showingSourceNumbers": "Showing {{source}}-reported numbers",
+    "wosShort": "WOS"
   },
   "predictor": {
     "title": "H-index Predictor",

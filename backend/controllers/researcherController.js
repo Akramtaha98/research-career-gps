@@ -13,6 +13,22 @@ const realHistoryCache = new Map(); // researcherId -> { computedAt, data }
 const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
 
 /**
+ * Parses an optional non-negative integer field (paperCount/citations on the
+ * Scopus/WOS forms) — unlike hIndex these are optional, so undefined/null/''
+ * are all valid "not provided" and pass through as null. Returns
+ * { ok: false } with a message if a value WAS provided but isn't a valid
+ * non-negative integer.
+ */
+function parseOptionalNonNegativeInt(value, fieldName) {
+  if (value === undefined || value === null || value === '') return { ok: true, value: null };
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 0) {
+    return { ok: false, message: `${fieldName} must be a whole number, 0 or higher.` };
+  }
+  return { ok: true, value: parsed };
+}
+
+/**
  * GET /api/researchers/search?q=name
  * Public (no auth) — lets a user find a researcher by name before deciding
  * which one to track. Returns lightweight candidates, no papers/citations
@@ -243,7 +259,7 @@ function setScore(which) {
         return res.status(403).json({ error: 'Not authorized to update this researcher' });
       }
 
-      const { profileUrl, hIndex } = req.body;
+      const { profileUrl, hIndex, paperCount, citations } = req.body;
       const parsedH = Number(hIndex);
       if (!Number.isInteger(parsedH) || parsedH < 0 || parsedH > 1000) {
         return res.status(400).json({ error: 'hIndex must be a whole number between 0 and 1000' });
@@ -251,8 +267,17 @@ function setScore(which) {
       if (profileUrl && !/^https?:\/\//i.test(profileUrl)) {
         return res.status(400).json({ error: 'profileUrl must start with http:// or https://' });
       }
+      const parsedPaperCount = parseOptionalNonNegativeInt(paperCount, 'paperCount');
+      if (!parsedPaperCount.ok) return res.status(400).json({ error: parsedPaperCount.message });
+      const parsedCitations = parseOptionalNonNegativeInt(citations, 'citations');
+      if (!parsedCitations.ok) return res.status(400).json({ error: parsedCitations.message });
 
-      const updated = await store.setScore(id, which, { profileUrl: profileUrl || null, hIndex: parsedH });
+      const updated = await store.setScore(id, which, {
+        profileUrl: profileUrl || null,
+        hIndex: parsedH,
+        paperCount: parsedPaperCount.value,
+        citations: parsedCitations.value,
+      });
       return res.json({ researcher: updated });
     } catch (err) {
       return res.status(err.statusCode || 500).json({ error: err.message });
@@ -335,7 +360,7 @@ function submitSharedScore(which) {
         });
       }
 
-      const { profileUrl, hIndex } = req.body;
+      const { profileUrl, hIndex, paperCount, citations } = req.body;
       const parsedH = Number(hIndex);
       if (!Number.isInteger(parsedH) || parsedH < 0 || parsedH > 1000) {
         return res.status(400).json({ error: 'hIndex must be a whole number between 0 and 1000' });
@@ -343,6 +368,10 @@ function submitSharedScore(which) {
       if (profileUrl && !/^https?:\/\//i.test(profileUrl)) {
         return res.status(400).json({ error: 'profileUrl must start with http:// or https://' });
       }
+      const parsedPaperCount = parseOptionalNonNegativeInt(paperCount, 'paperCount');
+      if (!parsedPaperCount.ok) return res.status(400).json({ error: parsedPaperCount.message });
+      const parsedCitations = parseOptionalNonNegativeInt(citations, 'citations');
+      if (!parsedCitations.ok) return res.status(400).json({ error: parsedCitations.message });
 
       const submitter = await store.findUserById(req.user.id);
       const isOwner = Boolean(submitter?.orcid) && submitter.orcid === researcher.orcid;
@@ -351,6 +380,8 @@ function submitSharedScore(which) {
         orcid: researcher.orcid,
         which,
         hIndex: parsedH,
+        paperCount: parsedPaperCount.value,
+        citations: parsedCitations.value,
         profileUrl: profileUrl || null,
         submittedByUserId: req.user.id,
         isOwner,

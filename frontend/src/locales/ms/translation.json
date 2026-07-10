@@ -42,6 +42,9 @@
     "profileUrlPlaceholder": "Tampal pautan ke profil pengarang {{label}} anda",
     "openProfile": "Buka profil ↗",
     "hIndexLabel": "Indeks-H",
+    "paperCountLabel": "Kertas kerja",
+    "citationsLabel": "Petikan",
+    "optional": "Pilihan",
     "save": "Simpan",
     "saving": "Menyimpan...",
     "cancel": "Batal",
@@ -194,7 +197,9 @@
     "realHistoryLoading": "Mengira daripada data petikan... ini mungkin mengambil masa seminit",
     "realHistoryError": "Tidak dapat mengira sejarah indeks-H. Cuba lagi sebentar lagi.",
     "realHistoryNote": "Dikira daripada data petikan sebenar merentasi {{count}} kertas kerja paling banyak dipetik anda.",
-    "realHistorySkipped": "({{count}} kertas kerja tanpa data mencukupi telah dikecualikan.)"
+    "realHistorySkipped": "({{count}} kertas kerja tanpa data mencukupi telah dikecualikan.)",
+    "showingSourceNumbers": "Menunjukkan nombor yang dilaporkan oleh {{source}}",
+    "wosShort": "WOS"
   },
   "predictor": {
     "title": "Peramal Indeks-H",

@@ -42,6 +42,9 @@
     "profileUrlPlaceholder": "Link zu deinem {{label}}-Autorenprofil einfügen",
     "openProfile": "Profil öffnen ↗",
     "hIndexLabel": "H-Index",
+    "paperCountLabel": "Publikationen",
+    "citationsLabel": "Zitationen",
+    "optional": "Optional",
     "save": "Speichern",
     "saving": "Wird gespeichert...",
     "cancel": "Abbrechen",
@@ -194,7 +197,9 @@
     "realHistoryLoading": "Berechnung aus Zitationsdaten... dies kann eine Minute dauern",
     "realHistoryError": "H-Index-Verlauf konnte nicht berechnet werden. Versuche es gleich noch einmal.",
     "realHistoryNote": "Berechnet aus echten Zitationsdaten deiner {{count}} meistzitierten Publikationen.",
-    "realHistorySkipped": "({{count}} Publikationen ohne ausreichende Daten wurden ausgeschlossen.)"
+    "realHistorySkipped": "({{count}} Publikationen ohne ausreichende Daten wurden ausgeschlossen.)",
+    "showingSourceNumbers": "Zeigt die von {{source}} gemeldeten Zahlen",
+    "wosShort": "WOS"
   },
   "predictor": {
     "title": "H-Index-Prognose",
