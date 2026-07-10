@@ -10,6 +10,42 @@ const GENERIC_PROFILE_LINK = {
 };
 
 /**
+ * Renders the result of the backend's best-effort, no-AI check against the
+ * live Scopus page (see services/externalProfileCheck.js). Shared by both
+ * ScoreRow (private box) and CommunityRow below since both submit paths now
+ * return an `autoCheck` alongside the save/submit result. Web of Science
+ * always comes back with attempted: false — there's no public page for it
+ * to check, not a failure of this particular attempt.
+ */
+function AutoCheckNote({ autoCheck }) {
+  const { t } = useTranslation();
+  if (!autoCheck) return null;
+
+  const fields = [
+    { key: 'hIndex', label: t('scoreBox.hIndexLabel') },
+    { key: 'paperCount', label: t('scoreBox.paperCountLabel') },
+    { key: 'citations', label: t('scoreBox.citationsLabel') },
+  ];
+  const comparable = fields.filter((f) => autoCheck.matches?.[f.key] != null);
+
+  return (
+    <p className="mt-1 text-[11px] text-slate-400">
+      <span className="font-medium">{t('scoreBox.autoCheck.label')}</span>{' '}
+      {comparable.length > 0 ? (
+        comparable.map((f, i) => (
+          <span key={f.key} className={autoCheck.matches[f.key] ? 'text-emerald-600' : 'text-red-600'}>
+            {i > 0 && ' · '}
+            {autoCheck.matches[f.key] ? '✓' : '✗'} {f.label} ({autoCheck.extracted[f.key]})
+          </span>
+        ))
+      ) : (
+        autoCheck.note
+      )}
+    </p>
+  );
+}
+
+/**
  * One box, two independent slots: self-reported official numbers from Scopus
  * and Web of Science (h-index, paper count, citations). Separate because a
  * researcher may have one, both, or neither, and the two are unrelated
@@ -92,6 +128,7 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
   const [saving, setSaving] = useState(false);
   const [removing, setRemoving] = useState(false);
   const [message, setMessage] = useState(null);
+  const [autoCheck, setAutoCheck] = useState(null);
   const [claiming, setClaiming] = useState(false);
   const [claimMessage, setClaimMessage] = useState(null);
   const [claimModalOpen, setClaimModalOpen] = useState(false);
@@ -167,8 +204,9 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
     }
     setSaving(true);
     setMessage(null);
+    setAutoCheck(null);
     try {
-      await setScore(which, {
+      const result = await setScore(which, {
         profileUrl: profileUrl.trim() || null,
         hIndex: parsedH,
         paperCount: parsedPaperCount.value,
@@ -177,6 +215,7 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
       if (setBaselineSource) setBaselineSource(which);
       setEditing(false);
       setMessage(t('scoreBox.saved'));
+      setAutoCheck(result?.autoCheck || null);
     } catch (err) {
       setMessage(err.response?.data?.error || t('scoreBox.saveFailed'));
     } finally {
@@ -367,6 +406,7 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
       )}
 
       {message && <p className="mt-1 text-xs text-slate-500">{message}</p>}
+      <AutoCheckNote autoCheck={autoCheck} />
 
       <CommunityRow which={which} shared={shared} orcid={sharedOrcid} />
     </div>
@@ -398,6 +438,7 @@ function CommunityRow({ which, shared, orcid }) {
   const [citationsInput, setCitationsInput] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [resultMessage, setResultMessage] = useState(null);
+  const [autoCheck, setAutoCheck] = useState(null);
 
   const isOwner = Boolean(user?.orcid) && Boolean(orcid) && user.orcid === orcid;
 
@@ -427,6 +468,7 @@ function CommunityRow({ which, shared, orcid }) {
     }
     setSubmitting(true);
     setResultMessage(null);
+    setAutoCheck(null);
     try {
       const result = await submitSharedScore(which, {
         profileUrl: profileUrl.trim() || null,
@@ -443,6 +485,7 @@ function CommunityRow({ which, shared, orcid }) {
             : 'scoreBox.community.resultSuggestion'
         )
       );
+      setAutoCheck(result?.autoCheck || null);
       setOpen(false);
       setProfileUrl('');
       setHIndexInput('');
@@ -583,6 +626,7 @@ function CommunityRow({ which, shared, orcid }) {
       )}
 
       {resultMessage && <p className="mt-1 text-xs text-slate-500">{resultMessage}</p>}
+      <AutoCheckNote autoCheck={autoCheck} />
     </div>
   );
 }

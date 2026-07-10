@@ -72,6 +72,9 @@
       "resultUnverified": "Soumis. Affiché comme non vérifié jusqu'à ce que le chercheur le confirme en se connectant avec ORCID.",
       "resultSuggestion": "Enregistré comme suggestion. Une valeur vérifiée existe déjà et seul le compte ORCID confirmé de ce chercheur peut la modifier.",
       "submitFailed": "Échec de l'envoi. Réessayez."
+    },
+    "autoCheck": {
+      "label": "Vérification automatique :"
     }
   },
   "orcidLogin": {

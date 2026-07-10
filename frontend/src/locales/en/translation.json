@@ -72,6 +72,9 @@
       "resultUnverified": "Submitted. Shown as unverified until the researcher confirms it by signing in with ORCID.",
       "resultSuggestion": "Recorded as a suggestion. A verified value already exists and only this researcher's own ORCID-confirmed account can change it.",
       "submitFailed": "Couldn't submit. Try again."
+    },
+    "autoCheck": {
+      "label": "Automatic check:"
     }
   },
   "orcidLogin": {

@@ -4,6 +4,29 @@ const { fetchTopCollaborators } = require('../services/semanticScholar');
 const openAlex = require('../services/openAlex');
 const { computeHistoricalHIndex } = require('../services/historicalHIndex');
 const { generateActionItems } = require('../utils/actionItems');
+const { checkScopusProfile, checkWosProfile } = require('../services/externalProfileCheck');
+
+/**
+ * Best-effort, no-AI check of a submitted number against the live profile
+ * page (see services/externalProfileCheck.js for what this can and can't
+ * do, and why). Never allowed to fail the request it's attached to — any
+ * error here is swallowed and reported as an unreachable/unconfirmed result
+ * instead, since this is a bonus signal, not a gate on saving the user's own
+ * self-reported number.
+ */
+async function runAutoCheck(which, profileUrl, claimed) {
+  try {
+    return which === 'scopus' ? await checkScopusProfile(profileUrl, claimed) : checkWosProfile();
+  } catch {
+    return {
+      attempted: true,
+      reachable: false,
+      extracted: { hIndex: null, paperCount: null, citations: null },
+      matches: { hIndex: null, paperCount: null, citations: null },
+      note: "Couldn't run the automatic check this time.",
+    };
+  }
+}
 
 // Computing real historical H-index makes one Semantic Scholar request per
 // paper (rate-limit-sensitive), so cache results per researcher in memory
@@ -317,7 +340,14 @@ function setScore(which) {
         paperCount: parsedPaperCount.value,
         citations: parsedCitations.value,
       });
-      return res.json({ researcher: updated });
+
+      const autoCheck = await runAutoCheck(which, profileUrl || null, {
+        hIndex: parsedH,
+        paperCount: parsedPaperCount.value,
+        citations: parsedCitations.value,
+      });
+
+      return res.json({ researcher: updated, autoCheck });
     } catch (err) {
       return res.status(err.statusCode || 500).json({ error: err.message });
     }
@@ -428,7 +458,13 @@ function submitSharedScore(which) {
         isOwner,
       });
 
-      return res.json(result); // { current, resultStatus, applied }
+      const autoCheck = await runAutoCheck(which, profileUrl || null, {
+        hIndex: parsedH,
+        paperCount: parsedPaperCount.value,
+        citations: parsedCitations.value,
+      });
+
+      return res.json({ ...result, autoCheck }); // { current, resultStatus, applied, autoCheck }
     } catch (err) {
       return res.status(err.statusCode || 500).json({ error: err.message });
     }

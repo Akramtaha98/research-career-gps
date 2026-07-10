@@ -72,6 +72,9 @@
       "resultUnverified": "Enviado. Se muestra como sin verificar hasta que el investigador lo confirme iniciando sesión con ORCID.",
       "resultSuggestion": "Registrado como sugerencia. Ya existe un valor verificado y solo la cuenta ORCID confirmada de este investigador puede cambiarlo.",
       "submitFailed": "No se pudo enviar. Inténtalo de nuevo."
+    },
+    "autoCheck": {
+      "label": "Verificación automática:"
     }
   },
   "orcidLogin": {

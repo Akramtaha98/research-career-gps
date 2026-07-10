@@ -72,6 +72,9 @@
       "resultUnverified": "Eingereicht. Wird als nicht verifiziert angezeigt, bis die Person dies durch ORCID-Anmeldung bestätigt.",
       "resultSuggestion": "Als Vorschlag gespeichert. Es existiert bereits ein verifizierter Wert, den nur das ORCID-bestätigte Konto dieser Person ändern kann.",
       "submitFailed": "Senden fehlgeschlagen. Bitte erneut versuchen."
+    },
+    "autoCheck": {
+      "label": "Automatische Prüfung:"
     }
   },
   "orcidLogin": {

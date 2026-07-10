@@ -72,6 +72,9 @@
       "resultUnverified": "Dihantar. Dipaparkan sebagai belum disahkan sehingga penyelidik mengesahkannya dengan log masuk ORCID.",
       "resultSuggestion": "Direkodkan sebagai cadangan sahaja. Nilai yang disahkan sudah wujud dan hanya akaun ORCID penyelidik ini yang boleh menukarnya.",
       "submitFailed": "Gagal menghantar. Cuba lagi."
+    },
+    "autoCheck": {
+      "label": "Semakan automatik:"
     }
   },
   "orcidLogin": {

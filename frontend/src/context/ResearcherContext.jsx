@@ -121,7 +121,10 @@ export function ResearcherProvider({ children }) {
         citations,
       });
       setResearcher(data.researcher);
-      return data.researcher;
+      // Full payload (not just the researcher) so callers can read
+      // data.autoCheck — the best-effort live comparison against the pasted
+      // profile URL (see backend/services/externalProfileCheck.js).
+      return data;
     },
     [source, researcher]
   );
