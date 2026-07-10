@@ -153,6 +153,16 @@ const memoryStore = {
     return memory.users.find((u) => u.stripe_customer_id === stripeCustomerId) || null;
   },
 
+  // Links an OAuth-confirmed ORCID iD onto an existing account (see
+  // authController's "Connect ORCID" link flow). Caller must first check the
+  // iD isn't already on a different account.
+  async setUserOrcid(userId, orcid) {
+    const user = memory.users.find((u) => u.id === userId);
+    if (!user) return null;
+    user.orcid = orcid;
+    return user;
+  },
+
   async updateUserBilling(userId, { stripeCustomerId, plan, subscriptionStatus }) {
     const user = memory.users.find((u) => u.id === userId);
     if (!user) return null;
@@ -595,6 +605,15 @@ const pgStore = {
 
   async findUserByStripeCustomerId(stripeCustomerId) {
     const { rows } = await query(`SELECT * FROM users WHERE stripe_customer_id = $1`, [stripeCustomerId]);
+    return rows[0] || null;
+  },
+
+  // Links an OAuth-confirmed ORCID iD onto an existing account (see
+  // authController's "Connect ORCID" link flow). Caller must first check the
+  // iD isn't already on a different account (there's also a UNIQUE(orcid)
+  // constraint as a backstop).
+  async setUserOrcid(userId, orcid) {
+    const { rows } = await query(`UPDATE users SET orcid = $2 WHERE id = $1 RETURNING *`, [userId, orcid]);
     return rows[0] || null;
   },
 

@@ -21,6 +21,7 @@
   "scoreBox": {
     "title": "Índice H oficial (Scopus / Web of Science)",
     "subtitle": "Opcional. Scopus y Web of Science no ofrecen una API pública, así que esto es autodeclarado — abre tu perfil, comprueba el número e introdúcelo aquí.",
+    "connectOrcidHint": "Conecta tu ORCID para verificar tus cifras oficiales y reclamar tu perfil.",
     "orcidCrossCheck": "Tu ORCID: {{orcid}} — antes de guardar, confirma que coincide con el ORCID mostrado en la página del perfil, y no el de otro autor con nombre similar.",
     "edit": "Editar",
     "profileUrlLabel": "URL del perfil",
@@ -79,6 +80,9 @@
   },
   "orcidLogin": {
     "cta": "Continuar con ORCID",
+    "connectCta": "Conectar tu ORCID",
+    "connecting": "Conectando…",
+    "connectFailed": "No se pudo iniciar la conexión con ORCID. Inténtalo de nuevo.",
     "notConfigured": "Continuar con ORCID (no configurado)",
     "notConfiguredTitle": "Configura VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI para activarlo — ver docs/SETUP.md",
     "signingIn": "Iniciando sesión...",

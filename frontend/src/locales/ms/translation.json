@@ -21,6 +21,7 @@
   "scoreBox": {
     "title": "Indeks-H rasmi (Scopus / Web of Science)",
     "subtitle": "Pilihan. Scopus dan Web of Science tidak menawarkan API awam, jadi ini dilaporkan sendiri — buka profil anda, semak nombor itu, dan masukkannya di sini.",
+    "connectOrcidHint": "Sambungkan ORCID anda untuk mengesahkan nombor rasmi dan menuntut profil anda.",
     "orcidCrossCheck": "ORCID anda: {{orcid}} — sebelum menyimpan, sahkan ia sepadan dengan ORCID yang dipaparkan pada halaman profil, bukan pengarang lain dengan nama yang hampir sama.",
     "edit": "Sunting",
     "profileUrlLabel": "URL profil",
@@ -79,6 +80,9 @@
   },
   "orcidLogin": {
     "cta": "Teruskan dengan ORCID",
+    "connectCta": "Sambungkan ORCID anda",
+    "connecting": "Menyambung…",
+    "connectFailed": "Gagal memulakan sambungan ORCID. Cuba lagi.",
     "notConfigured": "Teruskan dengan ORCID (belum dikonfigurasi)",
     "notConfiguredTitle": "Tetapkan VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI untuk mengaktifkan — lihat docs/SETUP.md",
     "signingIn": "Sedang log masuk...",

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useResearcher } from '../context/ResearcherContext';
 import { useAuth } from '../context/AuthContext';
 import Modal from './Modal';
+import OrcidButton from './OrcidButton';
 
 const GENERIC_PROFILE_LINK = {
   scopus: 'https://www.scopus.com/freelookup/form/author.uri',
@@ -81,6 +82,13 @@ export default function ScoreBox({ researcher, baselineSource, setBaselineSource
         <p className="mt-2 text-xs text-slate-600 bg-white/70 border border-brand-100 rounded-lg px-3 py-2">
           {t('scoreBox.orcidCrossCheck', { orcid: user.orcid })}
         </p>
+      )}
+
+      {user && !user.orcid && (
+        <div className="mt-2 text-xs text-slate-600 bg-white/70 border border-brand-100 rounded-lg px-3 py-2">
+          <p className="mb-2">{t('scoreBox.connectOrcidHint')}</p>
+          <OrcidButton connect />
+        </div>
       )}
 
       <div className="mt-3 divide-y divide-brand-100/70">
