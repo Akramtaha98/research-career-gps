@@ -12,20 +12,6 @@ const { query, isDemoMode } = require('../config/db');
 
 const uuid = () => crypto.randomUUID();
 
-/**
- * Loose title-match key (lowercase, punctuation/whitespace stripped) used by
- * mergeImportedPapers to avoid re-adding a paper that's already tracked
- * (either auto-fetched from OpenAlex/S2, or from a previous import) under a
- * slightly different title formatting. Same normalization approach as
- * researcherSource.js's cross-source merge.
- */
-function titleKey(title) {
-  return (title || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim();
-}
-
 // Column-name lookup for pgStore's setScore/clearScore — keeps `which`
 // ('scopus' | 'wos') from ever being interpolated into SQL directly.
 const WHICH_COLUMNS = {
@@ -352,11 +338,10 @@ const memoryStore = {
       .sort((a, b) => b.seq - a.seq);
   },
 
-  // Only clears previously auto-fetched rows (origin='auto') — manually
-  // imported papers (origin='import', see mergeImportedPapers below) survive
-  // every refresh/re-add, since there's no upstream source to re-fetch them
-  // from and re-running an OpenAlex/S2 fetch shouldn't silently delete data
-  // the user manually added from their real Scopus/WOS export.
+  // Only clears previously auto-fetched rows (origin='auto') — the papers
+  // table also supports an 'import' origin (see schema.sql), left in place
+  // for schema stability even though the CSV-import feature that used to
+  // write those rows has been removed.
   async replacePapers(researcherId, papers) {
     memory.papers = memory.papers.filter((p) => !(p.researcher_id === researcherId && p.origin === 'auto'));
     const now = new Date().toISOString();
@@ -379,45 +364,6 @@ const memoryStore = {
     return memory.papers
       .filter((p) => p.researcher_id === researcherId)
       .sort((a, b) => (b.citations || 0) - (a.citations || 0));
-  },
-
-  /**
-   * Adds manually-imported (Scopus/WOS CSV) papers to a researcher's paper
-   * list, skipping any whose normalized title already matches an existing
-   * paper (so re-importing the same CSV, or importing papers OpenAlex/S2
-   * already indexed, doesn't create duplicates). Returns how many were
-   * actually added vs skipped, plus the full merged paper list.
-   */
-  async mergeImportedPapers(researcherId, papers) {
-    const existing = memory.papers.filter((p) => p.researcher_id === researcherId);
-    const existingTitleKeys = new Set(existing.map((p) => titleKey(p.title)));
-    const now = new Date().toISOString();
-
-    let addedCount = 0;
-    const seenThisBatch = new Set();
-    for (const p of papers) {
-      const key = titleKey(p.title);
-      if (!key || existingTitleKeys.has(key) || seenThisBatch.has(key)) continue;
-      seenThisBatch.add(key);
-      memory.papers.push({
-        id: uuid(),
-        researcher_id: researcherId,
-        external_id: p.doi || null,
-        title: p.title,
-        year: p.year || null,
-        citations: p.citations || 0,
-        venue: p.venue || null,
-        origin: 'import',
-        updated_at: now,
-      });
-      addedCount += 1;
-    }
-
-    const merged = memory.papers
-      .filter((p) => p.researcher_id === researcherId)
-      .sort((a, b) => (b.citations || 0) - (a.citations || 0));
-
-    return { addedCount, skippedCount: papers.length - addedCount, papers: merged };
   },
 
   async getHistory(researcherId) {
@@ -790,8 +736,7 @@ const pgStore = {
   },
 
   // Only clears previously auto-fetched rows — see memoryStore's version of
-  // this function for why manually-imported (origin='import') papers are
-  // deliberately left alone here.
+  // this function for why the 'auto' filter is here.
   async replacePapers(researcherId, papers) {
     await query(`DELETE FROM papers WHERE researcher_id = $1 AND origin = 'auto'`, [researcherId]);
     const inserted = [];
@@ -804,33 +749,6 @@ const pgStore = {
       inserted.push(rows[0]);
     }
     return inserted;
-  },
-
-  /** Adds manually-imported papers, deduping by normalized title — see memoryStore's version for the full rationale. */
-  async mergeImportedPapers(researcherId, papers) {
-    const { rows: existing } = await query(`SELECT title FROM papers WHERE researcher_id = $1`, [researcherId]);
-    const existingTitleKeys = new Set(existing.map((p) => titleKey(p.title)));
-
-    let addedCount = 0;
-    const seenThisBatch = new Set();
-    for (const p of papers) {
-      const key = titleKey(p.title);
-      if (!key || existingTitleKeys.has(key) || seenThisBatch.has(key)) continue;
-      seenThisBatch.add(key);
-      await query(
-        `INSERT INTO papers (researcher_id, external_id, title, year, citations, venue, origin)
-         VALUES ($1, $2, $3, $4, $5, $6, 'import')`,
-        [researcherId, p.doi || null, p.title, p.year || null, p.citations || 0, p.venue || null]
-      );
-      addedCount += 1;
-    }
-
-    const { rows: merged } = await query(
-      `SELECT * FROM papers WHERE researcher_id = $1 ORDER BY citations DESC`,
-      [researcherId]
-    );
-
-    return { addedCount, skippedCount: papers.length - addedCount, papers: merged };
   },
 
   async listPapers(researcherId) {

@@ -168,55 +168,6 @@ async function listPapers(req, res) {
   }
 }
 
-/**
- * POST /api/researchers/:id/import-papers
- * Body: { papers: [{ title, year, citations, venue, doi }, ...] }
- * Adds papers parsed from a Scopus/WOS CSV export (see
- * frontend/src/utils/csvImport.js) to the tracked researcher's real paper
- * list — the Import page previously only previewed these in the browser and
- * never saved them. Dedups against whatever's already tracked (auto-fetched
- * or previously imported) by normalized title, and — unlike the OpenAlex/
- * Semantic Scholar refresh path — these rows are never auto-deleted, since
- * there's no upstream source to re-sync them against (see
- * store.js replacePapers/mergeImportedPapers).
- */
-async function importPapers(req, res) {
-  try {
-    const { id } = req.params;
-    const researcher = await store.findResearcherById(id);
-    if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
-    if (researcher.user_id !== req.user.id) {
-      return res.status(403).json({ error: 'Not authorized to update this researcher' });
-    }
-
-    const { papers } = req.body;
-    if (!Array.isArray(papers) || papers.length === 0) {
-      return res.status(400).json({ error: 'papers must be a non-empty array' });
-    }
-    if (papers.length > 2000) {
-      return res.status(400).json({ error: 'Too many papers in one import — please split into smaller files.' });
-    }
-    for (const p of papers) {
-      if (!p || typeof p.title !== 'string' || !p.title.trim()) {
-        return res.status(400).json({ error: 'Every paper needs a non-empty title' });
-      }
-    }
-
-    const cleaned = papers.map((p) => ({
-      title: p.title.trim(),
-      year: Number.isInteger(p.year) ? p.year : null,
-      citations: Number.isInteger(p.citations) && p.citations >= 0 ? p.citations : 0,
-      venue: typeof p.venue === 'string' ? p.venue.trim() || null : null,
-      doi: typeof p.doi === 'string' ? p.doi.trim() || null : null,
-    }));
-
-    const result = await store.mergeImportedPapers(id, cleaned);
-    return res.json(result); // { addedCount, skippedCount, papers }
-  } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
-  }
-}
-
 /** GET /api/researchers/:id/actions — auto-generated recommendations */
 async function getActionItems(req, res) {
   try {
@@ -467,7 +418,6 @@ module.exports = {
   getMyLatestResearcher,
   getResearcher,
   listPapers,
-  importPapers,
   getActionItems,
   getCollaborators,
   getRealHistory,

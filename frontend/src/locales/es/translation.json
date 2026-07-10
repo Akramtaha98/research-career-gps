@@ -5,7 +5,6 @@
     "dashboard": "Panel",
     "predictor": "Predictor",
     "actions": "Acciones",
-    "import": "Importar",
     "verify": "Verificar",
     "logout": "Cerrar sesión",
     "login": "Iniciar sesión"
@@ -15,29 +14,6 @@
   },
   "common": {
     "loading": "Cargando..."
-  },
-  "import": {
-    "title": "Importar datos de Scopus / Web of Science",
-    "subtitle": "Trae números de citas reales exportando un CSV desde Scopus o Web of Science (mientras estás en la red de tu universidad) y súbelo aquí. Todo ocurre en tu navegador — el archivo nunca se sube a ningún servidor.",
-    "source": {
-      "scopus": "Scopus",
-      "wos": "Web of Science",
-      "other": "Otro"
-    },
-    "instructionsScopus": "En Scopus (conectado a la VPN de tu universidad), abre tu perfil de autor, selecciona tus documentos y luego Export → CSV — asegúrate de incluir \"Cited by\" en los campos exportados.",
-    "instructionsWos": "En Web of Science (conectado a la VPN de tu universidad), abre tu informe de citas, selecciona todos los registros y luego Export → Excel/CSV incluyendo \"Times Cited\".",
-    "instructionsOther": "Sube cualquier CSV con columnas de título, año y número de citas — los nombres de columna se detectan automáticamente.",
-    "missingColumns": "No se encontró una columna de título y número de citas en este archivo. Asegúrate de que la exportación incluya esos campos.",
-    "parseError": "No se pudo leer este archivo. Asegúrate de que sea una exportación CSV.",
-    "noRows": "No se encontraron artículos en este archivo.",
-    "resultsTitle": "Importado desde {{source}}",
-    "clear": "Borrar",
-    "privacyNote": "Este archivo se procesó completamente en tu navegador y nunca se subió a ningún lugar.",
-    "saveButton": "Guardar estos artículos en mi Panel",
-    "saving": "Guardando...",
-    "saveRequiresLive": "Busca o añade un investigador en la página de Búsqueda primero para guardar estos artículos.",
-    "saveSuccess": "Se añadieron {{added}} artículo(s) nuevo(s) a tu Panel ({{skipped}} ya estaban registrados).",
-    "saveFailed": "No se pudieron guardar estos artículos. Inténtalo de nuevo."
   },
   "scoreBox": {
     "title": "Índice H oficial (Scopus / Web of Science)",

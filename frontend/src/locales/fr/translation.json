@@ -5,7 +5,6 @@
     "dashboard": "Tableau de bord",
     "predictor": "Prédicteur",
     "actions": "Actions",
-    "import": "Importer",
     "verify": "Vérifier",
     "logout": "Déconnexion",
     "login": "Connexion"
@@ -15,29 +14,6 @@
   },
   "common": {
     "loading": "Chargement..."
-  },
-  "import": {
-    "title": "Importer des données Scopus / Web of Science",
-    "subtitle": "Obtenez de vrais chiffres de citations en exportant un CSV depuis Scopus ou Web of Science (tout en étant sur le réseau de votre université) et en le téléversant ici. Tout se passe dans votre navigateur — le fichier n'est jamais envoyé à un serveur.",
-    "source": {
-      "scopus": "Scopus",
-      "wos": "Web of Science",
-      "other": "Autre"
-    },
-    "instructionsScopus": "Sur Scopus (connecté au VPN de votre université), ouvrez votre profil d'auteur, sélectionnez vos documents, puis Export → CSV — assurez-vous que \"Cited by\" figure parmi les champs exportés.",
-    "instructionsWos": "Sur Web of Science (connecté au VPN de votre université), ouvrez votre rapport de citations, sélectionnez tous les enregistrements, puis Export → Excel/CSV en incluant \"Times Cited\".",
-    "instructionsOther": "Téléversez un fichier CSV avec des colonnes pour le titre, l'année et le nombre de citations — les noms de colonnes sont détectés automatiquement.",
-    "missingColumns": "Impossible de trouver une colonne de titre et de nombre de citations dans ce fichier. Assurez-vous que l'export inclut ces champs.",
-    "parseError": "Impossible de lire ce fichier. Assurez-vous qu'il s'agit d'un export CSV.",
-    "noRows": "Aucun article trouvé dans ce fichier.",
-    "resultsTitle": "Importé depuis {{source}}",
-    "clear": "Effacer",
-    "privacyNote": "Ce fichier a été entièrement traité dans votre navigateur et n'a jamais été téléversé nulle part.",
-    "saveButton": "Enregistrer ces articles dans mon tableau de bord",
-    "saving": "Enregistrement...",
-    "saveRequiresLive": "Recherchez ou ajoutez d'abord un chercheur sur la page Recherche pour enregistrer ces articles.",
-    "saveSuccess": "{{added}} nouvel(aux) article(s) ajouté(s) à votre tableau de bord ({{skipped}} déjà suivi(s)).",
-    "saveFailed": "Impossible d'enregistrer ces articles. Veuillez réessayer."
   },
   "scoreBox": {
     "title": "Indice H officiel (Scopus / Web of Science)",

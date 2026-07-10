@@ -178,27 +178,6 @@ export function ResearcherProvider({ children }) {
   );
 
   /**
-   * Saves papers parsed from a Scopus/WOS CSV export (see utils/csvImport.js)
-   * to the current live researcher's REAL paper list — this is what the
-   * Import page previously never did (it only previewed the parsed rows in
-   * the browser). Dedups server-side against whatever's already tracked, so
-   * calling this more than once with an overlapping file is safe. Updates
-   * local `papers` state from the merged result so the "All papers" table
-   * reflects it immediately, without needing a full refresh.
-   */
-  const importPapers = useCallback(
-    async (parsedPapers) => {
-      if (source !== 'live' || !researcher?.id) return null;
-      const { data } = await client.post(`/researchers/${researcher.id}/import-papers`, {
-        papers: parsedPapers,
-      });
-      setPapers(data.papers);
-      return data; // { addedCount, skippedCount, papers }
-    },
-    [source, researcher]
-  );
-
-  /**
    * Fetches and loads this user's most recently tracked researcher, if any.
    * Used both by the auto-load-on-login effect below and available for a
    * manual "back to my dashboard" action if ever needed.
@@ -266,7 +245,6 @@ export function ResearcherProvider({ children }) {
         clearScore,
         getSharedScores,
         submitSharedScore,
-        importPapers,
         loadLatestResearcher,
       }}
     >

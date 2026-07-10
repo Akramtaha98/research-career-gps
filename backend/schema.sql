@@ -90,10 +90,10 @@ CREATE TABLE IF NOT EXISTS papers (
   citations      INTEGER NOT NULL DEFAULT 0,
   venue          VARCHAR(255),
   -- 'auto' (fetched from OpenAlex/Semantic Scholar, replaced wholesale on
-  -- every add/refresh) vs 'import' (manually added from a Scopus/WOS CSV
-  -- export via the Import page — survives refreshes since replacePapers()
-  -- only clears 'auto' rows, not these). See services/store.js
-  -- mergeImportedPapers.
+  -- every add/refresh — see services/store.js replacePapers, which only
+  -- clears 'auto' rows). The app no longer writes any other origin value
+  -- (the CSV-import feature that used to write 'import' rows was removed),
+  -- but the column stays for schema stability.
   origin         VARCHAR(20) NOT NULL DEFAULT 'auto',
   updated_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );

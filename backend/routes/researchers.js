@@ -5,7 +5,6 @@ const {
   getMyLatestResearcher,
   getResearcher,
   listPapers,
-  importPapers,
   getActionItems,
   getCollaborators,
   getRealHistory,
@@ -32,7 +31,6 @@ router.post('/', addResearcher);
 router.get('/me/latest', getMyLatestResearcher);
 router.get('/:id', getResearcher);
 router.get('/:id/papers', listPapers);
-router.post('/:id/import-papers', importPapers);
 router.get('/:id/actions', getActionItems);
 router.get('/:id/collaborators', requirePro, getCollaborators);
 router.get('/:id/real-history', getRealHistory);

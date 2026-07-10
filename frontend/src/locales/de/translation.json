@@ -5,7 +5,6 @@
     "dashboard": "Dashboard",
     "predictor": "Prognose",
     "actions": "Aufgaben",
-    "import": "Importieren",
     "verify": "Verifizieren",
     "logout": "Abmelden",
     "login": "Anmelden"
@@ -15,29 +14,6 @@
   },
   "common": {
     "loading": "Wird geladen..."
-  },
-  "import": {
-    "title": "Scopus- / Web-of-Science-Daten importieren",
-    "subtitle": "Hole echte Zitationszahlen, indem du eine CSV-Datei aus Scopus oder Web of Science exportierst (während du im Netzwerk deiner Universität bist) und sie hier hochlädst. Alles läuft in deinem Browser — die Datei wird nie an einen Server gesendet.",
-    "source": {
-      "scopus": "Scopus",
-      "wos": "Web of Science",
-      "other": "Andere"
-    },
-    "instructionsScopus": "Öffne in Scopus (verbunden mit dem VPN deiner Universität) dein Autorenprofil, wähle deine Dokumente aus und dann Export → CSV — stelle sicher, dass \"Cited by\" in den exportierten Feldern enthalten ist.",
-    "instructionsWos": "Öffne in Web of Science (verbunden mit dem VPN deiner Universität) deinen Zitationsbericht, wähle alle Datensätze aus und dann Export → Excel/CSV mit \"Times Cited\".",
-    "instructionsOther": "Lade eine beliebige CSV-Datei mit Spalten für Titel, Jahr und Zitationsanzahl hoch — Spaltennamen werden automatisch erkannt.",
-    "missingColumns": "In dieser Datei wurde keine Titel- und Zitationsspalte gefunden. Stelle sicher, dass der Export diese Felder enthält.",
-    "parseError": "Diese Datei konnte nicht gelesen werden. Stelle sicher, dass es sich um einen CSV-Export handelt.",
-    "noRows": "In dieser Datei wurden keine Publikationen gefunden.",
-    "resultsTitle": "Importiert aus {{source}}",
-    "clear": "Löschen",
-    "privacyNote": "Diese Datei wurde vollständig in deinem Browser verarbeitet und nirgendwo hochgeladen.",
-    "saveButton": "Diese Publikationen in meinem Dashboard speichern",
-    "saving": "Wird gespeichert...",
-    "saveRequiresLive": "Suche oder füge zuerst auf der Suchseite einen Forscher hinzu, um diese Publikationen zu speichern.",
-    "saveSuccess": "{{added}} neue Publikation(en) zu deinem Dashboard hinzugefügt ({{skipped}} bereits erfasst).",
-    "saveFailed": "Diese Publikationen konnten nicht gespeichert werden. Bitte versuche es erneut."
   },
   "scoreBox": {
     "title": "Offizieller H-Index (Scopus / Web of Science)",
