@@ -49,6 +49,7 @@ async function fetchAuthorProfile(semanticScholarId, { retry = true } = {}) {
 const AUTHOR_FIELDS = [
   'name',
   'affiliations',
+  'externalIds',
   'hIndex',
   'citationCount',
   'paperCount',
@@ -77,6 +78,10 @@ function mapAuthorResponse(id, data) {
     // strings (unlike OpenAlex's richer {institution, years} objects) — kept
     // as-is here, used by verificationService.js's identity check.
     affiliations: data.affiliations || [],
+    // Exposed so researcherSource.js can bridge to OpenAlex for enrichment
+    // now that Semantic Scholar is the primary source there (mirrors
+    // openAlex.js's own `orcid` field, exposed for the same reason).
+    orcid: data.externalIds?.ORCID || null,
     hIndex: calculateHIndex(citations),
     totalCitations: citations.reduce((a, b) => a + b, 0),
     paperCount: papers.length,

@@ -130,7 +130,7 @@
   },
   "search": {
     "title": "ابحث عن باحث",
-    "subtitle": "ابحث بالاسم أو ORCID أو المعرّف لجلب بيانات استشهاد حقيقية — OpenAlex كمصدر أساسي، وSemantic Scholar كبديل احتياطي.",
+    "subtitle": "ابحث بالاسم أو ORCID أو المعرّف لجلب بيانات استشهاد حقيقية — Semantic Scholar كمصدر أساسي، وOpenAlex كبديل احتياطي.",
     "label": "اسم الباحث أو ORCID أو معرّف Semantic Scholar",
     "placeholder": "مثال: Oren Etzioni أو 0000-0002-9082-0875",
     "hint": "البحث بالاسم قد يطابق عدة أشخاص — الصق معرّف ORCID للحصول على تطابق دقيق، أو معرّف Semantic Scholar الرقمي مباشرة.",

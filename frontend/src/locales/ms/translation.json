@@ -130,7 +130,7 @@
   },
   "search": {
     "title": "Cari penyelidik",
-    "subtitle": "Cari mengikut nama, ORCID atau ID untuk mendapatkan data petikan sebenar — OpenAlex sebagai sumber utama, Semantic Scholar sebagai sandaran.",
+    "subtitle": "Cari mengikut nama, ORCID atau ID untuk mendapatkan data petikan sebenar — Semantic Scholar sebagai sumber utama, OpenAlex sebagai sandaran.",
     "label": "Nama penyelidik, ORCID atau ID Semantic Scholar",
     "placeholder": "cth. Oren Etzioni atau 0000-0002-9082-0875",
     "hint": "Carian mengikut nama boleh sepadan dengan beberapa orang — tampal ORCID iD untuk padanan tepat, atau ID Pengarang Semantic Scholar berangka secara terus.",

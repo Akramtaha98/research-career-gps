@@ -130,7 +130,7 @@
   },
   "search": {
     "title": "Buscar un investigador",
-    "subtitle": "Busca por nombre, ORCID o ID para obtener datos reales de citas — OpenAlex como fuente principal, Semantic Scholar como respaldo.",
+    "subtitle": "Busca por nombre, ORCID o ID para obtener datos reales de citas — Semantic Scholar como fuente principal, OpenAlex como respaldo.",
     "label": "Nombre del investigador, ORCID o ID de Semantic Scholar",
     "placeholder": "ej. Oren Etzioni o 0000-0002-9082-0875",
     "hint": "Una búsqueda por nombre puede coincidir con varias personas — pega un ORCID iD para una coincidencia exacta, o un ID numérico de autor de Semantic Scholar directamente.",
