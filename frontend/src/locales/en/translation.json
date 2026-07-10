@@ -31,7 +31,12 @@
     "noRows": "No papers found in this file.",
     "resultsTitle": "Imported from {{source}}",
     "clear": "Clear",
-    "privacyNote": "This file was processed entirely in your browser and was never uploaded anywhere."
+    "privacyNote": "This file was processed entirely in your browser and was never uploaded anywhere.",
+    "saveButton": "Save these papers to my Dashboard",
+    "saving": "Saving...",
+    "saveRequiresLive": "Look up or add a researcher on the Search page first to save these papers.",
+    "saveSuccess": "Added {{added}} new paper(s) to your Dashboard ({{skipped}} already tracked).",
+    "saveFailed": "Couldn't save these papers. Please try again."
   },
   "scoreBox": {
     "title": "Official H-index (Scopus / Web of Science)",

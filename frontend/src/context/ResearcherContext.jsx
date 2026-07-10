@@ -1,10 +1,12 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import client from '../api/client';
 import { demoResearcher, demoPapers, demoHistory, demoCollaborators } from '../data/demoData';
+import { useAuth } from './AuthContext';
 
 const ResearcherContext = createContext(null);
 
 export function ResearcherProvider({ children }) {
+  const { user } = useAuth();
   const [source, setSource] = useState('demo'); // 'demo' | 'live'
   const [researcher, setResearcher] = useState(demoResearcher);
   const [papers, setPapers] = useState(demoPapers);
@@ -15,6 +17,10 @@ export function ResearcherProvider({ children }) {
   // truth shared by ScoreBox and Dashboard's effective-metrics computation
   // (see computeEffectiveMetrics below), instead of each fetching it separately.
   const [sharedScores, setSharedScores] = useState(null);
+  // Guards the auto-load-on-login effect below so it only ever runs once per
+  // app session, not every time `user` changes for any other reason (e.g.
+  // refreshUser() after a Stripe Checkout redirect).
+  const autoLoadAttempted = useRef(false);
 
   const useDemo = useCallback(() => {
     setSource('demo');
@@ -171,6 +177,60 @@ export function ResearcherProvider({ children }) {
     [source, researcher]
   );
 
+  /**
+   * Saves papers parsed from a Scopus/WOS CSV export (see utils/csvImport.js)
+   * to the current live researcher's REAL paper list — this is what the
+   * Import page previously never did (it only previewed the parsed rows in
+   * the browser). Dedups server-side against whatever's already tracked, so
+   * calling this more than once with an overlapping file is safe. Updates
+   * local `papers` state from the merged result so the "All papers" table
+   * reflects it immediately, without needing a full refresh.
+   */
+  const importPapers = useCallback(
+    async (parsedPapers) => {
+      if (source !== 'live' || !researcher?.id) return null;
+      const { data } = await client.post(`/researchers/${researcher.id}/import-papers`, {
+        papers: parsedPapers,
+      });
+      setPapers(data.papers);
+      return data; // { addedCount, skippedCount, papers }
+    },
+    [source, researcher]
+  );
+
+  /**
+   * Fetches and loads this user's most recently tracked researcher, if any.
+   * Used both by the auto-load-on-login effect below and available for a
+   * manual "back to my dashboard" action if ever needed.
+   */
+  const loadLatestResearcher = useCallback(async () => {
+    try {
+      const { data } = await client.get('/researchers/me/latest');
+      if (!data.researcher) return false;
+      const papersRes = await client.get(`/researchers/${data.researcher.id}/papers`);
+      setSource('live');
+      setResearcher(data.researcher);
+      setPapers(papersRes.data.papers);
+      setHistory(data.history || []);
+      loadSharedScores(data.researcher.id);
+      return true;
+    } catch {
+      return false;
+    }
+  }, [loadSharedScores]);
+
+  // Restores the user's real tracked researcher on login instead of leaving
+  // the demo example on screen — runs once per app session, only if nothing
+  // else has already loaded a live researcher (e.g. the user hasn't just
+  // come from picking a search result).
+  useEffect(() => {
+    if (user && !autoLoadAttempted.current) {
+      autoLoadAttempted.current = true;
+      if (source === 'demo') loadLatestResearcher();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
   const refreshResearcher = useCallback(async () => {
     if (source !== 'live' || !researcher?.id) return;
     setLoading(true);
@@ -206,6 +266,8 @@ export function ResearcherProvider({ children }) {
         clearScore,
         getSharedScores,
         submitSharedScore,
+        importPapers,
+        loadLatestResearcher,
       }}
     >
       {children}

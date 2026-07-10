@@ -31,7 +31,12 @@
     "noRows": "In dieser Datei wurden keine Publikationen gefunden.",
     "resultsTitle": "Importiert aus {{source}}",
     "clear": "Löschen",
-    "privacyNote": "Diese Datei wurde vollständig in deinem Browser verarbeitet und nirgendwo hochgeladen."
+    "privacyNote": "Diese Datei wurde vollständig in deinem Browser verarbeitet und nirgendwo hochgeladen.",
+    "saveButton": "Diese Publikationen in meinem Dashboard speichern",
+    "saving": "Wird gespeichert...",
+    "saveRequiresLive": "Suche oder füge zuerst auf der Suchseite einen Forscher hinzu, um diese Publikationen zu speichern.",
+    "saveSuccess": "{{added}} neue Publikation(en) zu deinem Dashboard hinzugefügt ({{skipped}} bereits erfasst).",
+    "saveFailed": "Diese Publikationen konnten nicht gespeichert werden. Bitte versuche es erneut."
   },
   "scoreBox": {
     "title": "Offizieller H-Index (Scopus / Web of Science)",

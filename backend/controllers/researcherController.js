@@ -99,6 +99,24 @@ async function addResearcher(req, res) {
 }
 
 /**
+ * GET /api/researchers/me/latest
+ * Returns the logged-in user's most recently updated tracked researcher (or
+ * { researcher: null } if they've never added one). Used by the frontend to
+ * restore the last-tracked researcher on login instead of leaving the demo
+ * example on screen — see ResearcherContext.jsx's loadLatestResearcher.
+ */
+async function getMyLatestResearcher(req, res) {
+  try {
+    const researcher = await store.findLatestResearcherByUser(req.user.id);
+    if (!researcher) return res.json({ researcher: null });
+    const history = await store.getHistory(researcher.id);
+    return res.json({ researcher, history });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
+}
+
+/**
  * GET /api/researchers/:id
  * Returns the stored researcher snapshot. Pass ?refresh=true to re-fetch
  * from Semantic Scholar and recalculate before returning.
@@ -147,6 +165,55 @@ async function listPapers(req, res) {
     return res.json({ papers });
   } catch (err) {
     return res.status(500).json({ error: err.message });
+  }
+}
+
+/**
+ * POST /api/researchers/:id/import-papers
+ * Body: { papers: [{ title, year, citations, venue, doi }, ...] }
+ * Adds papers parsed from a Scopus/WOS CSV export (see
+ * frontend/src/utils/csvImport.js) to the tracked researcher's real paper
+ * list — the Import page previously only previewed these in the browser and
+ * never saved them. Dedups against whatever's already tracked (auto-fetched
+ * or previously imported) by normalized title, and — unlike the OpenAlex/
+ * Semantic Scholar refresh path — these rows are never auto-deleted, since
+ * there's no upstream source to re-sync them against (see
+ * store.js replacePapers/mergeImportedPapers).
+ */
+async function importPapers(req, res) {
+  try {
+    const { id } = req.params;
+    const researcher = await store.findResearcherById(id);
+    if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
+    if (researcher.user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized to update this researcher' });
+    }
+
+    const { papers } = req.body;
+    if (!Array.isArray(papers) || papers.length === 0) {
+      return res.status(400).json({ error: 'papers must be a non-empty array' });
+    }
+    if (papers.length > 2000) {
+      return res.status(400).json({ error: 'Too many papers in one import — please split into smaller files.' });
+    }
+    for (const p of papers) {
+      if (!p || typeof p.title !== 'string' || !p.title.trim()) {
+        return res.status(400).json({ error: 'Every paper needs a non-empty title' });
+      }
+    }
+
+    const cleaned = papers.map((p) => ({
+      title: p.title.trim(),
+      year: Number.isInteger(p.year) ? p.year : null,
+      citations: Number.isInteger(p.citations) && p.citations >= 0 ? p.citations : 0,
+      venue: typeof p.venue === 'string' ? p.venue.trim() || null : null,
+      doi: typeof p.doi === 'string' ? p.doi.trim() || null : null,
+    }));
+
+    const result = await store.mergeImportedPapers(id, cleaned);
+    return res.json(result); // { addedCount, skippedCount, papers }
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
   }
 }
 
@@ -397,8 +464,10 @@ function submitSharedScore(which) {
 module.exports = {
   searchResearchers,
   addResearcher,
+  getMyLatestResearcher,
   getResearcher,
   listPapers,
+  importPapers,
   getActionItems,
   getCollaborators,
   getRealHistory,

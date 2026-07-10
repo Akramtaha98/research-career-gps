@@ -106,9 +106,14 @@ export default function Search() {
           <button type="submit" disabled={searching || loading} className="btn-primary flex-1">
             {searching ? t('search.searching') : loading ? t('search.fetching') : t('search.searchBtn')}
           </button>
-          <button type="button" onClick={handleDemo} className="btn-secondary flex-1">
-            {t('search.demoBtn')}
-          </button>
+          {/* Demo data is only useful for anonymous visitors deciding whether to
+              sign up — once logged in, showing it just risks accidentally
+              replacing a real tracked researcher with the canned example. */}
+          {!user && (
+            <button type="button" onClick={handleDemo} className="btn-secondary flex-1">
+              {t('search.demoBtn')}
+            </button>
+          )}
         </div>
       </form>
 

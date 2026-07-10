@@ -12,6 +12,20 @@ const { query, isDemoMode } = require('../config/db');
 
 const uuid = () => crypto.randomUUID();
 
+/**
+ * Loose title-match key (lowercase, punctuation/whitespace stripped) used by
+ * mergeImportedPapers to avoid re-adding a paper that's already tracked
+ * (either auto-fetched from OpenAlex/S2, or from a previous import) under a
+ * slightly different title formatting. Same normalization approach as
+ * researcherSource.js's cross-source merge.
+ */
+function titleKey(title) {
+  return (title || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
 // Column-name lookup for pgStore's setScore/clearScore — keeps `which`
 // ('scopus' | 'wos') from ever being interpolated into SQL directly.
 const WHICH_COLUMNS = {
@@ -238,6 +252,19 @@ const memoryStore = {
     return memory.researchers.find((r) => r.id === id) || null;
   },
 
+  /**
+   * Most recently updated researcher this user is tracking, or null if
+   * they've never added one. Used to restore the last-tracked researcher on
+   * login instead of leaving the demo example showing (see App.jsx /
+   * ResearcherContext.jsx — `source` stays 'demo' until something explicitly
+   * loads a real researcher).
+   */
+  async findLatestResearcherByUser(userId) {
+    const mine = memory.researchers.filter((r) => r.user_id === userId);
+    if (mine.length === 0) return null;
+    return mine.reduce((latest, r) => (new Date(r.updated_at) > new Date(latest.updated_at) ? r : latest));
+  },
+
   async setScore(researcherId, which, { profileUrl, hIndex, paperCount, citations }) {
     const researcher = memory.researchers.find((r) => r.id === researcherId);
     if (!researcher) return null;
@@ -319,8 +346,13 @@ const memoryStore = {
       .sort((a, b) => b.seq - a.seq);
   },
 
+  // Only clears previously auto-fetched rows (origin='auto') — manually
+  // imported papers (origin='import', see mergeImportedPapers below) survive
+  // every refresh/re-add, since there's no upstream source to re-fetch them
+  // from and re-running an OpenAlex/S2 fetch shouldn't silently delete data
+  // the user manually added from their real Scopus/WOS export.
   async replacePapers(researcherId, papers) {
-    memory.papers = memory.papers.filter((p) => p.researcher_id !== researcherId);
+    memory.papers = memory.papers.filter((p) => !(p.researcher_id === researcherId && p.origin === 'auto'));
     const now = new Date().toISOString();
     const rows = papers.map((p) => ({
       id: uuid(),
@@ -330,6 +362,7 @@ const memoryStore = {
       year: p.year || null,
       citations: p.citations || 0,
       venue: p.venue || null,
+      origin: 'auto',
       updated_at: now,
     }));
     memory.papers.push(...rows);
@@ -340,6 +373,45 @@ const memoryStore = {
     return memory.papers
       .filter((p) => p.researcher_id === researcherId)
       .sort((a, b) => (b.citations || 0) - (a.citations || 0));
+  },
+
+  /**
+   * Adds manually-imported (Scopus/WOS CSV) papers to a researcher's paper
+   * list, skipping any whose normalized title already matches an existing
+   * paper (so re-importing the same CSV, or importing papers OpenAlex/S2
+   * already indexed, doesn't create duplicates). Returns how many were
+   * actually added vs skipped, plus the full merged paper list.
+   */
+  async mergeImportedPapers(researcherId, papers) {
+    const existing = memory.papers.filter((p) => p.researcher_id === researcherId);
+    const existingTitleKeys = new Set(existing.map((p) => titleKey(p.title)));
+    const now = new Date().toISOString();
+
+    let addedCount = 0;
+    const seenThisBatch = new Set();
+    for (const p of papers) {
+      const key = titleKey(p.title);
+      if (!key || existingTitleKeys.has(key) || seenThisBatch.has(key)) continue;
+      seenThisBatch.add(key);
+      memory.papers.push({
+        id: uuid(),
+        researcher_id: researcherId,
+        external_id: p.doi || null,
+        title: p.title,
+        year: p.year || null,
+        citations: p.citations || 0,
+        venue: p.venue || null,
+        origin: 'import',
+        updated_at: now,
+      });
+      addedCount += 1;
+    }
+
+    const merged = memory.papers
+      .filter((p) => p.researcher_id === researcherId)
+      .sort((a, b) => (b.citations || 0) - (a.citations || 0));
+
+    return { addedCount, skippedCount: papers.length - addedCount, papers: merged };
   },
 
   async getHistory(researcherId) {
@@ -456,6 +528,15 @@ const pgStore = {
     return rows[0] || null;
   },
 
+  /** Most recently updated researcher this user is tracking, or null. See memoryStore's version for the full rationale. */
+  async findLatestResearcherByUser(userId) {
+    const { rows } = await query(
+      `SELECT * FROM researchers WHERE user_id = $1 ORDER BY updated_at DESC LIMIT 1`,
+      [userId]
+    );
+    return rows[0] || null;
+  },
+
   // `which` is always a hardcoded 'scopus' or 'wos' literal from the
   // controller (see WHICH_COLUMNS below) — never raw request input — so
   // building the column names this way is safe, not a SQL-injection vector.
@@ -558,18 +639,48 @@ const pgStore = {
     return rows;
   },
 
+  // Only clears previously auto-fetched rows — see memoryStore's version of
+  // this function for why manually-imported (origin='import') papers are
+  // deliberately left alone here.
   async replacePapers(researcherId, papers) {
-    await query(`DELETE FROM papers WHERE researcher_id = $1`, [researcherId]);
+    await query(`DELETE FROM papers WHERE researcher_id = $1 AND origin = 'auto'`, [researcherId]);
     const inserted = [];
     for (const p of papers) {
       const { rows } = await query(
-        `INSERT INTO papers (researcher_id, external_id, title, year, citations, venue)
-         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+        `INSERT INTO papers (researcher_id, external_id, title, year, citations, venue, origin)
+         VALUES ($1, $2, $3, $4, $5, $6, 'auto') RETURNING *`,
         [researcherId, p.externalId || null, p.title, p.year || null, p.citations || 0, p.venue || null]
       );
       inserted.push(rows[0]);
     }
     return inserted;
+  },
+
+  /** Adds manually-imported papers, deduping by normalized title — see memoryStore's version for the full rationale. */
+  async mergeImportedPapers(researcherId, papers) {
+    const { rows: existing } = await query(`SELECT title FROM papers WHERE researcher_id = $1`, [researcherId]);
+    const existingTitleKeys = new Set(existing.map((p) => titleKey(p.title)));
+
+    let addedCount = 0;
+    const seenThisBatch = new Set();
+    for (const p of papers) {
+      const key = titleKey(p.title);
+      if (!key || existingTitleKeys.has(key) || seenThisBatch.has(key)) continue;
+      seenThisBatch.add(key);
+      await query(
+        `INSERT INTO papers (researcher_id, external_id, title, year, citations, venue, origin)
+         VALUES ($1, $2, $3, $4, $5, $6, 'import')`,
+        [researcherId, p.doi || null, p.title, p.year || null, p.citations || 0, p.venue || null]
+      );
+      addedCount += 1;
+    }
+
+    const { rows: merged } = await query(
+      `SELECT * FROM papers WHERE researcher_id = $1 ORDER BY citations DESC`,
+      [researcherId]
+    );
+
+    return { addedCount, skippedCount: papers.length - addedCount, papers: merged };
   },
 
   async listPapers(researcherId) {

@@ -2,8 +2,10 @@ const express = require('express');
 const {
   searchResearchers,
   addResearcher,
+  getMyLatestResearcher,
   getResearcher,
   listPapers,
+  importPapers,
   getActionItems,
   getCollaborators,
   getRealHistory,
@@ -26,8 +28,11 @@ router.get('/search', searchResearchers);
 router.use(requireAuth);
 
 router.post('/', addResearcher);
+// Must be registered before '/:id' — otherwise Express would match "me" as an :id param.
+router.get('/me/latest', getMyLatestResearcher);
 router.get('/:id', getResearcher);
 router.get('/:id/papers', listPapers);
+router.post('/:id/import-papers', importPapers);
 router.get('/:id/actions', getActionItems);
 router.get('/:id/collaborators', requirePro, getCollaborators);
 router.get('/:id/real-history', getRealHistory);

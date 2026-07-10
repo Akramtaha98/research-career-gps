@@ -2,9 +2,11 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { parseCsv, mapRowsToPapers, summarizeImport } from '../utils/csvImport';
 import MetricCard from '../components/MetricCard';
+import { useResearcher } from '../context/ResearcherContext';
 
 export default function ImportData() {
   const { t } = useTranslation();
+  const { source: dataSource, importPapers } = useResearcher();
   const fileInputRef = useRef(null);
   const [source, setSource] = useState('scopus'); // 'scopus' | 'wos' | 'other'
   const [fileName, setFileName] = useState(null);
@@ -13,6 +15,24 @@ export default function ImportData() {
   const [error, setError] = useState(null);
   const [sortKey, setSortKey] = useState('citations');
   const [sortDir, setSortDir] = useState('desc');
+  const [saving, setSaving] = useState(false);
+  const [saveResult, setSaveResult] = useState(null); // { addedCount, skippedCount } | null
+  const [saveError, setSaveError] = useState(null);
+
+  async function handleSave() {
+    if (!papers || papers.length === 0) return;
+    setSaving(true);
+    setSaveError(null);
+    setSaveResult(null);
+    try {
+      const result = await importPapers(papers);
+      setSaveResult(result);
+    } catch (err) {
+      setSaveError(err.response?.data?.error || err.message || t('import.saveFailed'));
+    } finally {
+      setSaving(false);
+    }
+  }
 
   function toggleSort(key) {
     if (sortKey === key) {
@@ -30,6 +50,8 @@ export default function ImportData() {
     setPapers(null);
     setSummary(null);
     setFileName(file.name);
+    setSaveResult(null);
+    setSaveError(null);
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -59,6 +81,8 @@ export default function ImportData() {
     setSummary(null);
     setError(null);
     setFileName(null);
+    setSaveResult(null);
+    setSaveError(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
@@ -133,12 +157,28 @@ export default function ImportData() {
           </div>
 
           <div className="card">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
               <h2 className="text-lg font-semibold text-slate-900">{t('import.resultsTitle', { source: t(`import.source.${source}`) })}</h2>
-              <button onClick={reset} className="btn-secondary text-xs">
-                {t('import.clear')}
-              </button>
+              <div className="flex items-center gap-2">
+                {dataSource === 'live' ? (
+                  <button onClick={handleSave} disabled={saving} className="btn-primary text-xs">
+                    {saving ? t('import.saving') : t('import.saveButton')}
+                  </button>
+                ) : (
+                  <span className="text-xs text-slate-400">{t('import.saveRequiresLive')}</span>
+                )}
+                <button onClick={reset} className="btn-secondary text-xs">
+                  {t('import.clear')}
+                </button>
+              </div>
             </div>
+
+            {saveResult && (
+              <p className="mb-3 text-sm text-emerald-600">
+                {t('import.saveSuccess', { added: saveResult.addedCount, skipped: saveResult.skippedCount })}
+              </p>
+            )}
+            {saveError && <p className="mb-3 text-sm text-red-600">{saveError}</p>}
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>

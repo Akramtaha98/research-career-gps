@@ -31,7 +31,12 @@
     "noRows": "No se encontraron artículos en este archivo.",
     "resultsTitle": "Importado desde {{source}}",
     "clear": "Borrar",
-    "privacyNote": "Este archivo se procesó completamente en tu navegador y nunca se subió a ningún lugar."
+    "privacyNote": "Este archivo se procesó completamente en tu navegador y nunca se subió a ningún lugar.",
+    "saveButton": "Guardar estos artículos en mi Panel",
+    "saving": "Guardando...",
+    "saveRequiresLive": "Busca o añade un investigador en la página de Búsqueda primero para guardar estos artículos.",
+    "saveSuccess": "Se añadieron {{added}} artículo(s) nuevo(s) a tu Panel ({{skipped}} ya estaban registrados).",
+    "saveFailed": "No se pudieron guardar estos artículos. Inténtalo de nuevo."
   },
   "scoreBox": {
     "title": "Índice H oficial (Scopus / Web of Science)",

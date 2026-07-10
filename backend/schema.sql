@@ -89,6 +89,12 @@ CREATE TABLE IF NOT EXISTS papers (
   year           INTEGER,
   citations      INTEGER NOT NULL DEFAULT 0,
   venue          VARCHAR(255),
+  -- 'auto' (fetched from OpenAlex/Semantic Scholar, replaced wholesale on
+  -- every add/refresh) vs 'import' (manually added from a Scopus/WOS CSV
+  -- export via the Import page — survives refreshes since replacePapers()
+  -- only clears 'auto' rows, not these). See services/store.js
+  -- mergeImportedPapers.
+  origin         VARCHAR(20) NOT NULL DEFAULT 'auto',
   updated_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

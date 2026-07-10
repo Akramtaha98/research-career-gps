@@ -31,7 +31,12 @@
     "noRows": "Tiada kertas kerja ditemui dalam fail ini.",
     "resultsTitle": "Diimport daripada {{source}}",
     "clear": "Kosongkan",
-    "privacyNote": "Fail ini diproses sepenuhnya dalam pelayar anda dan tidak pernah dimuat naik ke mana-mana."
+    "privacyNote": "Fail ini diproses sepenuhnya dalam pelayar anda dan tidak pernah dimuat naik ke mana-mana.",
+    "saveButton": "Simpan kertas kerja ini ke Papan Pemuka saya",
+    "saving": "Menyimpan...",
+    "saveRequiresLive": "Cari atau tambah penyelidik di halaman Carian dahulu untuk menyimpan kertas kerja ini.",
+    "saveSuccess": "{{added}} kertas kerja baharu ditambah ke Papan Pemuka anda ({{skipped}} sudah dijejaki).",
+    "saveFailed": "Tidak dapat menyimpan kertas kerja ini. Sila cuba lagi."
   },
   "scoreBox": {
     "title": "Indeks-H rasmi (Scopus / Web of Science)",
