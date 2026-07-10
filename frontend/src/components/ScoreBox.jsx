@@ -74,7 +74,8 @@ export default function ScoreBox({ researcher, baselineSource, setBaselineSource
 
 function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource, shared, sharedOrcid }) {
   const { t } = useTranslation();
-  const { setScore, clearScore } = useResearcher();
+  const { user } = useAuth();
+  const { setScore, clearScore, submitSharedScore } = useResearcher();
 
   const currentH = researcher[`${which}_h_index`];
   const currentPaperCount = researcher[`${which}_paper_count`];
@@ -90,8 +91,50 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
   const [saving, setSaving] = useState(false);
   const [removing, setRemoving] = useState(false);
   const [message, setMessage] = useState(null);
+  const [claiming, setClaiming] = useState(false);
+  const [claimMessage, setClaimMessage] = useState(null);
 
   const openHref = profileUrl.trim() || GENERIC_PROFILE_LINK[which];
+
+  // "Claiming" ties this private, self-reported number to the same
+  // ORCID-owner verification already proven out for the community pool (see
+  // CommunityRow / submitSharedScore below): the ONLY thing that actually
+  // establishes "this account belongs to the same person as this profile" is
+  // a matching ORCID from real ORCID sign-in — there's no Scopus/WOS API to
+  // check the number against directly (see scoreBox.disclaimer).
+  const isOwner = Boolean(user?.orcid) && Boolean(researcher?.orcid) && user.orcid === researcher.orcid;
+
+  async function handleClaim() {
+    // Always let the user open their real profile to self-check the number,
+    // regardless of ORCID status — this part never depends on verification.
+    if (openHref) window.open(openHref, '_blank', 'noopener,noreferrer');
+
+    if (!hasValue) {
+      setClaimMessage(t('scoreBox.claimNeedsNumbers'));
+      return;
+    }
+    if (!isOwner) {
+      setClaimMessage(t('scoreBox.claimNeedsOrcid'));
+      return;
+    }
+    setClaiming(true);
+    setClaimMessage(null);
+    try {
+      const result = await submitSharedScore(which, {
+        profileUrl: currentUrl || null,
+        hIndex: currentH,
+        paperCount: currentPaperCount,
+        citations: currentCitations,
+      });
+      setClaimMessage(
+        result?.resultStatus === 'verified' ? t('scoreBox.claimVerified') : t('scoreBox.claimSubmitted')
+      );
+    } catch (err) {
+      setClaimMessage(err.response?.data?.error || t('scoreBox.claimFailed'));
+    } finally {
+      setClaiming(false);
+    }
+  }
 
   function parseOptionalInt(value) {
     if (value === '' || value === null || value === undefined) return { ok: true, value: null };
@@ -111,6 +154,10 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
     const parsedCitations = parseOptionalInt(citationsInput);
     if (!parsedPaperCount.ok || !parsedCitations.ok) {
       setMessage(t('scoreBox.invalidNumber'));
+      return;
+    }
+    if (parsedPaperCount.value != null && parsedH > parsedPaperCount.value) {
+      setMessage(t('scoreBox.hIndexExceedsPapers', { hIndex: parsedH, paperCount: parsedPaperCount.value }));
       return;
     }
     setSaving(true);
@@ -193,7 +240,28 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
             </label>
           )}
         </div>
-      ) : (
+      ) : null}
+
+      {hasValue && !editing && (
+        <div className="mt-2 flex items-center gap-2 flex-wrap">
+          <button
+            type="button"
+            onClick={handleClaim}
+            disabled={claiming}
+            className="btn-secondary text-xs px-3 py-1.5"
+          >
+            {claiming ? t('scoreBox.claiming') : t('scoreBox.claimProfile')}
+          </button>
+          {isOwner && (
+            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+              {t('scoreBox.claimedBadge')}
+            </span>
+          )}
+          {claimMessage && <p className="text-xs text-slate-500 basis-full">{claimMessage}</p>}
+        </div>
+      )}
+
+      {!(hasValue && !editing) && (
         <form onSubmit={handleSave} className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
           <div className="sm:col-span-3">
             <label className="block text-xs font-medium text-slate-600 mb-1">{t('scoreBox.profileUrlLabel')}</label>
@@ -325,6 +393,10 @@ function CommunityRow({ which, shared, orcid }) {
     const parsedCitations = parseOptionalInt(citationsInput);
     if (!parsedPaperCount.ok || !parsedCitations.ok) {
       setResultMessage(t('scoreBox.invalidNumber'));
+      return;
+    }
+    if (parsedPaperCount.value != null && parsed > parsedPaperCount.value) {
+      setResultMessage(t('scoreBox.hIndexExceedsPapers', { hIndex: parsed, paperCount: parsedPaperCount.value }));
       return;
     }
     setSubmitting(true);

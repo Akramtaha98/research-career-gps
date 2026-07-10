@@ -29,6 +29,25 @@ function parseOptionalNonNegativeInt(value, fieldName) {
 }
 
 /**
+ * Mathematical sanity check shared by the private (scopus-score/wos-score)
+ * and community (shared-scores) submit endpoints: by definition an H-index
+ * can never exceed the researcher's total paper count (h papers each with
+ * >= h citations requires at least h papers to exist). Catches obvious typos
+ * or made-up numbers before they're stored, independent of the ORCID-owner
+ * verification check (which only establishes WHO is submitting, not whether
+ * the numbers are internally consistent).
+ */
+function validateHIndexAgainstPaperCount(hIndex, paperCount) {
+  if (paperCount != null && hIndex > paperCount) {
+    return {
+      ok: false,
+      message: `hIndex (${hIndex}) cannot be greater than paperCount (${paperCount}) — an H-index can never exceed the total number of papers.`,
+    };
+  }
+  return { ok: true };
+}
+
+/**
  * GET /api/researchers/search?q=name
  * Public (no auth) — lets a user find a researcher by name before deciding
  * which one to track. Returns lightweight candidates, no papers/citations
@@ -289,6 +308,8 @@ function setScore(which) {
       if (!parsedPaperCount.ok) return res.status(400).json({ error: parsedPaperCount.message });
       const parsedCitations = parseOptionalNonNegativeInt(citations, 'citations');
       if (!parsedCitations.ok) return res.status(400).json({ error: parsedCitations.message });
+      const hVsPapers = validateHIndexAgainstPaperCount(parsedH, parsedPaperCount.value);
+      if (!hVsPapers.ok) return res.status(400).json({ error: hVsPapers.message });
 
       const updated = await store.setScore(id, which, {
         profileUrl: profileUrl || null,
@@ -390,6 +411,8 @@ function submitSharedScore(which) {
       if (!parsedPaperCount.ok) return res.status(400).json({ error: parsedPaperCount.message });
       const parsedCitations = parseOptionalNonNegativeInt(citations, 'citations');
       if (!parsedCitations.ok) return res.status(400).json({ error: parsedCitations.message });
+      const hVsPapers = validateHIndexAgainstPaperCount(parsedH, parsedPaperCount.value);
+      if (!hVsPapers.ok) return res.status(400).json({ error: hVsPapers.message });
 
       const submitter = await store.findUserById(req.user.id);
       const isOwner = Boolean(submitter?.orcid) && submitter.orcid === researcher.orcid;
