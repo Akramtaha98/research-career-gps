@@ -320,6 +320,11 @@
     "hideHistory": "Verifizierungsverlauf ausblenden",
     "historyTitle": "Verifizierungsverlauf",
     "historyEmpty": "Für diese ORCID gibt es noch keine früheren Verifizierungen.",
-    "historyFailed": "Verifizierungsverlauf konnte nicht geladen werden."
+    "historyFailed": "Verifizierungsverlauf konnte nicht geladen werden.",
+    "ownerBadge": "Vom Inhaber bestätigt",
+    "ownerNote": "Am {{date}} vom ORCID-Inhaber bestätigt — wird anstelle der rohen Semantic-Scholar/OpenAlex-Daten angezeigt.",
+    "ownerSubmitSuccess": "Als dein ORCID-bestätigter Datensatz gespeichert — wird nun als bestätigter Wert für jeden angezeigt, der diese ORCID nachschlägt.",
+    "ownerCorrectionHint": "Diese Zahlen stammen von Semantic Scholar/OpenAlex und können veraltet sein. Falls dies deine ORCID ist, melde dich mit „Mit ORCID fortfahren“ (passend zu dieser iD) an und reiche oben deine echten Zahlen ein — nach Bestätigung ersetzen sie diese als dein offizieller Datensatz.",
+    "comparisonSourceNote": "Vergleicht deine Angabe mit den rohen Semantic-Scholar/OpenAlex-Daten — unabhängig von einem oben bestätigten ORCID-Inhaber-Datensatz."
   }
 }

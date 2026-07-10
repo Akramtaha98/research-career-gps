@@ -413,6 +413,7 @@ const memoryStore = {
     papers,
     comparisons,
     submittedByUserId,
+    isOwner = false,
   }) {
     const now = new Date().toISOString();
     let author = memory.verifiedAuthors.find((a) => a.orcid === orcid);
@@ -436,10 +437,28 @@ const memoryStore = {
         verified_affiliation: verifiedAffiliation,
         openalex_author_id: openAlexAuthorId || null,
         semantic_scholar_author_id: semanticScholarAuthorId || null,
+        owner_h_index: null,
+        owner_paper_count: null,
+        owner_citation_count: null,
+        owner_confirmed_by: null,
+        owner_confirmed_at: null,
         created_at: now,
         updated_at: now,
       };
       memory.verifiedAuthors.push(author);
+    }
+
+    // ORCID-OWNER OVERRIDE: only the actual ORCID owner (checked by the
+    // controller — submitter.orcid === this orcid — before calling this
+    // function) can set these fields, and only the specific fields they
+    // actually submitted a value for; anything they left blank keeps
+    // whatever was previously confirmed rather than getting wiped to null.
+    if (isOwner) {
+      if (submittedHIndex != null) author.owner_h_index = submittedHIndex;
+      if (submittedPaperCount != null) author.owner_paper_count = submittedPaperCount;
+      if (submittedCitationCount != null) author.owner_citation_count = submittedCitationCount;
+      author.owner_confirmed_by = submittedByUserId || null;
+      author.owner_confirmed_at = now;
     }
 
     const metrics = {
@@ -796,6 +815,7 @@ const pgStore = {
     papers,
     comparisons,
     submittedByUserId,
+    isOwner = false,
   }) {
     const { rows: authorRows } = await query(
       `INSERT INTO verified_authors
@@ -821,7 +841,26 @@ const pgStore = {
         semanticScholarAuthorId ?? null,
       ]
     );
-    const author = authorRows[0];
+    let author = authorRows[0];
+
+    // ORCID-OWNER OVERRIDE: only when the controller has already confirmed
+    // submitter.orcid === this orcid — see schema.sql's verified_authors
+    // comment. COALESCE keeps any field the owner didn't submit this time
+    // unchanged rather than wiping it to null.
+    if (isOwner) {
+      const { rows: ownerRows } = await query(
+        `UPDATE verified_authors SET
+           owner_h_index = COALESCE($2, owner_h_index),
+           owner_paper_count = COALESCE($3, owner_paper_count),
+           owner_citation_count = COALESCE($4, owner_citation_count),
+           owner_confirmed_by = $5,
+           owner_confirmed_at = now()
+         WHERE id = $1
+         RETURNING *`,
+        [author.id, submittedHIndex ?? null, submittedPaperCount ?? null, submittedCitationCount ?? null, submittedByUserId || null]
+      );
+      author = ownerRows[0];
+    }
 
     const { rows: metricsRows } = await query(
       `INSERT INTO verified_author_metrics

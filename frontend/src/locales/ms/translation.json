@@ -320,6 +320,11 @@
     "hideHistory": "Sembunyikan sejarah pengesahan",
     "historyTitle": "Sejarah pengesahan",
     "historyEmpty": "Belum ada pengesahan lepas untuk ORCID ini.",
-    "historyFailed": "Tidak dapat memuatkan sejarah pengesahan."
+    "historyFailed": "Tidak dapat memuatkan sejarah pengesahan.",
+    "ownerBadge": "Disahkan oleh pemilik",
+    "ownerNote": "Disahkan oleh pemilik ORCID pada {{date}} — dipaparkan menggantikan data mentah Semantic Scholar/OpenAlex.",
+    "ownerSubmitSuccess": "Disimpan sebagai rekod disahkan-ORCID anda — kini dipaparkan sebagai nilai yang disahkan untuk sesiapa yang mencari ORCID ini.",
+    "ownerCorrectionHint": "Nombor ini datang daripada Semantic Scholar/OpenAlex dan mungkin sudah lapuk. Jika ini ORCID anda, log masuk dengan \"Teruskan dengan ORCID\" (sepadan dengan iD ini) dan hantar nombor sebenar anda di atas — setelah disahkan, ia akan menggantikan nombor ini sebagai rekod rasmi anda.",
+    "comparisonSourceNote": "Membandingkan apa yang anda dakwa dengan data mentah Semantic Scholar/OpenAlex — tanpa mengira sebarang rekod yang disahkan oleh pemilik ORCID di atas."
   }
 }

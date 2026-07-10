@@ -125,6 +125,15 @@ export default function Verify() {
   const showUnverifiable = result && result.verificationStatus === 'unverifiable';
   const showVerified = result && !showUnverifiable;
 
+  // Owner-confirmed override: only ever set once the ORCID owner themselves
+  // (signed in via ORCID, account ORCID matching this one) has submitted a
+  // value — see backend's isOwner check. Falls back to the raw Semantic
+  // Scholar/OpenAlex snapshot per-field when no owner override exists yet.
+  const isOwnerConfirmed = Boolean(result?.author?.owner_confirmed_at);
+  const effectiveHIndex = result?.author?.owner_h_index ?? result?.metrics?.verified_h_index;
+  const effectivePaperCount = result?.author?.owner_paper_count ?? result?.metrics?.verified_paper_count;
+  const effectiveCitationCount = result?.author?.owner_citation_count ?? result?.metrics?.verified_citation_count;
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
       <div>
@@ -224,16 +233,29 @@ export default function Verify() {
         </div>
       )}
 
+      {showVerified && result.isOwner && (
+        <div className="card border border-emerald-200 bg-emerald-50">
+          <p className="text-sm font-medium text-emerald-700">{t('verify.ownerSubmitSuccess')}</p>
+        </div>
+      )}
+
       {showVerified && (
         <>
           <div className="card space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h2 className="text-lg font-semibold text-slate-900">{result.author?.verified_name || t('verify.identityTitle')}</h2>
-              <span
-                className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${STATUS_STYLES[result.verificationStatus]}`}
-              >
-                {t(`verify.status.${result.verificationStatus}`)}
-              </span>
+              <div className="flex items-center gap-2">
+                {isOwnerConfirmed && (
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full border bg-brand-50 text-brand-700 border-brand-200">
+                    {t('verify.ownerBadge')}
+                  </span>
+                )}
+                <span
+                  className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${STATUS_STYLES[result.verificationStatus]}`}
+                >
+                  {t(`verify.status.${result.verificationStatus}`)}
+                </span>
+              </div>
             </div>
             <p className="text-sm text-slate-500">
               {t('verify.sourceLabel')}:{' '}
@@ -242,21 +264,31 @@ export default function Verify() {
             {result.author?.verified_affiliation && (
               <p className="text-sm text-slate-500">{result.author.verified_affiliation}</p>
             )}
+            {isOwnerConfirmed && (
+              <p className="text-xs text-brand-600">
+                {t('verify.ownerNote', { date: new Date(result.author.owner_confirmed_at).toLocaleDateString() })}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <MetricCard label={t('dashboard.hIndex')} value={result.metrics?.verified_h_index ?? '—'} accent="brand" />
+            <MetricCard label={t('dashboard.hIndex')} value={effectiveHIndex ?? '—'} accent="brand" />
             <MetricCard
               label={t('verify.field.citationCount')}
-              value={(result.metrics?.verified_citation_count ?? 0).toLocaleString()}
+              value={(effectiveCitationCount ?? 0).toLocaleString()}
               accent="sky"
             />
-            <MetricCard label={t('dashboard.trackedPapers')} value={result.metrics?.verified_paper_count ?? 0} accent="emerald" />
+            <MetricCard label={t('dashboard.trackedPapers')} value={effectivePaperCount ?? 0} accent="emerald" />
           </div>
+
+          {!isOwnerConfirmed && (
+            <p className="text-xs text-slate-400">{t('verify.ownerCorrectionHint')}</p>
+          )}
 
           {result.comparisons?.length > 0 && (
             <div className="card">
-              <h2 className="text-lg font-semibold text-slate-900 mb-4">{t('verify.comparisonTitle')}</h2>
+              <h2 className="text-lg font-semibold text-slate-900">{t('verify.comparisonTitle')}</h2>
+              <p className="text-xs text-slate-400 mb-4">{t('verify.comparisonSourceNote')}</p>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>

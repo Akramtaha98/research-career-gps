@@ -48,8 +48,18 @@ async function runVerification(req, res) {
         metrics: null,
         papers: [],
         comparisons: [],
+        isOwner: false,
       });
     }
+
+    // ORCID-OWNER OVERRIDE: same check already used for the Dashboard's
+    // shared Scopus/WOS pool (see submitSharedScore in researcherController.js)
+    // — if the signed-in user authenticated via ORCID and their account's
+    // ORCID matches the one just verified, their submitted numbers are
+    // trusted as the actual owner's correction, not just another claim to
+    // check against Semantic Scholar/OpenAlex. See store.saveVerificationRun.
+    const submitter = await store.findUserById(req.user.id);
+    const isOwner = Boolean(submitter?.orcid) && submitter.orcid === result.orcid;
 
     const saved = await store.saveVerificationRun({
       orcid: result.orcid,
@@ -70,6 +80,7 @@ async function runVerification(req, res) {
       papers: result.papers,
       comparisons: result.comparisons,
       submittedByUserId: req.user.id,
+      isOwner,
     });
 
     return res.json({
@@ -81,6 +92,7 @@ async function runVerification(req, res) {
       metrics: saved.metrics,
       papers: saved.papers,
       comparisons: saved.comparisons,
+      isOwner,
     });
   } catch (err) {
     return res.status(err.statusCode || 500).json({ error: err.message });

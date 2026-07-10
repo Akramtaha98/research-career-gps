@@ -320,6 +320,11 @@
     "hideHistory": "Ocultar historial de verificación",
     "historyTitle": "Historial de verificación",
     "historyEmpty": "Todavía no hay verificaciones anteriores para este ORCID.",
-    "historyFailed": "No se pudo cargar el historial de verificación."
+    "historyFailed": "No se pudo cargar el historial de verificación.",
+    "ownerBadge": "Confirmado por el propietario",
+    "ownerNote": "Confirmado por el propietario del ORCID el {{date}} — se muestra en lugar de los datos brutos de Semantic Scholar/OpenAlex.",
+    "ownerSubmitSuccess": "Guardado como tu registro confirmado por ORCID — ahora se muestra como el valor confirmado para cualquiera que busque este ORCID.",
+    "ownerCorrectionHint": "Estos números provienen de Semantic Scholar/OpenAlex y pueden estar desactualizados. Si este es tu ORCID, inicia sesión con \"Continuar con ORCID\" (que coincida con este iD) y envía tus números reales arriba — una vez confirmados, reemplazarán estos como tu registro oficial.",
+    "comparisonSourceNote": "Compara lo que declaraste con los datos brutos de Semantic Scholar/OpenAlex — independiente de cualquier registro confirmado por el propietario del ORCID de arriba."
   }
 }

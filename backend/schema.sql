@@ -191,6 +191,21 @@ CREATE TABLE IF NOT EXISTS verified_authors (
   verified_affiliation        TEXT,
   openalex_author_id          VARCHAR(64),
   semantic_scholar_author_id  VARCHAR(64),
+  -- ORCID-OWNER OVERRIDE: when the person submitting a verification is
+  -- signed in via ORCID and their own account's ORCID matches this row's
+  -- orcid (see controllers/verificationController.js — same isOwner check
+  -- as shared_scores below), their claimed numbers are trusted as the
+  -- authoritative "this is really my record" correction, independent of
+  -- whatever Semantic Scholar/OpenAlex happen to have indexed. Each field
+  -- is only overwritten when the owner actually submits a value for it
+  -- (see saveVerificationRun's COALESCE-style merge) — a partial owner
+  -- submission never blanks out a previously confirmed field. Non-owners
+  -- can never set these, no matter what they submit.
+  owner_h_index               INTEGER,
+  owner_paper_count           INTEGER,
+  owner_citation_count        INTEGER,
+  owner_confirmed_by          UUID REFERENCES users(id) ON DELETE SET NULL,
+  owner_confirmed_at          TIMESTAMPTZ,
   created_at                  TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at                  TIMESTAMPTZ NOT NULL DEFAULT now()
 );

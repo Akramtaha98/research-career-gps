@@ -320,6 +320,11 @@
     "hideHistory": "إخفاء سجل التحقق",
     "historyTitle": "سجل التحقق",
     "historyEmpty": "لا توجد عمليات تحقق سابقة لهذا الـORCID بعد.",
-    "historyFailed": "تعذّر تحميل سجل التحقق."
+    "historyFailed": "تعذّر تحميل سجل التحقق.",
+    "ownerBadge": "مؤكَّد من المالك",
+    "ownerNote": "تم التأكيد من مالك ORCID بتاريخ {{date}} — يُعرض بدلاً من بيانات Semantic Scholar/OpenAlex الخام.",
+    "ownerSubmitSuccess": "تم الحفظ كسجلّك المؤكَّد عبر ORCID — يظهر الآن كقيمة مؤكَّدة لأي شخص يبحث عن هذا الـORCID.",
+    "ownerCorrectionHint": "هذه الأرقام مصدرها Semantic Scholar/OpenAlex وقد تكون قديمة. إذا كان هذا هو الـORCID الخاص بك، سجّل الدخول عبر \"المتابعة باستخدام ORCID\" (بما يطابق هذا المعرّف) وأرسل أرقامك الحقيقية أعلاه — بعد التأكيد، ستحل محل هذه الأرقام كسجلّك الرسمي.",
+    "comparisonSourceNote": "يقارن ما أدخلته ببيانات Semantic Scholar/OpenAlex الخام — بمعزل عن أي سجل مؤكَّد من مالك الـORCID أعلاه."
   }
 }
