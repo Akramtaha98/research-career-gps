@@ -6,6 +6,7 @@
     "predictor": "المتنبئ",
     "actions": "المهام",
     "import": "استيراد",
+    "verify": "التحقق",
     "logout": "تسجيل الخروج",
     "login": "تسجيل الدخول"
   },
@@ -301,5 +302,48 @@
     "strong": "منشور قوي",
     "average": "منشور متوسط",
     "emerging": "منشور ناشئ"
+  },
+  "verify": {
+    "title": "التحقق من المعلومات الأكاديمية",
+    "subtitle": "أدخل معرّف ORCID وما تدّعيه عن نفسك (مؤشر H، عدد الأبحاث، الاستشهادات...) — يتم التحقق أولاً من Semantic Scholar، والانتقال إلى OpenAlex فقط إذا لم يوجد سجل في Semantic Scholar، ويعرض لك بدقة أين تتطابق الأرقام أو تختلف.",
+    "orcidLabel": "معرّف ORCID",
+    "nameLabel": "الاسم",
+    "affiliationLabel": "الانتماء المؤسسي",
+    "optional": "(اختياري)",
+    "submit": "تحقق",
+    "verifying": "جارٍ التحقق...",
+    "loginRequired": "سجّل الدخول لتشغيل عملية تحقق وحفظها.",
+    "submitFailed": "تعذّر تنفيذ التحقق. حاول مرة أخرى.",
+    "invalidOrcid": "هذا لا يبدو معرّف ORCID صالحًا. الصيغة المتوقعة: 0000-0002-1825-0097.",
+    "notFound": "لم يُعثر على أي سجل لهذا الـORCID في Semantic Scholar أو OpenAlex.",
+    "identityTitle": "الباحث المُتحقَّق منه",
+    "sourceLabel": "المصدر",
+    "sourceSemanticScholar": "Semantic Scholar",
+    "sourceOpenAlex": "OpenAlex (احتياطي)",
+    "status": {
+      "verified": "تم التحقق",
+      "partial": "توجد اختلافات",
+      "unverifiable": "غير قابل للتحقق"
+    },
+    "field": {
+      "paperCount": "عدد الأبحاث",
+      "citationCount": "عدد الاستشهادات",
+      "impactFactor": "معامل تأثير المجلة",
+      "name": "الاسم",
+      "affiliation": "الانتماء المؤسسي"
+    },
+    "comparisonTitle": "المقارنة",
+    "colField": "الحقل",
+    "colSubmitted": "ما أدخلته",
+    "colVerified": "ما تم التحقق منه",
+    "colMatch": "التطابق",
+    "matchYes": "متطابق",
+    "matchNo": "غير متطابق",
+    "papersTitle": "الأبحاث الموجودة",
+    "showHistory": "عرض سجل التحقق",
+    "hideHistory": "إخفاء سجل التحقق",
+    "historyTitle": "سجل التحقق",
+    "historyEmpty": "لا توجد عمليات تحقق سابقة لهذا الـORCID بعد.",
+    "historyFailed": "تعذّر تحميل سجل التحقق."
   }
 }

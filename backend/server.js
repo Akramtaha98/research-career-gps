@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth');
 const researcherRoutes = require('./routes/researchers');
 const predictionRoutes = require('./routes/predictions');
 const billingRoutes = require('./routes/billing');
+const verificationRoutes = require('./routes/verification');
 const { webhook: billingWebhook } = require('./controllers/billingController');
 const { isDemoMode } = require('./config/db');
 
@@ -44,6 +45,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/researchers', researcherRoutes);
 app.use('/api/predictions', predictionRoutes);
 app.use('/api/billing', billingRoutes);
+app.use('/api/verify', verificationRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Not found' });

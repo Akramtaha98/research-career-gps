@@ -48,6 +48,7 @@ async function fetchAuthorProfile(semanticScholarId, { retry = true } = {}) {
 
 const AUTHOR_FIELDS = [
   'name',
+  'affiliations',
   'hIndex',
   'citationCount',
   'paperCount',
@@ -72,6 +73,10 @@ function mapAuthorResponse(id, data) {
     semanticScholarId: id,
     source: 'semantic_scholar',
     name: data.name || 'Unknown',
+    // Semantic Scholar returns this as a flat array of institution name
+    // strings (unlike OpenAlex's richer {institution, years} objects) — kept
+    // as-is here, used by verificationService.js's identity check.
+    affiliations: data.affiliations || [],
     hIndex: calculateHIndex(citations),
     totalCitations: citations.reduce((a, b) => a + b, 0),
     paperCount: papers.length,

@@ -56,6 +56,12 @@ const memory = {
   history: [], // { id, researcher_id, h_index, total_citations, recorded_at }
   sharedScores: [], // { id, orcid, which, h_index, profile_url, status, submitted_by, submitted_at, verified_by, verified_at }
   sharedScoresHistory: [], // { id, orcid, which, h_index, profile_url, result_status, submitted_by, submitted_at, seq }
+  // Standalone verification system (see services/verificationService.js) —
+  // deliberately separate from the researchers/papers tables above.
+  verifiedAuthors: [], // { id, orcid, submitted_name, verified_name, submitted_affiliation, verified_affiliation, openalex_author_id, semantic_scholar_author_id, created_at, updated_at }
+  verifiedAuthorMetrics: [], // { id, author_id, submitted_h_index, verified_h_index, submitted_paper_count, verified_paper_count, submitted_citation_count, verified_citation_count, source, verification_status, submitted_by, verified_at }
+  verifiedPapers: [], // { id, author_id, external_id, doi, title, year, venue, citation_count, source, updated_at }
+  verifiedComparisonResults: [], // { id, author_metrics_id, field_name, submitted_value, verified_value, difference, match, created_at }
 };
 
 // Monotonic counter so shared-score history sorts deterministically even
@@ -433,6 +439,150 @@ const memoryStore = {
     memory.predictions.push(row);
     return row;
   },
+
+  /**
+   * Persists one verification run (see services/verificationService.js):
+   * upserts the verified_authors row (orcid is the whole-app join key, not
+   * scoped per user), appends a new verified_author_metrics row (history
+   * preserved, never overwritten), replaces the verified_papers snapshot for
+   * this author with the freshly fetched list, and writes one
+   * verified_comparison_results row per compared field.
+   */
+  async saveVerificationRun({
+    orcid,
+    submittedName,
+    verifiedName,
+    submittedAffiliation,
+    verifiedAffiliation,
+    openAlexAuthorId,
+    semanticScholarAuthorId,
+    source,
+    verificationStatus,
+    submittedHIndex,
+    verifiedHIndex,
+    submittedPaperCount,
+    verifiedPaperCount,
+    submittedCitationCount,
+    verifiedCitationCount,
+    papers,
+    comparisons,
+    submittedByUserId,
+  }) {
+    const now = new Date().toISOString();
+    let author = memory.verifiedAuthors.find((a) => a.orcid === orcid);
+    if (author) {
+      Object.assign(author, {
+        submitted_name: submittedName ?? author.submitted_name,
+        verified_name: verifiedName,
+        submitted_affiliation: submittedAffiliation ?? author.submitted_affiliation,
+        verified_affiliation: verifiedAffiliation,
+        openalex_author_id: openAlexAuthorId || author.openalex_author_id,
+        semantic_scholar_author_id: semanticScholarAuthorId || author.semantic_scholar_author_id,
+        updated_at: now,
+      });
+    } else {
+      author = {
+        id: uuid(),
+        orcid,
+        submitted_name: submittedName ?? null,
+        verified_name: verifiedName,
+        submitted_affiliation: submittedAffiliation ?? null,
+        verified_affiliation: verifiedAffiliation,
+        openalex_author_id: openAlexAuthorId || null,
+        semantic_scholar_author_id: semanticScholarAuthorId || null,
+        created_at: now,
+        updated_at: now,
+      };
+      memory.verifiedAuthors.push(author);
+    }
+
+    const metrics = {
+      id: uuid(),
+      author_id: author.id,
+      submitted_h_index: submittedHIndex ?? null,
+      verified_h_index: verifiedHIndex,
+      submitted_paper_count: submittedPaperCount ?? null,
+      verified_paper_count: verifiedPaperCount,
+      submitted_citation_count: submittedCitationCount ?? null,
+      verified_citation_count: verifiedCitationCount,
+      source,
+      verification_status: verificationStatus,
+      submitted_by: submittedByUserId || null,
+      verified_at: now,
+    };
+    memory.verifiedAuthorMetrics.push(metrics);
+
+    // Replace the paper snapshot wholesale — see schema.sql's verified_papers
+    // comment for why this table isn't append-only per run.
+    memory.verifiedPapers = memory.verifiedPapers.filter((p) => p.author_id !== author.id);
+    const paperRows = papers.map((p) => ({
+      id: uuid(),
+      author_id: author.id,
+      external_id: p.externalId || null,
+      doi: p.doi || null,
+      title: p.title,
+      year: p.year || null,
+      venue: p.venue || null,
+      citation_count: p.citations || 0,
+      source,
+      updated_at: now,
+    }));
+    memory.verifiedPapers.push(...paperRows);
+
+    const comparisonRows = comparisons.map((c) => ({
+      id: uuid(),
+      author_metrics_id: metrics.id,
+      field_name: c.fieldName,
+      submitted_value: c.submittedValue ?? null,
+      verified_value: c.verifiedValue ?? null,
+      difference: c.difference ?? null,
+      match: c.match,
+      created_at: now,
+    }));
+    memory.verifiedComparisonResults.push(...comparisonRows);
+
+    return { author, metrics, papers: paperRows, comparisons: comparisonRows };
+  },
+
+  /**
+   * Full latest verification snapshot for an ORCID: the author record, its
+   * most recent metrics run, the current paper list, and that run's
+   * comparisons. Null if this ORCID has never been verified.
+   */
+  async getVerificationByOrcid(orcid) {
+    const author = memory.verifiedAuthors.find((a) => a.orcid === orcid) || null;
+    if (!author) return null;
+
+    const runs = memory.verifiedAuthorMetrics
+      .filter((m) => m.author_id === author.id)
+      .sort((a, b) => new Date(b.verified_at) - new Date(a.verified_at));
+    const latestMetrics = runs[0] || null;
+
+    const papers = memory.verifiedPapers
+      .filter((p) => p.author_id === author.id)
+      .sort((a, b) => (b.citation_count || 0) - (a.citation_count || 0));
+
+    const comparisons = latestMetrics
+      ? memory.verifiedComparisonResults.filter((c) => c.author_metrics_id === latestMetrics.id)
+      : [];
+
+    return { author, metrics: latestMetrics, papers, comparisons };
+  },
+
+  /** Every past verification run for an ORCID, newest first, each with its own comparison rows — the History view. */
+  async getVerificationHistory(orcid) {
+    const author = memory.verifiedAuthors.find((a) => a.orcid === orcid) || null;
+    if (!author) return [];
+
+    const runs = memory.verifiedAuthorMetrics
+      .filter((m) => m.author_id === author.id)
+      .sort((a, b) => new Date(b.verified_at) - new Date(a.verified_at));
+
+    return runs.map((m) => ({
+      ...m,
+      comparisons: memory.verifiedComparisonResults.filter((c) => c.author_metrics_id === m.id),
+    }));
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -706,6 +856,151 @@ const pgStore = {
       [researcherId, targetH, monthlyCitations, papersPerYear, estimatedMonths]
     );
     return rows[0];
+  },
+
+  /** Persists one verification run — see memoryStore's version for the full rationale. */
+  async saveVerificationRun({
+    orcid,
+    submittedName,
+    verifiedName,
+    submittedAffiliation,
+    verifiedAffiliation,
+    openAlexAuthorId,
+    semanticScholarAuthorId,
+    source,
+    verificationStatus,
+    submittedHIndex,
+    verifiedHIndex,
+    submittedPaperCount,
+    verifiedPaperCount,
+    submittedCitationCount,
+    verifiedCitationCount,
+    papers,
+    comparisons,
+    submittedByUserId,
+  }) {
+    const { rows: authorRows } = await query(
+      `INSERT INTO verified_authors
+         (orcid, submitted_name, verified_name, submitted_affiliation, verified_affiliation,
+          openalex_author_id, semantic_scholar_author_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       ON CONFLICT (orcid) DO UPDATE SET
+         submitted_name = COALESCE($2, verified_authors.submitted_name),
+         verified_name = $3,
+         submitted_affiliation = COALESCE($4, verified_authors.submitted_affiliation),
+         verified_affiliation = $5,
+         openalex_author_id = COALESCE($6, verified_authors.openalex_author_id),
+         semantic_scholar_author_id = COALESCE($7, verified_authors.semantic_scholar_author_id),
+         updated_at = now()
+       RETURNING *`,
+      [
+        orcid,
+        submittedName ?? null,
+        verifiedName,
+        submittedAffiliation ?? null,
+        verifiedAffiliation,
+        openAlexAuthorId ?? null,
+        semanticScholarAuthorId ?? null,
+      ]
+    );
+    const author = authorRows[0];
+
+    const { rows: metricsRows } = await query(
+      `INSERT INTO verified_author_metrics
+         (author_id, submitted_h_index, verified_h_index, submitted_paper_count, verified_paper_count,
+          submitted_citation_count, verified_citation_count, source, verification_status, submitted_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       RETURNING *`,
+      [
+        author.id,
+        submittedHIndex ?? null,
+        verifiedHIndex,
+        submittedPaperCount ?? null,
+        verifiedPaperCount,
+        submittedCitationCount ?? null,
+        verifiedCitationCount,
+        source,
+        verificationStatus,
+        submittedByUserId || null,
+      ]
+    );
+    const metrics = metricsRows[0];
+
+    // Replace the paper snapshot wholesale — see schema.sql's verified_papers
+    // comment for why this table isn't append-only per run.
+    await query(`DELETE FROM verified_papers WHERE author_id = $1`, [author.id]);
+    const paperRows = [];
+    for (const p of papers) {
+      const { rows } = await query(
+        `INSERT INTO verified_papers (author_id, external_id, doi, title, year, venue, citation_count, source)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+        [author.id, p.externalId || null, p.doi || null, p.title, p.year || null, p.venue || null, p.citations || 0, source]
+      );
+      paperRows.push(rows[0]);
+    }
+
+    const comparisonRows = [];
+    for (const c of comparisons) {
+      const { rows } = await query(
+        `INSERT INTO verified_comparison_results (author_metrics_id, field_name, submitted_value, verified_value, difference, match)
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+        [metrics.id, c.fieldName, c.submittedValue ?? null, c.verifiedValue ?? null, c.difference ?? null, c.match]
+      );
+      comparisonRows.push(rows[0]);
+    }
+
+    return { author, metrics, papers: paperRows, comparisons: comparisonRows };
+  },
+
+  /** Full latest verification snapshot for an ORCID — see memoryStore's version for the full rationale. */
+  async getVerificationByOrcid(orcid) {
+    const { rows: authorRows } = await query(`SELECT * FROM verified_authors WHERE orcid = $1`, [orcid]);
+    const author = authorRows[0];
+    if (!author) return null;
+
+    const { rows: metricsRows } = await query(
+      `SELECT * FROM verified_author_metrics WHERE author_id = $1 ORDER BY verified_at DESC LIMIT 1`,
+      [author.id]
+    );
+    const latestMetrics = metricsRows[0] || null;
+
+    const { rows: papers } = await query(
+      `SELECT * FROM verified_papers WHERE author_id = $1 ORDER BY citation_count DESC`,
+      [author.id]
+    );
+
+    let comparisons = [];
+    if (latestMetrics) {
+      const { rows } = await query(
+        `SELECT * FROM verified_comparison_results WHERE author_metrics_id = $1`,
+        [latestMetrics.id]
+      );
+      comparisons = rows;
+    }
+
+    return { author, metrics: latestMetrics, papers, comparisons };
+  },
+
+  /** Every past verification run for an ORCID, newest first, each with its own comparison rows. */
+  async getVerificationHistory(orcid) {
+    const { rows: authorRows } = await query(`SELECT * FROM verified_authors WHERE orcid = $1`, [orcid]);
+    const author = authorRows[0];
+    if (!author) return [];
+
+    const { rows: runs } = await query(
+      `SELECT * FROM verified_author_metrics WHERE author_id = $1 ORDER BY verified_at DESC`,
+      [author.id]
+    );
+
+    const results = [];
+    for (const run of runs) {
+      const { rows: comparisons } = await query(
+        `SELECT * FROM verified_comparison_results WHERE author_metrics_id = $1`,
+        [run.id]
+      );
+      results.push({ ...run, comparisons });
+    }
+    return results;
   },
 };
 

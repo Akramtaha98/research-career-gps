@@ -6,6 +6,7 @@
     "predictor": "Prédicteur",
     "actions": "Actions",
     "import": "Importer",
+    "verify": "Vérifier",
     "logout": "Déconnexion",
     "login": "Connexion"
   },
@@ -301,5 +302,48 @@
     "strong": "Publication solide",
     "average": "Publication moyenne",
     "emerging": "Publication émergente"
+  },
+  "verify": {
+    "title": "Vérifier des informations académiques",
+    "subtitle": "Saisissez un ORCID iD et ce que vous déclarez à votre sujet (indice H, nombre d'articles, citations...) — ceci vérifie d'abord auprès de Semantic Scholar, puis se rabat sur OpenAlex uniquement si Semantic Scholar n'a aucun enregistrement, et vous montre exactement où les chiffres concordent ou non.",
+    "orcidLabel": "ORCID iD",
+    "nameLabel": "Nom",
+    "affiliationLabel": "Affiliation",
+    "optional": "(optionnel)",
+    "submit": "Vérifier",
+    "verifying": "Vérification...",
+    "loginRequired": "Connectez-vous pour lancer et enregistrer une vérification.",
+    "submitFailed": "Impossible d'exécuter la vérification. Veuillez réessayer.",
+    "invalidOrcid": "Cela ne ressemble pas à un ORCID iD valide. Format attendu : 0000-0002-1825-0097.",
+    "notFound": "Aucun enregistrement trouvé pour cet ORCID sur Semantic Scholar ni sur OpenAlex.",
+    "identityTitle": "Auteur vérifié",
+    "sourceLabel": "Source",
+    "sourceSemanticScholar": "Semantic Scholar",
+    "sourceOpenAlex": "OpenAlex (repli)",
+    "status": {
+      "verified": "Vérifié",
+      "partial": "Écarts constatés",
+      "unverifiable": "Non vérifiable"
+    },
+    "field": {
+      "paperCount": "Nombre d'articles",
+      "citationCount": "Nombre de citations",
+      "impactFactor": "Facteur d'impact de la revue",
+      "name": "Nom",
+      "affiliation": "Affiliation"
+    },
+    "comparisonTitle": "Comparaison",
+    "colField": "Champ",
+    "colSubmitted": "Vous avez déclaré",
+    "colVerified": "Vérifié",
+    "colMatch": "Correspondance",
+    "matchYes": "Correspond",
+    "matchNo": "Ne correspond pas",
+    "papersTitle": "Articles trouvés",
+    "showHistory": "Afficher l'historique des vérifications",
+    "hideHistory": "Masquer l'historique des vérifications",
+    "historyTitle": "Historique des vérifications",
+    "historyEmpty": "Aucune vérification précédente pour cet ORCID pour l'instant.",
+    "historyFailed": "Impossible de charger l'historique des vérifications."
   }
 }

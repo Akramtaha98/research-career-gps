@@ -6,6 +6,7 @@
     "predictor": "Predictor",
     "actions": "Actions",
     "import": "Import",
+    "verify": "Verify",
     "logout": "Log out",
     "login": "Log in"
   },
@@ -301,5 +302,48 @@
     "strong": "Strong venue",
     "average": "Average venue",
     "emerging": "Emerging venue"
+  },
+  "verify": {
+    "title": "Verify academic information",
+    "subtitle": "Enter an ORCID iD and whatever you claim about yourself (H-index, paper count, citations...) — this checks it against Semantic Scholar first, falling back to OpenAlex only if Semantic Scholar has no record, and shows you exactly where the numbers agree or don't.",
+    "orcidLabel": "ORCID iD",
+    "nameLabel": "Name",
+    "affiliationLabel": "Affiliation",
+    "optional": "(optional)",
+    "submit": "Verify",
+    "verifying": "Verifying...",
+    "loginRequired": "Log in to run and save a verification.",
+    "submitFailed": "Couldn't run verification. Please try again.",
+    "invalidOrcid": "That doesn't look like a valid ORCID iD. Expected format: 0000-0002-1825-0097.",
+    "notFound": "No record found for this ORCID in Semantic Scholar or OpenAlex.",
+    "identityTitle": "Verified author",
+    "sourceLabel": "Source",
+    "sourceSemanticScholar": "Semantic Scholar",
+    "sourceOpenAlex": "OpenAlex (fallback)",
+    "status": {
+      "verified": "Verified",
+      "partial": "Discrepancies found",
+      "unverifiable": "Unverifiable"
+    },
+    "field": {
+      "paperCount": "Paper count",
+      "citationCount": "Citation count",
+      "impactFactor": "Journal impact factor",
+      "name": "Name",
+      "affiliation": "Affiliation"
+    },
+    "comparisonTitle": "Comparison",
+    "colField": "Field",
+    "colSubmitted": "You claimed",
+    "colVerified": "Verified",
+    "colMatch": "Match",
+    "matchYes": "Match",
+    "matchNo": "Mismatch",
+    "papersTitle": "Papers found",
+    "showHistory": "Show verification history",
+    "hideHistory": "Hide verification history",
+    "historyTitle": "Verification history",
+    "historyEmpty": "No past verification runs for this ORCID yet.",
+    "historyFailed": "Couldn't load verification history."
   }
 }

@@ -6,6 +6,7 @@
     "predictor": "Predictor",
     "actions": "Acciones",
     "import": "Importar",
+    "verify": "Verificar",
     "logout": "Cerrar sesión",
     "login": "Iniciar sesión"
   },
@@ -301,5 +302,48 @@
     "strong": "Publicación fuerte",
     "average": "Publicación media",
     "emerging": "Publicación emergente"
+  },
+  "verify": {
+    "title": "Verificar información académica",
+    "subtitle": "Introduce un ORCID iD y lo que declares sobre ti (índice H, número de artículos, citas...) — esto lo comprueba primero contra Semantic Scholar, recurriendo a OpenAlex solo si Semantic Scholar no tiene registro, y te muestra exactamente dónde coinciden o no los números.",
+    "orcidLabel": "ORCID iD",
+    "nameLabel": "Nombre",
+    "affiliationLabel": "Afiliación",
+    "optional": "(opcional)",
+    "submit": "Verificar",
+    "verifying": "Verificando...",
+    "loginRequired": "Inicia sesión para ejecutar y guardar una verificación.",
+    "submitFailed": "No se pudo ejecutar la verificación. Inténtalo de nuevo.",
+    "invalidOrcid": "Eso no parece un ORCID iD válido. Formato esperado: 0000-0002-1825-0097.",
+    "notFound": "No se encontró ningún registro para este ORCID en Semantic Scholar ni en OpenAlex.",
+    "identityTitle": "Autor verificado",
+    "sourceLabel": "Fuente",
+    "sourceSemanticScholar": "Semantic Scholar",
+    "sourceOpenAlex": "OpenAlex (alternativa)",
+    "status": {
+      "verified": "Verificado",
+      "partial": "Discrepancias encontradas",
+      "unverifiable": "No verificable"
+    },
+    "field": {
+      "paperCount": "Número de artículos",
+      "citationCount": "Número de citas",
+      "impactFactor": "Factor de impacto de la revista",
+      "name": "Nombre",
+      "affiliation": "Afiliación"
+    },
+    "comparisonTitle": "Comparación",
+    "colField": "Campo",
+    "colSubmitted": "Declaraste",
+    "colVerified": "Verificado",
+    "colMatch": "Coincidencia",
+    "matchYes": "Coincide",
+    "matchNo": "No coincide",
+    "papersTitle": "Artículos encontrados",
+    "showHistory": "Mostrar historial de verificación",
+    "hideHistory": "Ocultar historial de verificación",
+    "historyTitle": "Historial de verificación",
+    "historyEmpty": "Todavía no hay verificaciones anteriores para este ORCID.",
+    "historyFailed": "No se pudo cargar el historial de verificación."
   }
 }

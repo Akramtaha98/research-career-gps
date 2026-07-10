@@ -65,20 +65,27 @@ async function searchAuthors(query) {
   return (data.results || []).map(toCandidate);
 }
 
+/**
+ * Some prolific/long-career authors have dozens of historical affiliations
+ * on OpenAlex — cap to the 3 most recent so results stay readable instead of
+ * dumping an entire career history. Shared by toCandidate (search results)
+ * and fetchAuthorProfile (full profile) below.
+ */
+function formatAffiliations(rawAffiliations) {
+  return (rawAffiliations || [])
+    .slice()
+    .sort((x, y) => Math.max(...(y.years || [0])) - Math.max(...(x.years || [0])))
+    .slice(0, 3)
+    .map((aff) => aff.institution?.display_name)
+    .filter(Boolean);
+}
+
 function toCandidate(a) {
   return {
     semanticScholarId: shortId(a.id), // field name kept for wire compatibility with existing frontend/controller code
     source: 'openalex',
     name: a.display_name || 'Unknown',
-    // Some prolific/long-career authors have dozens of historical
-    // affiliations on OpenAlex — cap to the 3 most recent so the search
-    // result stays readable instead of dumping an entire career history.
-    affiliations: (a.affiliations || [])
-      .slice()
-      .sort((x, y) => Math.max(...(y.years || [0])) - Math.max(...(x.years || [0])))
-      .slice(0, 3)
-      .map((aff) => aff.institution?.display_name)
-      .filter(Boolean),
+    affiliations: formatAffiliations(a.affiliations),
     homepage: null,
     orcid: a.orcid ? a.orcid.replace('https://orcid.org/', '') : null,
     paperCount: a.works_count || 0,
@@ -171,6 +178,7 @@ async function fetchAuthorProfile(openAlexId) {
     semanticScholarId: id, // field name kept for wire compatibility
     source: 'openalex',
     name: author.display_name || 'Unknown',
+    affiliations: formatAffiliations(author.affiliations),
     orcid, // exposed so researcherSource.js can bridge to Semantic Scholar's ORCID lookup when merging
     hIndex,
     totalCitations,

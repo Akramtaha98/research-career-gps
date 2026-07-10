@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import Predictor from './pages/Predictor';
 import Actions from './pages/Actions';
 import ImportData from './pages/ImportData';
+import Verify from './pages/Verify';
 import { ResearcherProvider } from './context/ResearcherContext';
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="/predictor" element={<Predictor />} />
             <Route path="/actions" element={<Actions />} />
             <Route path="/import" element={<ImportData />} />
+            <Route path="/verify" element={<Verify />} />
             <Route path="*" element={<Navigate to="/search" replace />} />
           </Routes>
         </main>

@@ -169,6 +169,84 @@ CREATE TABLE IF NOT EXISTS shared_scores_history (
   submitted_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- ---------------------------------------------------------------------------
+-- Standalone academic-information VERIFICATION system. Given just an ORCID
+-- iD plus whatever numbers a user claims about themselves, looks the author
+-- up against Semantic Scholar (primary) and OpenAlex (fallback — only
+-- queried when Semantic Scholar has no record for that ORCID, or the record
+-- it does have has zero papers attached), stores the found "official" values
+-- alongside the user's claim, and records a field-by-field comparison.
+-- Deliberately separate from the "tracked researcher" Dashboard tables above
+-- (researchers/papers/shared_scores) — this is a lookup-verify-store-compare
+-- tool keyed purely by ORCID, with no "import" or "project" concept. See
+-- services/verificationService.js for the resolution logic.
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS verified_authors (
+  id                          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  orcid                       VARCHAR(19) UNIQUE NOT NULL,
+  submitted_name              TEXT,
+  verified_name               TEXT,
+  submitted_affiliation       TEXT,
+  verified_affiliation        TEXT,
+  openalex_author_id          VARCHAR(64),
+  semantic_scholar_author_id  VARCHAR(64),
+  created_at                  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at                  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- One row per verification run — append-only, so re-verifying the same
+-- ORCID later preserves a history of every check instead of overwriting the
+-- last one (useful for seeing whether a flagged discrepancy got corrected
+-- upstream).
+CREATE TABLE IF NOT EXISTS verified_author_metrics (
+  id                        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  author_id                 UUID NOT NULL REFERENCES verified_authors(id) ON DELETE CASCADE,
+  submitted_h_index         INTEGER,
+  verified_h_index          INTEGER,
+  submitted_paper_count     INTEGER,
+  verified_paper_count      INTEGER,
+  submitted_citation_count  INTEGER,
+  verified_citation_count   INTEGER,
+  source                    VARCHAR(20) NOT NULL CHECK (source IN ('semantic_scholar', 'openalex')),
+  verification_status       VARCHAR(20) NOT NULL CHECK (verification_status IN ('verified', 'partial', 'unverifiable')),
+  submitted_by              UUID REFERENCES users(id) ON DELETE SET NULL,
+  verified_at               TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- The author's paper list as of the MOST RECENT verification run — replaced
+-- wholesale on every re-verification. The historical trail of aggregate
+-- numbers lives in verified_author_metrics above, not a full paper snapshot
+-- per run (that would grow unbounded for prolific authors re-verified often).
+CREATE TABLE IF NOT EXISTS verified_papers (
+  id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  author_id      UUID NOT NULL REFERENCES verified_authors(id) ON DELETE CASCADE,
+  external_id    VARCHAR(64),
+  doi            VARCHAR(255),
+  title          TEXT NOT NULL,
+  year           INTEGER,
+  venue          VARCHAR(255),
+  citation_count INTEGER NOT NULL DEFAULT 0,
+  source         VARCHAR(20) NOT NULL CHECK (source IN ('semantic_scholar', 'openalex')),
+  updated_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Field-by-field discrepancy report for one verification run (h_index,
+-- paper_count, citation_count, name, affiliation, and journal_impact_factor
+-- — the last of which is never actually verifiable against these sources and
+-- is always recorded with match = false and a note saying so, rather than
+-- silently dropped or guessed at).
+CREATE TABLE IF NOT EXISTS verified_comparison_results (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  author_metrics_id   UUID NOT NULL REFERENCES verified_author_metrics(id) ON DELETE CASCADE,
+  field_name          VARCHAR(50) NOT NULL,
+  submitted_value     TEXT,
+  verified_value      TEXT,
+  difference          NUMERIC,
+  match               BOOLEAN NOT NULL,
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE INDEX IF NOT EXISTS idx_researchers_user_id ON researchers(user_id);
 CREATE INDEX IF NOT EXISTS idx_researchers_orcid ON researchers(orcid);
 CREATE INDEX IF NOT EXISTS idx_papers_researcher_id ON papers(researcher_id);
@@ -177,3 +255,7 @@ CREATE INDEX IF NOT EXISTS idx_history_researcher_id ON h_index_history(research
 CREATE INDEX IF NOT EXISTS idx_users_stripe_customer_id ON users(stripe_customer_id);
 CREATE INDEX IF NOT EXISTS idx_shared_scores_orcid ON shared_scores(orcid);
 CREATE INDEX IF NOT EXISTS idx_shared_scores_history_orcid ON shared_scores_history(orcid, which);
+CREATE INDEX IF NOT EXISTS idx_verified_authors_orcid ON verified_authors(orcid);
+CREATE INDEX IF NOT EXISTS idx_verified_author_metrics_author_id ON verified_author_metrics(author_id);
+CREATE INDEX IF NOT EXISTS idx_verified_papers_author_id ON verified_papers(author_id);
+CREATE INDEX IF NOT EXISTS idx_verified_comparison_results_metrics_id ON verified_comparison_results(author_metrics_id);

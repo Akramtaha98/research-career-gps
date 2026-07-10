@@ -6,6 +6,7 @@
     "predictor": "Peramal",
     "actions": "Tindakan",
     "import": "Import",
+    "verify": "Sahkan",
     "logout": "Log keluar",
     "login": "Log masuk"
   },
@@ -301,5 +302,48 @@
     "strong": "Penerbitan kukuh",
     "average": "Penerbitan purata",
     "emerging": "Penerbitan baharu muncul"
+  },
+  "verify": {
+    "title": "Sahkan maklumat akademik",
+    "subtitle": "Masukkan ORCID iD dan apa sahaja yang anda dakwa tentang diri anda (indeks-H, bilangan kertas kerja, petikan...) — ini menyemak dengan Semantic Scholar dahulu, dan hanya beralih ke OpenAlex jika Semantic Scholar tiada rekod, serta menunjukkan dengan tepat di mana nombor itu sepadan atau tidak.",
+    "orcidLabel": "ORCID iD",
+    "nameLabel": "Nama",
+    "affiliationLabel": "Gabungan/Institusi",
+    "optional": "(pilihan)",
+    "submit": "Sahkan",
+    "verifying": "Mengesahkan...",
+    "loginRequired": "Log masuk untuk menjalankan dan menyimpan pengesahan.",
+    "submitFailed": "Tidak dapat menjalankan pengesahan. Sila cuba lagi.",
+    "invalidOrcid": "Ini tidak kelihatan seperti ORCID iD yang sah. Format dijangka: 0000-0002-1825-0097.",
+    "notFound": "Tiada rekod ditemui untuk ORCID ini dalam Semantic Scholar atau OpenAlex.",
+    "identityTitle": "Penyelidik yang disahkan",
+    "sourceLabel": "Sumber",
+    "sourceSemanticScholar": "Semantic Scholar",
+    "sourceOpenAlex": "OpenAlex (sandaran)",
+    "status": {
+      "verified": "Disahkan",
+      "partial": "Percanggahan ditemui",
+      "unverifiable": "Tidak dapat disahkan"
+    },
+    "field": {
+      "paperCount": "Bilangan kertas kerja",
+      "citationCount": "Bilangan petikan",
+      "impactFactor": "Faktor impak jurnal",
+      "name": "Nama",
+      "affiliation": "Gabungan/Institusi"
+    },
+    "comparisonTitle": "Perbandingan",
+    "colField": "Medan",
+    "colSubmitted": "Anda dakwa",
+    "colVerified": "Disahkan",
+    "colMatch": "Padanan",
+    "matchYes": "Sepadan",
+    "matchNo": "Tidak sepadan",
+    "papersTitle": "Kertas kerja ditemui",
+    "showHistory": "Tunjukkan sejarah pengesahan",
+    "hideHistory": "Sembunyikan sejarah pengesahan",
+    "historyTitle": "Sejarah pengesahan",
+    "historyEmpty": "Belum ada pengesahan lepas untuk ORCID ini.",
+    "historyFailed": "Tidak dapat memuatkan sejarah pengesahan."
   }
 }

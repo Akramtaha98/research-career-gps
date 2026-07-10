@@ -6,6 +6,7 @@
     "predictor": "Prognose",
     "actions": "Aufgaben",
     "import": "Importieren",
+    "verify": "Verifizieren",
     "logout": "Abmelden",
     "login": "Anmelden"
   },
@@ -301,5 +302,48 @@
     "strong": "Starker Publikationsort",
     "average": "Durchschnittlicher Publikationsort",
     "emerging": "Aufstrebender Publikationsort"
+  },
+  "verify": {
+    "title": "Akademische Angaben verifizieren",
+    "subtitle": "Gib eine ORCID iD ein sowie das, was du über dich angibst (H-Index, Anzahl Publikationen, Zitationen...) — das wird zuerst gegen Semantic Scholar geprüft, nur bei fehlendem Eintrag dort wird auf OpenAlex zurückgegriffen, und du siehst genau, wo die Zahlen übereinstimmen oder nicht.",
+    "orcidLabel": "ORCID iD",
+    "nameLabel": "Name",
+    "affiliationLabel": "Zugehörigkeit",
+    "optional": "(optional)",
+    "submit": "Verifizieren",
+    "verifying": "Wird verifiziert...",
+    "loginRequired": "Melde dich an, um eine Verifizierung durchzuführen und zu speichern.",
+    "submitFailed": "Verifizierung konnte nicht durchgeführt werden. Bitte versuche es erneut.",
+    "invalidOrcid": "Das sieht nicht wie eine gültige ORCID iD aus. Erwartetes Format: 0000-0002-1825-0097.",
+    "notFound": "Für diese ORCID wurde weder bei Semantic Scholar noch bei OpenAlex ein Eintrag gefunden.",
+    "identityTitle": "Verifizierter Autor",
+    "sourceLabel": "Quelle",
+    "sourceSemanticScholar": "Semantic Scholar",
+    "sourceOpenAlex": "OpenAlex (Ausweichquelle)",
+    "status": {
+      "verified": "Verifiziert",
+      "partial": "Abweichungen gefunden",
+      "unverifiable": "Nicht verifizierbar"
+    },
+    "field": {
+      "paperCount": "Anzahl Publikationen",
+      "citationCount": "Anzahl Zitationen",
+      "impactFactor": "Impact-Faktor der Zeitschrift",
+      "name": "Name",
+      "affiliation": "Zugehörigkeit"
+    },
+    "comparisonTitle": "Vergleich",
+    "colField": "Feld",
+    "colSubmitted": "Du hast angegeben",
+    "colVerified": "Verifiziert",
+    "colMatch": "Übereinstimmung",
+    "matchYes": "Stimmt überein",
+    "matchNo": "Stimmt nicht überein",
+    "papersTitle": "Gefundene Publikationen",
+    "showHistory": "Verifizierungsverlauf anzeigen",
+    "hideHistory": "Verifizierungsverlauf ausblenden",
+    "historyTitle": "Verifizierungsverlauf",
+    "historyEmpty": "Für diese ORCID gibt es noch keine früheren Verifizierungen.",
+    "historyFailed": "Verifizierungsverlauf konnte nicht geladen werden."
   }
 }
