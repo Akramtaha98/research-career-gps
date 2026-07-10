@@ -54,7 +54,24 @@
     "selfReported": "dilaporkan sendiri",
     "viewProfile": "Lihat profil",
     "useAsBaseline": "Guna sebagai asas ramalan",
-    "disclaimer": "Tidak disahkan secara automatik dengan Scopus/WOS — aplikasi ini tidak dapat memanggil API mereka secara langsung. Nombor dan pautan disimpan seperti yang anda masukkan."
+    "disclaimer": "Tidak disahkan secara automatik dengan Scopus/WOS — aplikasi ini tidak dapat memanggil API mereka secara langsung. Nombor dan pautan disimpan seperti yang anda masukkan.",
+    "community": {
+      "title": "Dilaporkan oleh komuniti",
+      "subtitle": "Dikongsi dengan semua orang yang mencari penyelidik ini — bukan anda sahaja.",
+      "verified": "Disahkan oleh penyelidik",
+      "unverified": "Belum disahkan",
+      "noOrcid": "Nilai komuniti memerlukan ORCID penyelidik ini didaftarkan.",
+      "empty": "Belum ada nilai komuniti dihantar lagi.",
+      "suggestButton": "Cadangkan / kemas kini nilai ini",
+      "ownerHint": "ORCID log masuk anda sepadan dengan penyelidik ini — hantaran anda akan disahkan serta-merta.",
+      "submit": "Hantar",
+      "submitting": "Menghantar...",
+      "cancel": "Batal",
+      "resultVerified": "Terima kasih — memandangkan ini sepadan dengan ORCID anda sendiri, ia kini menjadi nilai komuniti yang disahkan.",
+      "resultUnverified": "Dihantar. Dipaparkan sebagai belum disahkan sehingga penyelidik mengesahkannya dengan log masuk ORCID.",
+      "resultSuggestion": "Direkodkan sebagai cadangan sahaja. Nilai yang disahkan sudah wujud dan hanya akaun ORCID penyelidik ini yang boleh menukarnya.",
+      "submitFailed": "Gagal menghantar. Cuba lagi."
+    }
   },
   "orcidLogin": {
     "cta": "Teruskan dengan ORCID",

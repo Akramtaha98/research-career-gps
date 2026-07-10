@@ -25,6 +25,23 @@ async function searchResearchers(req, res) {
     if (q.length < 2) return res.status(400).json({ error: 'q must be at least 2 characters' });
 
     const candidates = await researcherSource.searchAuthors(q);
+
+    // Attach any crowdsourced Scopus/WOS values already on file for each
+    // candidate that has an ORCID, so users can see community-reported
+    // numbers right in the search results — before deciding which
+    // candidate to track. Best-effort: a lookup failure for one candidate
+    // shouldn't break search results for the rest.
+    await Promise.all(
+      candidates.map(async (c) => {
+        if (!c.orcid) return;
+        try {
+          c.sharedScores = await store.getSharedScores(c.orcid);
+        } catch {
+          c.sharedScores = null;
+        }
+      })
+    );
+
     return res.json({ candidates });
   } catch (err) {
     return res.status(err.statusCode || 500).json({ error: err.message });
@@ -54,6 +71,7 @@ async function addResearcher(req, res) {
       totalCitations: profile.totalCitations,
       paperCount: profile.paperCount,
       source: profile.source,
+      orcid: profile.orcid || null,
     });
 
     await store.replacePapers(researcher.id, profile.papers);
@@ -88,6 +106,7 @@ async function getResearcher(req, res) {
         totalCitations: profile.totalCitations,
         paperCount: profile.paperCount,
         source: profile.source,
+        orcid: profile.orcid || null,
       });
       await store.replacePapers(researcher.id, profile.papers);
     }
@@ -259,6 +278,91 @@ function clearScore(which) {
   };
 }
 
+/**
+ * GET /api/researchers/:id/shared-scores
+ * Public within auth (any logged-in user, not just the one who added this
+ * researcher) — returns the CROWDSOURCED Scopus/WOS values for the person
+ * this researcher record points to (matched via their ORCID, see
+ * schema.sql's shared_scores comment). Distinct from the researcher's own
+ * private scopus_h_index/wos_h_index fields (self-reported baseline used for
+ * that user's own Predictor projections) — this is the shared, cross-user
+ * pool. Returns nulls (not an error) when the researcher has no ORCID on
+ * file, since crowdsourcing has no reliable key to group submissions on
+ * without one.
+ */
+async function getSharedScores(req, res) {
+  try {
+    const { id } = req.params;
+    const researcher = await store.findResearcherById(id);
+    if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
+    if (researcher.user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized to view this researcher' });
+    }
+    if (!researcher.orcid) {
+      return res.json({ orcid: null, scopus: null, wos: null });
+    }
+    const shared = await store.getSharedScores(researcher.orcid);
+    return res.json({ orcid: researcher.orcid, ...shared });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
+}
+
+/**
+ * POST /api/researchers/:id/shared-scores/:which  ('scopus' | 'wos')
+ * Body: { profileUrl, hIndex }
+ * Submits a value to the CROWDSOURCED pool for this researcher's ORCID.
+ * Verification model: if the submitting user's own ORCID-authenticated
+ * account (users.orcid) matches this researcher's ORCID — i.e. they ARE the
+ * researcher — the submission is immediately verified and becomes canonical.
+ * Otherwise it's stored as unverified; it still becomes the displayed
+ * "current" value if nothing verified exists yet, but can't silently
+ * overwrite an already-verified value (see store.js's
+ * resolveSharedScoreSubmission for the exact rules the user chose).
+ */
+function submitSharedScore(which) {
+  return async function (req, res) {
+    try {
+      const { id } = req.params;
+      const researcher = await store.findResearcherById(id);
+      if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
+      if (researcher.user_id !== req.user.id) {
+        return res.status(403).json({ error: 'Not authorized to view this researcher' });
+      }
+      if (!researcher.orcid) {
+        return res.status(400).json({
+          error: 'This researcher has no ORCID on file, so a shared/crowdsourced value cannot be tracked for them yet.',
+        });
+      }
+
+      const { profileUrl, hIndex } = req.body;
+      const parsedH = Number(hIndex);
+      if (!Number.isInteger(parsedH) || parsedH < 0 || parsedH > 1000) {
+        return res.status(400).json({ error: 'hIndex must be a whole number between 0 and 1000' });
+      }
+      if (profileUrl && !/^https?:\/\//i.test(profileUrl)) {
+        return res.status(400).json({ error: 'profileUrl must start with http:// or https://' });
+      }
+
+      const submitter = await store.findUserById(req.user.id);
+      const isOwner = Boolean(submitter?.orcid) && submitter.orcid === researcher.orcid;
+
+      const result = await store.submitSharedScore({
+        orcid: researcher.orcid,
+        which,
+        hIndex: parsedH,
+        profileUrl: profileUrl || null,
+        submittedByUserId: req.user.id,
+        isOwner,
+      });
+
+      return res.json(result); // { current, resultStatus, applied }
+    } catch (err) {
+      return res.status(err.statusCode || 500).json({ error: err.message });
+    }
+  };
+}
+
 module.exports = {
   searchResearchers,
   addResearcher,
@@ -271,4 +375,7 @@ module.exports = {
   clearScopusScore: clearScore('scopus'),
   setWosScore: setScore('wos'),
   clearWosScore: clearScore('wos'),
+  getSharedScores,
+  submitSharedScopusScore: submitSharedScore('scopus'),
+  submitSharedWosScore: submitSharedScore('wos'),
 };

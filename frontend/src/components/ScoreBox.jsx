@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResearcher } from '../context/ResearcherContext';
 import { useAuth } from '../context/AuthContext';
@@ -27,6 +27,24 @@ const GENERIC_PROFILE_LINK = {
 export default function ScoreBox({ researcher, baselineSource, setBaselineSource }) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { getSharedScores } = useResearcher();
+  const [shared, setShared] = useState(null); // { orcid, scopus, wos } | null while loading
+
+  useEffect(() => {
+    let cancelled = false;
+    setShared(null);
+    getSharedScores()
+      .then((data) => {
+        if (!cancelled) setShared(data);
+      })
+      .catch(() => {
+        if (!cancelled) setShared({ orcid: null, scopus: null, wos: null });
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [researcher?.id]);
 
   return (
     <div className="card border border-brand-100 bg-brand-50/40">
@@ -46,6 +64,9 @@ export default function ScoreBox({ researcher, baselineSource, setBaselineSource
           researcher={researcher}
           baselineSource={baselineSource}
           setBaselineSource={setBaselineSource}
+          shared={shared?.scopus}
+          sharedOrcid={shared?.orcid}
+          onSharedChange={(row) => setShared((prev) => ({ ...prev, scopus: row }))}
         />
         <ScoreRow
           which="wos"
@@ -53,6 +74,9 @@ export default function ScoreBox({ researcher, baselineSource, setBaselineSource
           researcher={researcher}
           baselineSource={baselineSource}
           setBaselineSource={setBaselineSource}
+          shared={shared?.wos}
+          sharedOrcid={shared?.orcid}
+          onSharedChange={(row) => setShared((prev) => ({ ...prev, wos: row }))}
         />
       </div>
 
@@ -61,7 +85,7 @@ export default function ScoreBox({ researcher, baselineSource, setBaselineSource
   );
 }
 
-function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource }) {
+function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource, shared, sharedOrcid, onSharedChange }) {
   const { t } = useTranslation();
   const { setScore, clearScore } = useResearcher();
 
@@ -209,6 +233,166 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource 
       )}
 
       {message && <p className="mt-1 text-xs text-slate-500">{message}</p>}
+
+      <CommunityRow which={which} shared={shared} orcid={sharedOrcid} onChange={onSharedChange} />
+    </div>
+  );
+}
+
+/**
+ * The crowdsourced counterpart to the private "self-reported" section above:
+ * shows whatever value the COMMUNITY has on file for this researcher (shared
+ * across every user, keyed by the researcher's ORCID — see
+ * backend/schema.sql's shared_scores comment), with a verified/unverified
+ * badge, and a small form to submit or update it. Submitting doesn't
+ * guarantee the value becomes canonical — see the result message after
+ * submit, which reflects exactly what the backend's ORCID-owner-override
+ * verification rule decided (verified / unverified / suggestion-only).
+ */
+function CommunityRow({ which, shared, orcid, onChange }) {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const { submitSharedScore } = useResearcher();
+
+  const [open, setOpen] = useState(false);
+  const [profileUrl, setProfileUrl] = useState('');
+  const [hIndexInput, setHIndexInput] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [resultMessage, setResultMessage] = useState(null);
+
+  const isOwner = Boolean(user?.orcid) && Boolean(orcid) && user.orcid === orcid;
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const parsed = Number(hIndexInput);
+    if (!Number.isInteger(parsed) || parsed < 0) {
+      setResultMessage(t('scoreBox.invalidNumber'));
+      return;
+    }
+    setSubmitting(true);
+    setResultMessage(null);
+    try {
+      const result = await submitSharedScore(which, { profileUrl: profileUrl.trim() || null, hIndex: parsed });
+      onChange?.(result.current);
+      setResultMessage(
+        t(
+          result.resultStatus === 'verified'
+            ? 'scoreBox.community.resultVerified'
+            : result.resultStatus === 'unverified'
+            ? 'scoreBox.community.resultUnverified'
+            : 'scoreBox.community.resultSuggestion'
+        )
+      );
+      setOpen(false);
+      setProfileUrl('');
+      setHIndexInput('');
+    } catch (err) {
+      setResultMessage(err.response?.data?.error || t('scoreBox.community.submitFailed'));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (orcid === undefined) {
+    // Parent's shared-scores fetch hasn't resolved yet — render nothing rather than
+    // flash a misleading "no ORCID" message before we actually know.
+    return null;
+  }
+
+  if (orcid === null) {
+    // researcher has no ORCID on file at all — feature genuinely unavailable, not just empty.
+    return (
+      <div className="mt-2 pt-2 border-t border-slate-100">
+        <p className="text-[11px] text-slate-400">{t('scoreBox.community.noOrcid')}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-2 pt-2 border-t border-slate-100">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-xs font-medium text-slate-500">{t('scoreBox.community.title')}</span>
+        {shared && (
+          <span
+            className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
+              shared.status === 'verified' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+            }`}
+          >
+            {shared.status === 'verified' ? t('scoreBox.community.verified') : t('scoreBox.community.unverified')}
+          </span>
+        )}
+      </div>
+
+      {shared ? (
+        <div className="mt-1 flex items-center justify-between gap-3 flex-wrap">
+          <div className="text-sm text-slate-700">
+            <span className="font-semibold">{shared.h_index}</span>
+            {shared.profile_url && (
+              <>
+                {' · '}
+                <a href={shared.profile_url} target="_blank" rel="noopener noreferrer" className="text-brand-600 underline text-xs">
+                  {t('scoreBox.viewProfile')}
+                </a>
+              </>
+            )}
+          </div>
+          {!open && (
+            <button type="button" onClick={() => setOpen(true)} className="text-xs text-brand-600 underline shrink-0">
+              {t('scoreBox.community.suggestButton')}
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="mt-1 flex items-center justify-between gap-3 flex-wrap">
+          <p className="text-xs text-slate-400">{t('scoreBox.community.empty')}</p>
+          {!open && (
+            <button type="button" onClick={() => setOpen(true)} className="text-xs text-brand-600 underline shrink-0">
+              {t('scoreBox.community.suggestButton')}
+            </button>
+          )}
+        </div>
+      )}
+
+      {isOwner && (
+        <p className="mt-1 text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-2 py-1">
+          {t('scoreBox.community.ownerHint')}
+        </p>
+      )}
+
+      {open && (
+        <form onSubmit={handleSubmit} className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t('scoreBox.profileUrlLabel')}</label>
+            <input
+              className="input"
+              placeholder={t('scoreBox.profileUrlPlaceholder', { label: which === 'scopus' ? 'Scopus' : 'Web of Science' })}
+              value={profileUrl}
+              onChange={(e) => setProfileUrl(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t('scoreBox.hIndexLabel')}</label>
+            <input
+              type="number"
+              min="0"
+              className="input"
+              value={hIndexInput}
+              onChange={(e) => setHIndexInput(e.target.value)}
+              required
+            />
+          </div>
+          <div className="sm:col-span-3 flex items-center gap-3">
+            <button type="submit" disabled={submitting} className="btn-primary text-xs px-3 py-1.5">
+              {submitting ? t('scoreBox.community.submitting') : t('scoreBox.community.submit')}
+            </button>
+            <button type="button" onClick={() => setOpen(false)} className="text-xs text-slate-500 underline">
+              {t('scoreBox.community.cancel')}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {resultMessage && <p className="mt-1 text-xs text-slate-500">{resultMessage}</p>}
     </div>
   );
 }

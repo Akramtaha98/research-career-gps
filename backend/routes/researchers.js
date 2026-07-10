@@ -11,6 +11,9 @@ const {
   clearScopusScore,
   setWosScore,
   clearWosScore,
+  getSharedScores,
+  submitSharedScopusScore,
+  submitSharedWosScore,
 } = require('../controllers/researcherController');
 const { requireAuth } = require('../middleware/auth');
 const { requirePro } = require('../middleware/requirePro');
@@ -32,5 +35,8 @@ router.patch('/:id/scopus-score', setScopusScore);
 router.delete('/:id/scopus-score', clearScopusScore);
 router.patch('/:id/wos-score', setWosScore);
 router.delete('/:id/wos-score', clearWosScore);
+router.get('/:id/shared-scores', getSharedScores);
+router.post('/:id/shared-scores/scopus', submitSharedScopusScore);
+router.post('/:id/shared-scores/wos', submitSharedWosScore);
 
 module.exports = router;

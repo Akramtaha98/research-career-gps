@@ -54,7 +54,24 @@
     "selfReported": "selbst gemeldet",
     "viewProfile": "Profil ansehen",
     "useAsBaseline": "Als Basis für die Prognose verwenden",
-    "disclaimer": "Nicht automatisch mit Scopus/WOS abgeglichen — diese App kann deren APIs nicht direkt aufrufen. Zahlen und Links werden genau so gespeichert, wie du sie eingegeben hast."
+    "disclaimer": "Nicht automatisch mit Scopus/WOS abgeglichen — diese App kann deren APIs nicht direkt aufrufen. Zahlen und Links werden genau so gespeichert, wie du sie eingegeben hast.",
+    "community": {
+      "title": "Von der Community gemeldet",
+      "subtitle": "Sichtbar für alle, die nach dieser Forscherin/diesem Forscher suchen — nicht nur für dich.",
+      "verified": "Von der Person verifiziert",
+      "unverified": "Nicht verifiziert",
+      "noOrcid": "Community-Werte erfordern eine hinterlegte ORCID für diese Person.",
+      "empty": "Noch kein Community-Wert eingereicht.",
+      "suggestButton": "Diesen Wert vorschlagen / aktualisieren",
+      "ownerHint": "Deine angemeldete ORCID stimmt mit der dieser Person überein — deine Eingabe wird sofort verifiziert.",
+      "submit": "Absenden",
+      "submitting": "Wird gesendet...",
+      "cancel": "Abbrechen",
+      "resultVerified": "Danke — da dies mit deiner eigenen ORCID übereinstimmt, ist es jetzt der verifizierte Community-Wert.",
+      "resultUnverified": "Eingereicht. Wird als nicht verifiziert angezeigt, bis die Person dies durch ORCID-Anmeldung bestätigt.",
+      "resultSuggestion": "Als Vorschlag gespeichert. Es existiert bereits ein verifizierter Wert, den nur das ORCID-bestätigte Konto dieser Person ändern kann.",
+      "submitFailed": "Senden fehlgeschlagen. Bitte erneut versuchen."
+    }
   },
   "orcidLogin": {
     "cta": "Weiter mit ORCID",

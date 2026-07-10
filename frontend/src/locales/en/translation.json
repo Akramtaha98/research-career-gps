@@ -54,7 +54,24 @@
     "selfReported": "self-reported",
     "viewProfile": "View profile",
     "useAsBaseline": "Use as prediction baseline",
-    "disclaimer": "Not automatically checked against Scopus/WOS — this app has no way to call their APIs directly. Numbers and links are stored exactly as entered."
+    "disclaimer": "Not automatically checked against Scopus/WOS — this app has no way to call their APIs directly. Numbers and links are stored exactly as entered.",
+    "community": {
+      "title": "Community-reported",
+      "subtitle": "Shared with everyone who searches for this researcher — not just you.",
+      "verified": "Verified by researcher",
+      "unverified": "Unverified",
+      "noOrcid": "Community numbers need this researcher's ORCID on file to enable.",
+      "empty": "No community value submitted yet.",
+      "suggestButton": "Suggest / update this value",
+      "ownerHint": "Your signed-in ORCID matches this researcher — your submission will be verified immediately.",
+      "submit": "Submit",
+      "submitting": "Submitting...",
+      "cancel": "Cancel",
+      "resultVerified": "Thanks — since this matches your own ORCID, it's now the verified community value.",
+      "resultUnverified": "Submitted. Shown as unverified until the researcher confirms it by signing in with ORCID.",
+      "resultSuggestion": "Recorded as a suggestion. A verified value already exists and only this researcher's own ORCID-confirmed account can change it.",
+      "submitFailed": "Couldn't submit. Try again."
+    }
   },
   "orcidLogin": {
     "cta": "Continue with ORCID",

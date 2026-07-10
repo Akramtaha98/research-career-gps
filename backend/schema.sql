@@ -46,6 +46,14 @@ CREATE TABLE IF NOT EXISTS researchers (
   -- calls to know which service the stored ID belongs to. See
   -- services/researcherSource.js.
   source                    VARCHAR(20) NOT NULL DEFAULT 'semantic_scholar',
+  -- The TRACKED PERSON's own ORCID iD (not the app user's — see users.orcid
+  -- for that). Populated from the upstream profile (openAlex.js) whenever
+  -- the author has one on file. This is the join key for the shared/
+  -- crowdsourced Scopus/WOS pool below (shared_scores) — without it, a
+  -- researcher's self-reported numbers stay private to whoever added them,
+  -- since there's no reliable way to know two different users' "researchers"
+  -- rows refer to the same real person otherwise.
+  orcid                 VARCHAR(19),
   -- Optional self-reported official H-index numbers, entered manually
   -- because neither Scopus nor Web of Science offers a public API this app
   -- can call directly (see services/openAlex.js history for why). Scopus
@@ -95,8 +103,57 @@ CREATE TABLE IF NOT EXISTS h_index_history (
   recorded_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Crowdsourced Scopus/WOS pool: ONE canonical current value per (orcid, which),
+-- shared across every user who searches for that researcher — this is what
+-- replaces the old "each user has their own private number" model. Verification
+-- model (user-selected): the researcher's OWN ORCID-authenticated account
+-- (users.orcid matches this row's orcid) can submit a value that's
+-- immediately marked verified and becomes canonical, overwriting whatever was
+-- there. Anyone else's submission is stored as 'unverified' and shown as such;
+-- it can still become the displayed "current" value if nothing verified
+-- exists yet, but once a verified value exists, non-owner submissions no
+-- longer silently overwrite it (see submitSharedScore in store.js) — they're
+-- only recorded in shared_scores_history as suggestions.
+CREATE TABLE IF NOT EXISTS shared_scores (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  orcid         VARCHAR(19) NOT NULL,
+  which         VARCHAR(10) NOT NULL CHECK (which IN ('scopus', 'wos')),
+  h_index       INTEGER NOT NULL,
+  profile_url   TEXT,
+  status        VARCHAR(20) NOT NULL DEFAULT 'unverified' CHECK (status IN ('unverified', 'verified')),
+  submitted_by  UUID REFERENCES users(id) ON DELETE SET NULL,
+  submitted_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  verified_by   UUID REFERENCES users(id) ON DELETE SET NULL,
+  verified_at   TIMESTAMPTZ,
+  UNIQUE (orcid, which)
+);
+
+-- Append-only log of every submission ever made to the shared pool (including
+-- ones that didn't become "current" because a verified value already stood) —
+-- this is the update/history trail the user asked for, and doubles as an
+-- audit log if a submission ever needs to be investigated/disputed.
+CREATE TABLE IF NOT EXISTS shared_scores_history (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  -- Monotonic tiebreaker for ordering — submitted_at alone can collide when
+  -- two submissions land in the same instant, and UUIDs aren't sequential.
+  seq           BIGSERIAL,
+  orcid         VARCHAR(19) NOT NULL,
+  which         VARCHAR(10) NOT NULL CHECK (which IN ('scopus', 'wos')),
+  h_index       INTEGER NOT NULL,
+  profile_url   TEXT,
+  -- 'verified' | 'unverified' | 'suggestion' — what this specific submission
+  -- resulted in (a 'suggestion' is one that was recorded but did NOT become
+  -- the current value because a verified value already existed).
+  result_status VARCHAR(20) NOT NULL,
+  submitted_by  UUID REFERENCES users(id) ON DELETE SET NULL,
+  submitted_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE INDEX IF NOT EXISTS idx_researchers_user_id ON researchers(user_id);
+CREATE INDEX IF NOT EXISTS idx_researchers_orcid ON researchers(orcid);
 CREATE INDEX IF NOT EXISTS idx_papers_researcher_id ON papers(researcher_id);
 CREATE INDEX IF NOT EXISTS idx_predictions_researcher_id ON predictions(researcher_id);
 CREATE INDEX IF NOT EXISTS idx_history_researcher_id ON h_index_history(researcher_id);
 CREATE INDEX IF NOT EXISTS idx_users_stripe_customer_id ON users(stripe_customer_id);
+CREATE INDEX IF NOT EXISTS idx_shared_scores_orcid ON shared_scores(orcid);
+CREATE INDEX IF NOT EXISTS idx_shared_scores_history_orcid ON shared_scores_history(orcid, which);

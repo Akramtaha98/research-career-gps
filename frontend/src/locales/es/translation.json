@@ -54,7 +54,24 @@
     "selfReported": "autodeclarado",
     "viewProfile": "Ver perfil",
     "useAsBaseline": "Usar como base de la predicción",
-    "disclaimer": "No se comprueba automáticamente contra Scopus/WOS — esta app no puede llamar directamente a sus APIs. Los números y enlaces se guardan tal como los introdujiste."
+    "disclaimer": "No se comprueba automáticamente contra Scopus/WOS — esta app no puede llamar directamente a sus APIs. Los números y enlaces se guardan tal como los introdujiste.",
+    "community": {
+      "title": "Reportado por la comunidad",
+      "subtitle": "Compartido con todos los que buscan a este investigador — no solo contigo.",
+      "verified": "Verificado por el investigador",
+      "unverified": "Sin verificar",
+      "noOrcid": "Los valores de la comunidad requieren que este investigador tenga un ORCID registrado.",
+      "empty": "Todavía no se ha enviado ningún valor de la comunidad.",
+      "suggestButton": "Sugerir / actualizar este valor",
+      "ownerHint": "Tu ORCID de inicio de sesión coincide con el de este investigador — tu envío se verificará de inmediato.",
+      "submit": "Enviar",
+      "submitting": "Enviando...",
+      "cancel": "Cancelar",
+      "resultVerified": "Gracias — como coincide con tu propio ORCID, ahora es el valor verificado de la comunidad.",
+      "resultUnverified": "Enviado. Se muestra como sin verificar hasta que el investigador lo confirme iniciando sesión con ORCID.",
+      "resultSuggestion": "Registrado como sugerencia. Ya existe un valor verificado y solo la cuenta ORCID confirmada de este investigador puede cambiarlo.",
+      "submitFailed": "No se pudo enviar. Inténtalo de nuevo."
+    }
   },
   "orcidLogin": {
     "cta": "Continuar con ORCID",

@@ -28,7 +28,70 @@ const memory = {
   papers: [], // { id, researcher_id, external_id, title, year, citations, venue, updated_at }
   predictions: [], // { id, researcher_id, target_h, monthly_citations, papers_per_year, estimated_months, created_at }
   history: [], // { id, researcher_id, h_index, total_citations, recorded_at }
+  sharedScores: [], // { id, orcid, which, h_index, profile_url, status, submitted_by, submitted_at, verified_by, verified_at }
+  sharedScoresHistory: [], // { id, orcid, which, h_index, profile_url, result_status, submitted_by, submitted_at, seq }
 };
+
+// Monotonic counter so shared-score history sorts deterministically even
+// when two submissions land in the same millisecond (submitted_at alone
+// isn't enough resolution to order them — Date.toISOString() is ms-precision).
+let sharedScoresHistorySeq = 0;
+
+/**
+ * Shared crowdsourced-score submission logic — identical rules for both
+ * memoryStore and pgStore (see schema.sql's shared_scores comment for the
+ * full rationale). Pure function over plain objects so both backends can
+ * reuse it instead of duplicating the branching.
+ *
+ * @param {object|null} current - existing shared_scores row for (orcid, which), or null
+ * @param {{orcid, which, hIndex, profileUrl, submittedByUserId, isOwner}} submission
+ * @returns {{ nextCurrent: object, resultStatus: 'verified'|'unverified'|'suggestion', applied: boolean }}
+ */
+function resolveSharedScoreSubmission(current, { orcid, which, hIndex, profileUrl, submittedByUserId, isOwner }) {
+  const now = new Date().toISOString();
+
+  if (isOwner) {
+    // The researcher's own ORCID-authenticated account always wins, whether
+    // or not a verified value already exists.
+    return {
+      nextCurrent: {
+        ...(current || { id: uuid(), orcid, which }),
+        h_index: hIndex,
+        profile_url: profileUrl || null,
+        status: 'verified',
+        submitted_by: submittedByUserId,
+        submitted_at: now,
+        verified_by: submittedByUserId,
+        verified_at: now,
+      },
+      resultStatus: 'verified',
+      applied: true,
+    };
+  }
+
+  if (current && current.status === 'verified') {
+    // A verified value already stands — a non-owner submission is recorded
+    // as a suggestion (see shared_scores_history) but does not overwrite it.
+    return { nextCurrent: current, resultStatus: 'suggestion', applied: false };
+  }
+
+  // No current value yet, or the current one is itself unverified — the
+  // newest crowd submission becomes the (still unverified) displayed value.
+  return {
+    nextCurrent: {
+      ...(current || { id: uuid(), orcid, which }),
+      h_index: hIndex,
+      profile_url: profileUrl || null,
+      status: 'unverified',
+      submitted_by: submittedByUserId,
+      submitted_at: now,
+      verified_by: null,
+      verified_at: null,
+    },
+    resultStatus: 'unverified',
+    applied: true,
+  };
+}
 
 const memoryStore = {
   async createUser({ email, name, passwordHash, authProvider = 'local', orcid = null }) {
@@ -102,7 +165,7 @@ const memoryStore = {
     return user;
   },
 
-  async upsertResearcher({ userId, semanticScholarId, name, hIndex, totalCitations, paperCount, source = 'semantic_scholar' }) {
+  async upsertResearcher({ userId, semanticScholarId, name, hIndex, totalCitations, paperCount, source = 'semantic_scholar', orcid = null }) {
     let researcher = memory.researchers.find(
       (r) => r.user_id === userId && r.semantic_scholar_id === semanticScholarId
     );
@@ -114,6 +177,7 @@ const memoryStore = {
         total_citations: totalCitations,
         paper_count: paperCount,
         source,
+        orcid: orcid !== null ? orcid : researcher.orcid,
         updated_at: now,
       });
     } else {
@@ -126,6 +190,7 @@ const memoryStore = {
         total_citations: totalCitations,
         paper_count: paperCount,
         source,
+        orcid,
         scopus_h_index: null,
         scopus_url: null,
         scopus_updated_at: null,
@@ -166,6 +231,61 @@ const memoryStore = {
     researcher[`${which}_url`] = null;
     researcher[`${which}_updated_at`] = null;
     return researcher;
+  },
+
+  /** Both current shared_scores rows (scopus + wos) for a given researcher ORCID. */
+  async getSharedScores(orcid) {
+    if (!orcid) return { scopus: null, wos: null };
+    return {
+      scopus: memory.sharedScores.find((s) => s.orcid === orcid && s.which === 'scopus') || null,
+      wos: memory.sharedScores.find((s) => s.orcid === orcid && s.which === 'wos') || null,
+    };
+  },
+
+  async submitSharedScore({ orcid, which, hIndex, profileUrl, submittedByUserId, isOwner }) {
+    const current = memory.sharedScores.find((s) => s.orcid === orcid && s.which === which) || null;
+    const { nextCurrent, resultStatus, applied } = resolveSharedScoreSubmission(current, {
+      orcid,
+      which,
+      hIndex,
+      profileUrl,
+      submittedByUserId,
+      isOwner,
+    });
+
+    if (applied) {
+      if (current) {
+        Object.assign(current, nextCurrent);
+      } else {
+        memory.sharedScores.push(nextCurrent);
+      }
+    }
+
+    memory.sharedScoresHistory.push({
+      id: uuid(),
+      orcid,
+      which,
+      h_index: hIndex,
+      profile_url: profileUrl || null,
+      result_status: resultStatus,
+      submitted_by: submittedByUserId,
+      submitted_at: new Date().toISOString(),
+      seq: sharedScoresHistorySeq++,
+    });
+
+    const finalCurrent = applied
+      ? current
+        ? current
+        : nextCurrent
+      : memory.sharedScores.find((s) => s.orcid === orcid && s.which === which) || null;
+
+    return { current: finalCurrent, resultStatus, applied };
+  },
+
+  async getSharedScoreHistory(orcid, which) {
+    return memory.sharedScoresHistory
+      .filter((h) => h.orcid === orcid && h.which === which)
+      .sort((a, b) => b.seq - a.seq);
   },
 
   async replacePapers(researcherId, papers) {
@@ -282,14 +402,15 @@ const pgStore = {
     return rows[0] || null;
   },
 
-  async upsertResearcher({ userId, semanticScholarId, name, hIndex, totalCitations, paperCount, source = 'semantic_scholar' }) {
+  async upsertResearcher({ userId, semanticScholarId, name, hIndex, totalCitations, paperCount, source = 'semantic_scholar', orcid = null }) {
     const { rows } = await query(
-      `INSERT INTO researchers (user_id, semantic_scholar_id, name, h_index, total_citations, paper_count, source)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO researchers (user_id, semantic_scholar_id, name, h_index, total_citations, paper_count, source, orcid)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        ON CONFLICT (user_id, semantic_scholar_id)
-       DO UPDATE SET name = $3, h_index = $4, total_citations = $5, paper_count = $6, source = $7, updated_at = now()
+       DO UPDATE SET name = $3, h_index = $4, total_citations = $5, paper_count = $6, source = $7,
+         orcid = COALESCE($8, researchers.orcid), updated_at = now()
        RETURNING *`,
-      [userId, semanticScholarId, name, hIndex, totalCitations, paperCount, source]
+      [userId, semanticScholarId, name, hIndex, totalCitations, paperCount, source, orcid]
     );
     const researcher = rows[0];
     await query(
@@ -331,6 +452,75 @@ const pgStore = {
       [researcherId]
     );
     return rows[0] || null;
+  },
+
+  /** Both current shared_scores rows (scopus + wos) for a given researcher ORCID. */
+  async getSharedScores(orcid) {
+    if (!orcid) return { scopus: null, wos: null };
+    const { rows } = await query(`SELECT * FROM shared_scores WHERE orcid = $1`, [orcid]);
+    return {
+      scopus: rows.find((r) => r.which === 'scopus') || null,
+      wos: rows.find((r) => r.which === 'wos') || null,
+    };
+  },
+
+  // Reuses the same resolveSharedScoreSubmission branching logic as
+  // memoryStore (see its definition above) so both backends apply
+  // identical verification rules — only the persistence differs.
+  async submitSharedScore({ orcid, which, hIndex, profileUrl, submittedByUserId, isOwner }) {
+    const { rows: currentRows } = await query(
+      `SELECT * FROM shared_scores WHERE orcid = $1 AND which = $2`,
+      [orcid, which]
+    );
+    const current = currentRows[0] || null;
+
+    const { nextCurrent, resultStatus, applied } = resolveSharedScoreSubmission(current, {
+      orcid,
+      which,
+      hIndex,
+      profileUrl,
+      submittedByUserId,
+      isOwner,
+    });
+
+    let finalCurrent = current;
+    if (applied) {
+      const { rows } = await query(
+        `INSERT INTO shared_scores (orcid, which, h_index, profile_url, status, submitted_by, submitted_at, verified_by, verified_at)
+         VALUES ($1, $2, $3, $4, $5, $6, now(), $7, $8)
+         ON CONFLICT (orcid, which)
+         DO UPDATE SET h_index = $3, profile_url = $4, status = $5, submitted_by = $6,
+           submitted_at = now(), verified_by = $7, verified_at = $8
+         RETURNING *`,
+        [
+          orcid,
+          which,
+          hIndex,
+          profileUrl || null,
+          nextCurrent.status,
+          submittedByUserId,
+          nextCurrent.verified_by || null,
+          nextCurrent.verified_at || null,
+        ]
+      );
+      finalCurrent = rows[0];
+    }
+
+    await query(
+      `INSERT INTO shared_scores_history (orcid, which, h_index, profile_url, result_status, submitted_by)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [orcid, which, hIndex, profileUrl || null, resultStatus, submittedByUserId]
+    );
+
+    return { current: finalCurrent, resultStatus, applied };
+  },
+
+  async getSharedScoreHistory(orcid, which) {
+    const { rows } = await query(
+      `SELECT * FROM shared_scores_history WHERE orcid = $1 AND which = $2 ORDER BY seq DESC`,
+      [orcid, which]
+    );
+    return rows;
   },
 
   async replacePapers(researcherId, papers) {

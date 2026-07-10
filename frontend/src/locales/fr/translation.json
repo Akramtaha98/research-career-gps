@@ -54,7 +54,24 @@
     "selfReported": "auto-déclaré",
     "viewProfile": "Voir le profil",
     "useAsBaseline": "Utiliser comme base de prédiction",
-    "disclaimer": "Non vérifié automatiquement auprès de Scopus/WOS — cette application ne peut pas appeler directement leurs API. Les chiffres et liens sont enregistrés tels que vous les avez saisis."
+    "disclaimer": "Non vérifié automatiquement auprès de Scopus/WOS — cette application ne peut pas appeler directement leurs API. Les chiffres et liens sont enregistrés tels que vous les avez saisis.",
+    "community": {
+      "title": "Signalé par la communauté",
+      "subtitle": "Partagé avec tous ceux qui recherchent ce chercheur — pas seulement vous.",
+      "verified": "Vérifié par le chercheur",
+      "unverified": "Non vérifié",
+      "noOrcid": "Les valeurs communautaires nécessitent que ce chercheur ait un ORCID enregistré.",
+      "empty": "Aucune valeur communautaire soumise pour l'instant.",
+      "suggestButton": "Suggérer / mettre à jour cette valeur",
+      "ownerHint": "Votre ORCID de connexion correspond à celui de ce chercheur — votre soumission sera vérifiée immédiatement.",
+      "submit": "Soumettre",
+      "submitting": "Envoi...",
+      "cancel": "Annuler",
+      "resultVerified": "Merci — comme cela correspond à votre propre ORCID, c'est désormais la valeur communautaire vérifiée.",
+      "resultUnverified": "Soumis. Affiché comme non vérifié jusqu'à ce que le chercheur le confirme en se connectant avec ORCID.",
+      "resultSuggestion": "Enregistré comme suggestion. Une valeur vérifiée existe déjà et seul le compte ORCID confirmé de ce chercheur peut la modifier.",
+      "submitFailed": "Échec de l'envoi. Réessayez."
+    }
   },
   "orcidLogin": {
     "cta": "Continuer avec ORCID",

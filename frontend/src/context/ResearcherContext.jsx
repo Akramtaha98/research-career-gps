@@ -108,6 +108,41 @@ export function ResearcherProvider({ children }) {
     [source, researcher]
   );
 
+  /**
+   * Fetches the CROWDSOURCED Scopus/WOS values for the current live
+   * researcher — shared across every user, not just whoever added them (see
+   * backend/schema.sql's shared_scores comment). Returns
+   * { orcid, scopus, wos } where scopus/wos are null if nothing's been
+   * submitted yet, or if this researcher has no ORCID on file (crowdsourcing
+   * needs a stable cross-user key).
+   */
+  const getSharedScores = useCallback(async () => {
+    if (source !== 'live' || !researcher?.id) return { orcid: null, scopus: null, wos: null };
+    const { data } = await client.get(`/researchers/${researcher.id}/shared-scores`);
+    return data;
+  }, [source, researcher]);
+
+  /**
+   * Submits a value to the shared/community pool. Verification model: if the
+   * signed-in user's own ORCID matches this researcher's ORCID (they ARE the
+   * researcher), it's instantly verified and becomes canonical; otherwise
+   * it's recorded as unverified, and can't silently overwrite an
+   * already-verified value — see backend's resolveSharedScoreSubmission.
+   * Returns { current, resultStatus, applied } so the UI can tell the user
+   * exactly what happened to their submission.
+   */
+  const submitSharedScore = useCallback(
+    async (which, { profileUrl, hIndex }) => {
+      if (source !== 'live' || !researcher?.id) return null;
+      const { data } = await client.post(`/researchers/${researcher.id}/shared-scores/${which}`, {
+        profileUrl,
+        hIndex,
+      });
+      return data;
+    },
+    [source, researcher]
+  );
+
   const refreshResearcher = useCallback(async () => {
     if (source !== 'live' || !researcher?.id) return;
     setLoading(true);
@@ -139,6 +174,8 @@ export function ResearcherProvider({ children }) {
         getRealHistory,
         setScore,
         clearScore,
+        getSharedScores,
+        submitSharedScore,
       }}
     >
       {children}
