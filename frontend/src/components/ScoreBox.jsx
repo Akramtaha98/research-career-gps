@@ -120,7 +120,10 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
   const currentUrl = researcher[`${which}_url`];
   const hasValue = currentH != null;
 
-  const [editing, setEditing] = useState(!hasValue);
+  // The edit form lives in a popup (see the Modal below) rather than inline —
+  // starts closed so the box shows only a compact read-only summary until the
+  // user chooses to add/edit numbers.
+  const [editing, setEditing] = useState(false);
   const [profileUrl, setProfileUrl] = useState(currentUrl || '');
   const [hIndexInput, setHIndexInput] = useState(currentH ?? '');
   const [paperCountInput, setPaperCountInput] = useState(currentPaperCount ?? '');
@@ -228,7 +231,7 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
     setMessage(null);
     try {
       await clearScore(which);
-      setEditing(true);
+      setEditing(false);
       setHIndexInput('');
       setPaperCountInput('');
       setCitationsInput('');
@@ -244,14 +247,12 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
     <div className="py-3 first:pt-0 last:pb-0">
       <div className="flex items-center justify-between gap-3">
         <span className="text-sm font-medium text-slate-700">{label}</span>
-        {hasValue && !editing && (
-          <button type="button" onClick={() => setEditing(true)} className="text-xs text-brand-600 underline shrink-0">
-            {t('scoreBox.edit')}
-          </button>
-        )}
+        <button type="button" onClick={() => setEditing(true)} className="text-xs text-brand-600 underline shrink-0">
+          {hasValue ? t('scoreBox.edit') : t('scoreBox.addNumbers')}
+        </button>
       </div>
 
-      {hasValue && !editing ? (
+      {hasValue ? (
         <div className="mt-1.5 flex items-center justify-between gap-3 flex-wrap">
           <div className="text-sm text-slate-700">
             <span className="font-semibold">{t('scoreBox.hIndexLabel')} {currentH}</span>
@@ -284,9 +285,11 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
             </label>
           )}
         </div>
-      ) : null}
+      ) : (
+        <p className="mt-1.5 text-sm text-slate-400">{t('scoreBox.notReportedYet')}</p>
+      )}
 
-      {hasValue && !editing && (
+      {hasValue && (
         <div className="mt-2 flex items-center gap-2 flex-wrap">
           <button type="button" onClick={openClaimModal} className="btn-secondary text-xs px-3 py-1.5">
             {t('scoreBox.claimProfile')}
@@ -326,8 +329,8 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
         {claimMessage && <p className="mt-3 text-xs text-slate-500">{claimMessage}</p>}
       </Modal>
 
-      {!(hasValue && !editing) && (
-        <form onSubmit={handleSave} className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
+      <Modal open={editing} onClose={() => setEditing(false)} title={t('scoreBox.editModalTitle', { label })}>
+        <form onSubmit={handleSave} className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
           <div className="sm:col-span-3">
             <label className="block text-xs font-medium text-slate-600 mb-1">{t('scoreBox.profileUrlLabel')}</label>
             <div className="flex gap-2">
@@ -386,11 +389,9 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
             <button type="submit" disabled={saving} className="btn-primary text-xs px-3 py-1.5">
               {saving ? t('scoreBox.saving') : t('scoreBox.save')}
             </button>
-            {hasValue && (
-              <button type="button" onClick={() => setEditing(false)} className="text-xs text-slate-500 underline">
-                {t('scoreBox.cancel')}
-              </button>
-            )}
+            <button type="button" onClick={() => setEditing(false)} className="text-xs text-slate-500 underline">
+              {t('scoreBox.cancel')}
+            </button>
             {hasValue && (
               <button
                 type="button"
@@ -403,7 +404,7 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
             )}
           </div>
         </form>
-      )}
+      </Modal>
 
       {message && <p className="mt-1 text-xs text-slate-500">{message}</p>}
       <AutoCheckNote autoCheck={autoCheck} />
