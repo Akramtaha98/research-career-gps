@@ -1,4 +1,5 @@
 const store = require('../services/store');
+const { sendContactNotificationEmail } = require('../services/email');
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_NAME_LEN = 200;
@@ -8,9 +9,12 @@ const MAX_MESSAGE_LEN = 5000;
  * POST /api/contact
  * Body: { name, email, message }
  * Public — no auth required, so any visitor (not just signed-in users) can
- * leave a message. No outbound email is sent (no SMTP/Resend/SendGrid
- * configured for this project); the message is stored in contact_messages
- * for direct review, same as every other admin-facing table in this app.
+ * leave a message. The message is always stored in contact_messages first
+ * (source of truth, same as every other admin-facing table in this app);
+ * an outbound notification email is then attempted via Resend (see
+ * services/email.js), best-effort — a missing RESEND_API_KEY/
+ * CONTACT_NOTIFY_EMAIL or a delivery failure never fails the submission
+ * itself, since the message is already safely saved either way.
  */
 async function submitContactMessage(req, res) {
   try {
@@ -29,7 +33,17 @@ async function submitContactMessage(req, res) {
     }
 
     const saved = await store.createContactMessage({ name, email, message, userId: null });
-    return res.status(201).json({ ok: true, id: saved.id });
+
+    let emailed = false;
+    try {
+      await sendContactNotificationEmail({ name, email, message });
+      emailed = true;
+    } catch (emailErr) {
+      // eslint-disable-next-line no-console
+      console.warn('Contact form notification email not sent:', emailErr.message);
+    }
+
+    return res.status(201).json({ ok: true, id: saved.id, emailed });
   } catch (err) {
     return res.status(err.statusCode || 500).json({ error: err.message });
   }

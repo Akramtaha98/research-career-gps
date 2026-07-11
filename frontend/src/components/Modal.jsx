@@ -6,7 +6,7 @@ import { useEffect } from 'react';
  * (open profile + immediately submit) into an explicit choice the user sees
  * and confirms first — see ScoreBox.jsx's ClaimModal.
  */
-export default function Modal({ open, onClose, title, children }) {
+export default function Modal({ open, onClose, title, children, maxWidth = 'max-w-md' }) {
   useEffect(() => {
     if (!open) return;
     function handleKey(e) {
@@ -21,13 +21,16 @@ export default function Modal({ open, onClose, title, children }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50"
-      onClick={onClose}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClose();
+      }}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="card w-full max-w-md"
+        className={`card w-full ${maxWidth} max-h-[85vh] overflow-y-auto`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3">

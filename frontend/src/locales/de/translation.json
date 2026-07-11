@@ -3,6 +3,7 @@
     "brand": "Research GPS",
     "search": "Suche",
     "dashboard": "Dashboard",
+    "timeline": "Zeitachse",
     "predictor": "Prognose",
     "actions": "Aufgaben",
     "verify": "Verifizieren",
@@ -23,6 +24,9 @@
     "subtitle": "Optional. Scopus und Web of Science bieten keine öffentliche API, daher ist dies selbst gemeldet — öffne dein Profil, prüfe die Zahl und trage sie hier ein.",
     "connectOrcidHint": "Verknüpfe deine ORCID, um deine offiziellen Zahlen zu bestätigen und dein Profil zu beanspruchen.",
     "orcidCrossCheck": "Deine ORCID: {{orcid}} — bestätige vor dem Speichern, dass sie mit der auf der Profilseite angezeigten ORCID übereinstimmt und nicht mit der eines anderen Autors mit ähnlichem Namen.",
+    "summaryEmpty": "Noch nicht hinzugefügt — optional.",
+    "manageButton": "Verwalten",
+    "addButton": "Hinzufügen",
     "edit": "Bearbeiten",
     "profileUrlLabel": "Profil-URL",
     "profileUrlPlaceholder": "Link zu deinem {{label}}-Autorenprofil einfügen",
@@ -204,7 +208,17 @@
     "realHistoryNote": "Berechnet aus echten Zitationsdaten deiner {{count}} meistzitierten Publikationen.",
     "realHistorySkipped": "({{count}} Publikationen ohne ausreichende Daten wurden ausgeschlossen.)",
     "showingSourceNumbers": "Zeigt die von {{source}} gemeldeten Zahlen",
-    "wosShort": "WOS"
+    "wosShort": "WOS",
+    "colVerification": "Verifizierung",
+    "verification": {
+      "confirm": "Das ist meins",
+      "notMine": "Nicht meins",
+      "duplicate": "Duplikat",
+      "confirmedBadge": "Bestätigt",
+      "notMineBadge": "Nicht meins",
+      "duplicateBadge": "Duplikat",
+      "undo": "Rückgängig"
+    }
   },
   "predictor": {
     "title": "H-Index-Prognose",
@@ -385,5 +399,33 @@
     "citationsNeededValue_other": "+{{count}} Zitate",
     "untitled": "Ohne Titel",
     "disclaimer": "Basierend auf deinen {{h}} erfassten Arbeiten und ihrer aktuellen Zitatzahl — wird automatisch neu berechnet, sobald sich Zitate oder Arbeiten ändern."
+  },
+  "timeline": {
+    "title": "Zeitachse deiner Forschungskarriere",
+    "subtitle": "Wie sich deine Forschungskarriere entwickelt hat, was sich kürzlich geändert hat, und was als Nächstes kommt.",
+    "recordedSince": "Von Research GPS erfasst seit {{date}}",
+    "earliestPublication": "früheste erfasste Veröffentlichung {{year}}",
+    "loading": "Zeitachse wird geladen...",
+    "loadError": "Zeitachse konnte nicht geladen werden. Versuche es gleich noch einmal.",
+    "demoEmptyTitle": "Die Zeitachse benötigt einen echten erfassten Forscher",
+    "demoEmptyDesc": "Demodaten haben keinen Schnappschuss-Verlauf zum Anzeigen. Suche und erfasse einen echten Forscher, um deine eigene Zeitachse aufzubauen.",
+    "demoEmptyCta": "Nach einem Forscher suchen",
+    "sinceLastVisitTitle": "Seit deinem letzten Besuch",
+    "sinceLastVisitEmpty": "Dies ist dein erster erfasster Schnappschuss — komm nach deiner nächsten Aktualisierung wieder, um zu sehen, was sich geändert hat.",
+    "sinceLastVisitRange": "Vergleich {{from}} → {{to}}",
+    "citations": "Zitate",
+    "papersGainedCitations_one": "{{count}} Arbeit hat Zitate hinzugewonnen",
+    "papersGainedCitations_other": "{{count}} Arbeiten haben Zitate hinzugewonnen",
+    "chartTitle": "H-Index im Zeitverlauf",
+    "chartRecordedLabel": "Von Research GPS erfasst — nur ab deinem ersten erfassten Schnappschuss, nicht deiner gesamten Karrieregeschichte.",
+    "notEnoughHistoryTitle": "Noch nicht genug erfasster Verlauf",
+    "notEnoughHistoryDesc": "Bisher nur ein Schnappschuss. Komm nach weiteren Aktualisierungen dieses Forschers in den kommenden Wochen/Monaten wieder, um hier einen erfassten Trend zu sehen.",
+    "milestonesTitle": "Meilensteine",
+    "milestones": {
+      "firstSnapshot": "Erster erfasster Schnappschuss — H-Index {{hIndex}}, {{citations}} Zitate",
+      "hIndexIncrease": "H-Index stieg von {{previous}} auf {{hIndex}}",
+      "citationMilestone": "Hat {{threshold}} Zitate insgesamt überschritten"
+    },
+    "disclaimer": "Der \"erfasste\" Verlauf beginnt erst, sobald dieser Forscher hier erstmals erfasst wurde — er rekonstruiert den H-Index nicht rückwirkend vor diesem Datum. Für eine Rekonstruktion früherer Jahre aus Zitationsdaten pro Jahr siehe \"Echten historischen H-Index laden\" im Dashboard."
   }
 }

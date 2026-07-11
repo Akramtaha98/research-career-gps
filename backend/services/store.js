@@ -39,7 +39,8 @@ const memory = {
   researchers: [], // { id, user_id, semantic_scholar_id, name, h_index, total_citations, paper_count, updated_at }
   papers: [], // { id, researcher_id, external_id, title, year, citations, venue, updated_at }
   predictions: [], // { id, researcher_id, target_h, monthly_citations, papers_per_year, estimated_months, created_at }
-  history: [], // { id, researcher_id, h_index, total_citations, recorded_at }
+  history: [], // { id, researcher_id, h_index, total_citations, paper_count, source, snapshot_date, recorded_at } — one per researcher per calendar day, see schema.sql's h_index_history comment
+  paperSnapshots: [], // { id, researcher_id, external_id, snapshot_date, citation_count, created_at } — see schema.sql's paper_snapshots comment
   sharedScores: [], // { id, orcid, which, h_index, profile_url, status, submitted_by, submitted_at, verified_by, verified_at }
   sharedScoresHistory: [], // { id, orcid, which, h_index, profile_url, result_status, submitted_by, submitted_at, seq }
   // Standalone verification system (see services/verificationService.js) —
@@ -49,6 +50,7 @@ const memory = {
   verifiedPapers: [], // { id, author_id, external_id, doi, title, year, venue, citation_count, source, updated_at }
   verifiedComparisonResults: [], // { id, author_metrics_id, field_name, submitted_value, verified_value, difference, match, created_at }
   contactMessages: [], // { id, name, email, message, user_id, read_at, created_at } — public "Contact us" form, see schema.sql
+  paperVerifications: [], // { id, researcher_id, external_id, status, note, created_at, updated_at } — see schema.sql's paper_verifications comment
 };
 
 // Monotonic counter so shared-score history sorts deterministically even
@@ -241,14 +243,75 @@ const memoryStore = {
       };
       memory.researchers.push(researcher);
     }
-    memory.history.push({
-      id: uuid(),
-      researcher_id: researcher.id,
-      h_index: hIndex,
-      total_citations: totalCitations,
-      recorded_at: now,
-    });
+    // Once-per-calendar-day snapshot (see schema.sql's h_index_history
+    // comment) -- updates today's row in place instead of piling up a new
+    // one on every refresh, so repeated manual refreshes in a day don't
+    // pollute the Timeline's "recorded" history with near-duplicate points.
+    const today = now.slice(0, 10); // 'YYYY-MM-DD'
+    let snapshot = memory.history.find(
+      (h) => h.researcher_id === researcher.id && h.snapshot_date === today
+    );
+    if (snapshot) {
+      Object.assign(snapshot, {
+        h_index: hIndex,
+        total_citations: totalCitations,
+        paper_count: paperCount,
+        source,
+        recorded_at: now,
+      });
+    } else {
+      memory.history.push({
+        id: uuid(),
+        researcher_id: researcher.id,
+        h_index: hIndex,
+        total_citations: totalCitations,
+        paper_count: paperCount,
+        source,
+        snapshot_date: today,
+        recorded_at: now,
+      });
+    }
     return researcher;
+  },
+
+  /**
+   * Records today's citation count for each tracked paper (external_id
+   * required; papers without one — vanishingly rare — are skipped, same as
+   * paper_verifications). Once-per-day like the researcher-level snapshot
+   * above: repeated refreshes the same day just update today's row. This is
+   * the paper-level data the Timeline's "since your last visit" diff needs
+   * (e.g. "2 papers gained citations") — h_index_history alone can't tell
+   * you WHICH papers moved.
+   */
+  async snapshotPapers(researcherId, papers) {
+    // Takes the same shape as replacePapers's `papers` argument (camelCase
+    // externalId, straight from researcherSource.fetchAuthorProfile) rather
+    // than a stored papers row, so callers can pass profile.papers directly
+    // after replacePapers without reshaping anything.
+    const today = new Date().toISOString().slice(0, 10);
+    for (const p of papers) {
+      if (!p.externalId) continue;
+      let row = memory.paperSnapshots.find(
+        (s) => s.researcher_id === researcherId && s.external_id === p.externalId && s.snapshot_date === today
+      );
+      if (row) {
+        row.citation_count = p.citations || 0;
+      } else {
+        memory.paperSnapshots.push({
+          id: uuid(),
+          researcher_id: researcherId,
+          external_id: p.externalId,
+          snapshot_date: today,
+          citation_count: p.citations || 0,
+          created_at: new Date().toISOString(),
+        });
+      }
+    }
+  },
+
+  /** Every per-paper citation snapshot ever recorded for a researcher, any date, unsorted — callers group by snapshot_date. */
+  async getPaperSnapshots(researcherId) {
+    return memory.paperSnapshots.filter((s) => s.researcher_id === researcherId);
   },
 
   async findResearcherById(id) {
@@ -266,6 +329,22 @@ const memoryStore = {
     const mine = memory.researchers.filter((r) => r.user_id === userId);
     if (mine.length === 0) return null;
     return mine.reduce((latest, r) => (new Date(r.updated_at) > new Date(latest.updated_at) ? r : latest));
+  },
+
+  /**
+   * Researchers (across every user) whose most recent snapshot is missing or
+   * older than cutoffDate ('YYYY-MM-DD') — feeds the monthly snapshot cron
+   * (services/snapshotScheduler.js), which re-fetches and re-snapshots
+   * exactly these, so someone who tracks a researcher once and never
+   * manually refreshes still gets fresh Timeline history over time.
+   */
+  async getResearchersNeedingSnapshot(cutoffDate) {
+    return memory.researchers.filter((r) => {
+      const rows = memory.history.filter((h) => h.researcher_id === r.id);
+      if (rows.length === 0) return true;
+      const latest = rows.reduce((a, b) => (a.snapshot_date > b.snapshot_date ? a : b));
+      return latest.snapshot_date < cutoffDate;
+    });
   },
 
   async setScore(researcherId, which, { profileUrl, hIndex, paperCount, citations }) {
@@ -386,10 +465,56 @@ const memoryStore = {
     return rows;
   },
 
+  /**
+   * Sets (or clears, if status is null) a per-paper "this is mine / not mine
+   * / duplicate" correction — see schema.sql's paper_verifications comment
+   * for why this is keyed by external_id rather than the paper's own row id.
+   */
+  async setPaperVerification(researcherId, externalId, status, note) {
+    const now = new Date().toISOString();
+    let row = memory.paperVerifications.find(
+      (v) => v.researcher_id === researcherId && v.external_id === externalId
+    );
+    if (status === null) {
+      memory.paperVerifications = memory.paperVerifications.filter((v) => v !== row);
+      return null;
+    }
+    if (row) {
+      row.status = status;
+      row.note = note ?? null;
+      row.updated_at = now;
+    } else {
+      row = {
+        id: uuid(),
+        researcher_id: researcherId,
+        external_id: externalId,
+        status,
+        note: note ?? null,
+        created_at: now,
+        updated_at: now,
+      };
+      memory.paperVerifications.push(row);
+    }
+    return row;
+  },
+
+  /** All per-paper corrections for a researcher, keyed by external_id for easy lookup by callers. */
+  async getPaperVerifications(researcherId) {
+    const rows = memory.paperVerifications.filter((v) => v.researcher_id === researcherId);
+    const byExternalId = {};
+    for (const row of rows) byExternalId[row.external_id] = row;
+    return byExternalId;
+  },
+
   async listPapers(researcherId) {
-    return memory.papers
+    const papers = memory.papers
       .filter((p) => p.researcher_id === researcherId)
       .sort((a, b) => (b.citations || 0) - (a.citations || 0));
+    const verifications = memory.paperVerifications.filter((v) => v.researcher_id === researcherId);
+    return papers.map((p) => {
+      const v = p.external_id ? verifications.find((v) => v.external_id === p.external_id) : null;
+      return { ...p, verification: v ? v.status : null };
+    });
   },
 
   async getHistory(researcherId) {
@@ -666,11 +791,43 @@ const pgStore = {
       [userId, semanticScholarId, name, hIndex, totalCitations, paperCount, source, orcid]
     );
     const researcher = rows[0];
+    // Once-per-calendar-day snapshot -- see schema.sql's uq_h_index_history_
+    // researcher_snapshot_date comment. ON CONFLICT updates today's row
+    // in place instead of erroring or piling up duplicates when a researcher
+    // is refreshed more than once the same day.
     await query(
-      `INSERT INTO h_index_history (researcher_id, h_index, total_citations) VALUES ($1, $2, $3)`,
-      [researcher.id, hIndex, totalCitations]
+      `INSERT INTO h_index_history (researcher_id, h_index, total_citations, paper_count, source, snapshot_date)
+       VALUES ($1, $2, $3, $4, $5, CURRENT_DATE)
+       ON CONFLICT (researcher_id, snapshot_date)
+       DO UPDATE SET h_index = $2, total_citations = $3, paper_count = $4, source = $5, recorded_at = now()`,
+      [researcher.id, hIndex, totalCitations, paperCount, source]
     );
     return researcher;
+  },
+
+  /**
+   * Records today's citation count for each tracked paper — the paper-level
+   * counterpart to the snapshot above, keyed by external_id (see
+   * schema.sql's paper_snapshots comment for why). Papers with no
+   * external_id are skipped (vanishingly rare, same as paper_verifications).
+   */
+  async snapshotPapers(researcherId, papers) {
+    for (const p of papers) {
+      if (!p.externalId) continue;
+      await query(
+        `INSERT INTO paper_snapshots (researcher_id, external_id, snapshot_date, citation_count)
+         VALUES ($1, $2, CURRENT_DATE, $3)
+         ON CONFLICT (researcher_id, external_id, snapshot_date)
+         DO UPDATE SET citation_count = $3`,
+        [researcherId, p.externalId, p.citations || 0]
+      );
+    }
+  },
+
+  /** Every per-paper citation snapshot ever recorded for a researcher, any date, unsorted — callers group by snapshot_date. */
+  async getPaperSnapshots(researcherId) {
+    const { rows } = await query(`SELECT * FROM paper_snapshots WHERE researcher_id = $1`, [researcherId]);
+    return rows;
   },
 
   async findResearcherById(id) {
@@ -685,6 +842,20 @@ const pgStore = {
       [userId]
     );
     return rows[0] || null;
+  },
+
+  /** See memoryStore's version for the full rationale. */
+  async getResearchersNeedingSnapshot(cutoffDate) {
+    const { rows } = await query(
+      `SELECT r.* FROM researchers r
+       LEFT JOIN (
+         SELECT researcher_id, MAX(snapshot_date) AS latest_date
+         FROM h_index_history GROUP BY researcher_id
+       ) h ON h.researcher_id = r.id
+       WHERE h.latest_date IS NULL OR h.latest_date < $1`,
+      [cutoffDate]
+    );
+    return rows;
   },
 
   // `which` is always a hardcoded 'scopus' or 'wos' literal from the
@@ -816,10 +987,48 @@ const pgStore = {
 
   async listPapers(researcherId) {
     const { rows } = await query(
-      `SELECT * FROM papers WHERE researcher_id = $1 ORDER BY citations DESC`,
+      `SELECT p.*, v.status AS verification
+       FROM papers p
+       LEFT JOIN paper_verifications v
+         ON v.researcher_id = p.researcher_id AND v.external_id = p.external_id
+       WHERE p.researcher_id = $1
+       ORDER BY p.citations DESC`,
       [researcherId]
     );
     return rows;
+  },
+
+  /**
+   * Sets (or clears, when status is null) a per-paper "this is mine / not
+   * mine / duplicate" correction. Keyed by (researcher_id, external_id) —
+   * NOT papers.id — because replacePapers() deletes and reinserts every
+   * origin='auto' paper with a fresh UUID on each refresh, which would
+   * silently wipe any correction keyed on the internal row id instead.
+   */
+  async setPaperVerification(researcherId, externalId, status, note) {
+    if (status === null) {
+      await query(`DELETE FROM paper_verifications WHERE researcher_id = $1 AND external_id = $2`, [
+        researcherId,
+        externalId,
+      ]);
+      return null;
+    }
+    const { rows } = await query(
+      `INSERT INTO paper_verifications (researcher_id, external_id, status, note)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (researcher_id, external_id)
+       DO UPDATE SET status = EXCLUDED.status, note = EXCLUDED.note, updated_at = now()
+       RETURNING *`,
+      [researcherId, externalId, status, note ?? null]
+    );
+    return rows[0];
+  },
+
+  async getPaperVerifications(researcherId) {
+    const { rows } = await query(`SELECT * FROM paper_verifications WHERE researcher_id = $1`, [researcherId]);
+    const byExternalId = {};
+    for (const row of rows) byExternalId[row.external_id] = row;
+    return byExternalId;
   },
 
   async getHistory(researcherId) {

@@ -47,10 +47,50 @@ function AutoCheckNote({ autoCheck }) {
 }
 
 /**
- * One box, two independent slots: self-reported official numbers from Scopus
- * and Web of Science (h-index, paper count, citations). Separate because a
- * researcher may have one, both, or neither, and the two are unrelated
- * citation databases with their own (usually different) numbers — see
+ * Compact entry point. Scopus/WOS numbers are a niche, optional feature most
+ * users never touch — showing the full two-section form permanently on the
+ * Dashboard (as it used to) crowded out the actual metrics. Now it's a single
+ * line (current values, if any) plus one button that opens everything below
+ * in a popup, so the page stays simple by default and the full form only
+ * appears when someone actually wants to edit it.
+ */
+export default function ScoreBox({ researcher, baselineSource, setBaselineSource }) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+
+  const scopusH = researcher.scopus_h_index;
+  const wosH = researcher.wos_h_index;
+  const hasAny = scopusH != null || wosH != null;
+
+  const summaryParts = [];
+  if (scopusH != null) summaryParts.push(`Scopus ${t('scoreBox.hIndexLabel')} ${scopusH}`);
+  if (wosH != null) summaryParts.push(`${t('dashboard.wosShort')} ${t('scoreBox.hIndexLabel')} ${wosH}`);
+
+  return (
+    <div className="card flex items-center justify-between gap-3 flex-wrap">
+      <div>
+        <h3 className="text-sm font-semibold text-slate-900">{t('scoreBox.title')}</h3>
+        <p className="text-xs text-slate-500 mt-0.5">
+          {hasAny ? summaryParts.join(' · ') : t('scoreBox.summaryEmpty')}
+        </p>
+      </div>
+      <button type="button" onClick={() => setOpen(true)} className="btn-secondary text-xs px-3 py-1.5 shrink-0">
+        {hasAny ? t('scoreBox.manageButton') : t('scoreBox.addButton')}
+      </button>
+
+      <Modal open={open} onClose={() => setOpen(false)} title={t('scoreBox.title')} maxWidth="max-w-2xl">
+        <ScoreBoxContent researcher={researcher} baselineSource={baselineSource} setBaselineSource={setBaselineSource} />
+      </Modal>
+    </div>
+  );
+}
+
+/**
+ * The full editor, rendered inside the popup opened by ScoreBox above. Two
+ * independent slots: self-reported official numbers from Scopus and Web of
+ * Science (h-index, paper count, citations). Separate because a researcher
+ * may have one, both, or neither, and the two are unrelated citation
+ * databases with their own (usually different) numbers — see
  * backend/schema.sql comment on scopus_h_index/wos_h_index for why this is
  * self-reported instead of fetched automatically (no public API either
  * service offers).
@@ -68,30 +108,29 @@ function AutoCheckNote({ autoCheck }) {
  * from ResearcherContext's `sharedScores`, a single fetch shared with
  * Dashboard's effective-metrics computation rather than fetching separately.
  */
-export default function ScoreBox({ researcher, baselineSource, setBaselineSource }) {
+function ScoreBoxContent({ researcher, baselineSource, setBaselineSource }) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { sharedScores } = useResearcher();
 
   return (
-    <div className="card border border-brand-100 bg-brand-50/40">
-      <h3 className="text-sm font-semibold text-slate-900">{t('scoreBox.title')}</h3>
-      <p className="text-xs text-slate-500 mt-0.5">{t('scoreBox.subtitle')}</p>
+    <div>
+      <p className="text-xs text-slate-500">{t('scoreBox.subtitle')}</p>
 
       {user?.orcid && (
-        <p className="mt-2 text-xs text-slate-600 bg-white/70 border border-brand-100 rounded-lg px-3 py-2">
+        <p className="mt-2 text-xs text-slate-600 bg-slate-50 border border-slate-100 rounded-lg px-3 py-2">
           {t('scoreBox.orcidCrossCheck', { orcid: user.orcid })}
         </p>
       )}
 
       {user && !user.orcid && (
-        <div className="mt-2 text-xs text-slate-600 bg-white/70 border border-brand-100 rounded-lg px-3 py-2">
+        <div className="mt-2 text-xs text-slate-600 bg-slate-50 border border-slate-100 rounded-lg px-3 py-2">
           <p className="mb-2">{t('scoreBox.connectOrcidHint')}</p>
           <OrcidButton connect />
         </div>
       )}
 
-      <div className="mt-3 divide-y divide-brand-100/70">
+      <div className="mt-3 divide-y divide-slate-100">
         <ScoreRow
           which="scopus"
           label="Scopus"
@@ -345,7 +384,7 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
                 value={profileUrl}
                 onChange={(e) => setProfileUrl(e.target.value)}
               />
-              {openHref && (
+              {profileUrl.trim() && (
                 <a
                   href={openHref}
                   target="_blank"

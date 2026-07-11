@@ -5,6 +5,7 @@ const openAlex = require('../services/openAlex');
 const { computeHistoricalHIndex } = require('../services/historicalHIndex');
 const { generateActionItems } = require('../utils/actionItems');
 const { checkScopusProfile, checkWosProfile } = require('../services/externalProfileCheck');
+const { computeSinceLastVisit, computeMilestones } = require('../services/timeline');
 
 /**
  * Best-effort, no-AI check of a submitted number against the live profile
@@ -133,6 +134,7 @@ async function addResearcher(req, res) {
     });
 
     await store.replacePapers(researcher.id, profile.papers);
+    await store.snapshotPapers(researcher.id, profile.papers);
 
     return res.status(201).json({ researcher });
   } catch (err) {
@@ -185,6 +187,7 @@ async function getResearcher(req, res) {
         orcid: profile.orcid || null,
       });
       await store.replacePapers(researcher.id, profile.papers);
+      await store.snapshotPapers(researcher.id, profile.papers);
     }
 
     const history = await store.getHistory(researcher.id);
@@ -207,6 +210,77 @@ async function listPapers(req, res) {
     return res.json({ papers });
   } catch (err) {
     return res.status(500).json({ error: err.message });
+  }
+}
+
+/**
+ * PATCH /api/researchers/:id/paper-verification
+ * Body: { externalId, status } — status is one of 'confirmed' | 'not_mine' |
+ * 'duplicate' | null (null clears it). externalId is taken from the body
+ * rather than the URL path because DOI-based external IDs can contain
+ * slashes (e.g. "10.1038/s41586-020-2649-2"), which a plain Express route
+ * param can't hold safely.
+ *
+ * Lets the researcher's own tracked-profile owner flag a specific paper as
+ * theirs, not theirs, or a duplicate. Stored keyed by external_id (not the
+ * paper's internal row id) so it survives replacePapers() re-fetching and
+ * re-inserting the auto-synced paper list on every refresh — see
+ * store.js's setPaperVerification comment.
+ */
+async function setPaperVerification(req, res) {
+  try {
+    const { id } = req.params;
+    const researcher = await store.findResearcherById(id);
+    if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
+    if (researcher.user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized to update this researcher' });
+    }
+
+    const { externalId, status } = req.body;
+    if (!externalId || typeof externalId !== 'string') {
+      return res.status(400).json({ error: 'externalId is required' });
+    }
+    const allowed = ['confirmed', 'not_mine', 'duplicate', null];
+    if (!allowed.includes(status)) {
+      return res.status(400).json({ error: "status must be one of 'confirmed', 'not_mine', 'duplicate', or null" });
+    }
+
+    const result = await store.setPaperVerification(id, externalId, status, null);
+    return res.json({ verification: result ? result.status : null });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
+}
+
+/**
+ * GET /api/researchers/:id/timeline
+ * Returns this researcher's RECORDED snapshot history (h_index_history,
+ * once per calendar day — distinct from the separate, on-demand
+ * RECONSTRUCTED history at GET /:id/real-history, which infers past H-index
+ * from per-paper citation-by-year data going further back than tracking
+ * began), a "since your last visit" diff between the two most recent
+ * snapshots, and a milestone list derived purely from that recorded
+ * history. See services/timeline.js for the actual computation.
+ */
+async function getTimeline(req, res) {
+  try {
+    const { id } = req.params;
+    const researcher = await store.findResearcherById(id);
+    if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
+    if (researcher.user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized to view this researcher' });
+    }
+
+    const snapshots = await store.getHistory(id);
+    const paperSnapshots = await store.getPaperSnapshots(id);
+
+    return res.json({
+      snapshots,
+      sinceLastVisit: computeSinceLastVisit(snapshots, paperSnapshots),
+      milestones: computeMilestones(snapshots),
+    });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
   }
 }
 
@@ -477,6 +551,8 @@ module.exports = {
   getMyLatestResearcher,
   getResearcher,
   listPapers,
+  setPaperVerification,
+  getTimeline,
   getActionItems,
   getCollaborators,
   getRealHistory,

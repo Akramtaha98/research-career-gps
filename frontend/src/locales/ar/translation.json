@@ -3,6 +3,7 @@
     "brand": "بوصلة البحث",
     "search": "بحث",
     "dashboard": "لوحة التحكم",
+    "timeline": "الجدول الزمني",
     "predictor": "المتنبئ",
     "actions": "المهام",
     "verify": "التحقق",
@@ -23,6 +24,9 @@
     "subtitle": "اختياري. لا يوفر Scopus ولا Web of Science واجهة برمجة عامة، لذا فهذا يُبلَّغ عنه ذاتياً — افتح ملفك الشخصي، تحقق من الرقم، وأدخله هنا.",
     "connectOrcidHint": "اربط معرّف ORCID الخاص بك للتحقق من أرقامك الرسمية والمطالبة بملفك.",
     "orcidCrossCheck": "معرّف ORCID الخاص بك: {{orcid}} — قبل الحفظ، تأكد أنه يطابق ORCID الظاهر في صفحة الملف الشخصي، وليس لباحث آخر بنفس الاسم تقريباً.",
+    "summaryEmpty": "لم تتم إضافته بعد — اختياري.",
+    "manageButton": "إدارة",
+    "addButton": "إضافة",
     "edit": "تعديل",
     "profileUrlLabel": "رابط الملف الشخصي",
     "profileUrlPlaceholder": "الصق رابط ملفك الشخصي كباحث في {{label}}",
@@ -204,7 +208,17 @@
     "realHistoryNote": "محسوب من بيانات استشهاد حقيقية عبر أكثر {{count}} بحث استشهاداً لديك.",
     "realHistorySkipped": "(تم استبعاد {{count}} بحث بسبب نقص البيانات.)",
     "showingSourceNumbers": "يتم عرض الأرقام المُبلَّغ عنها من {{source}}",
-    "wosShort": "WOS"
+    "wosShort": "WOS",
+    "colVerification": "التحقق",
+    "verification": {
+      "confirm": "هذا بحثي",
+      "notMine": "ليس بحثي",
+      "duplicate": "مكرر",
+      "confirmedBadge": "مؤكَّد",
+      "notMineBadge": "ليس بحثي",
+      "duplicateBadge": "مكرر",
+      "undo": "تراجع"
+    }
   },
   "predictor": {
     "title": "متنبئ مؤشر H",
@@ -385,5 +399,33 @@
     "citationsNeededValue_other": "+{{count}} استشهادات",
     "untitled": "بدون عنوان",
     "disclaimer": "بناءً على {{h}} من أبحاثك المتتبَّعة وعدد استشهاداتها الحالي — يُعاد الحساب تلقائياً مع تحديث الاستشهادات والأبحاث."
+  },
+  "timeline": {
+    "title": "الجدول الزمني لمسيرتك البحثية",
+    "subtitle": "كيف تطورت مسيرتك البحثية، وما الذي تغيّر مؤخراً، وما هو التالي.",
+    "recordedSince": "مسجَّل بواسطة Research GPS منذ {{date}}",
+    "earliestPublication": "أقدم بحث متتبَّع {{year}}",
+    "loading": "جارٍ تحميل جدولك الزمني...",
+    "loadError": "تعذّر تحميل جدولك الزمني. حاول مرة أخرى بعد قليل.",
+    "demoEmptyTitle": "الجدول الزمني يحتاج إلى باحث حقيقي متتبَّع",
+    "demoEmptyDesc": "بيانات العرض التوضيحي لا تحتوي على سجل لقطات لعرضه. ابحث عن باحث حقيقي وتتبّعه لتبدأ ببناء جدولك الزمني الخاص.",
+    "demoEmptyCta": "البحث عن باحث",
+    "sinceLastVisitTitle": "منذ زيارتك الأخيرة",
+    "sinceLastVisitEmpty": "هذه أول لقطة مسجَّلة لك — عد بعد تحديثك القادم لترى ما تغيّر.",
+    "sinceLastVisitRange": "مقارنة {{from}} ← {{to}}",
+    "citations": "الاستشهادات",
+    "papersGainedCitations_one": "بحث واحد اكتسب استشهادات",
+    "papersGainedCitations_other": "{{count}} أبحاث اكتسبت استشهادات",
+    "chartTitle": "مؤشر H عبر الزمن",
+    "chartRecordedLabel": "مسجَّل بواسطة Research GPS — فقط من أول لقطة متتبَّعة لديك، وليس تاريخ مسيرتك الكامل.",
+    "notEnoughHistoryTitle": "لا يوجد سجل مسجَّل كافٍ بعد",
+    "notEnoughHistoryDesc": "توجد لقطة واحدة فقط حتى الآن. عد بعد تحديث هذا الباحث خلال الأسابيع/الأشهر القادمة لترى اتجاهاً مسجَّلاً هنا.",
+    "milestonesTitle": "الإنجازات",
+    "milestones": {
+      "firstSnapshot": "أول لقطة مسجَّلة — مؤشر H {{hIndex}}، {{citations}} استشهاد",
+      "hIndexIncrease": "ارتفع مؤشر H من {{previous}} إلى {{hIndex}}",
+      "citationMilestone": "تجاوز {{threshold}} استشهاد إجمالاً"
+    },
+    "disclaimer": "يبدأ السجل \"المسجَّل\" من أول مرة تم فيها تتبع هذا الباحث هنا — ولا يُعيد بناء مؤشر H لما قبل ذلك التاريخ. لإعادة بناء السنوات السابقة من بيانات الاستشهادات حسب السنة، راجع \"تحميل مؤشر H التاريخي الحقيقي\" في لوحة التحكم."
   }
 }
