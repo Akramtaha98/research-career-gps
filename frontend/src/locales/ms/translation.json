@@ -200,7 +200,17 @@
     "realHistoryNote": "Dikira daripada data petikan sebenar merentasi {{count}} kertas kerja paling banyak dipetik anda.",
     "realHistorySkipped": "({{count}} kertas kerja tanpa data mencukupi telah dikecualikan.)",
     "showingSourceNumbers": "Menunjukkan nombor yang dilaporkan oleh {{source}}",
-    "wosShort": "WOS"
+    "wosShort": "WOS",
+    "colVerification": "Pengesahan",
+    "verification": {
+      "confirm": "Ini kertas saya",
+      "notMine": "Bukan kertas saya",
+      "duplicate": "Pendua",
+      "confirmedBadge": "Disahkan",
+      "notMineBadge": "Bukan kertas saya",
+      "duplicateBadge": "Pendua",
+      "undo": "Buat asal"
+    }
   },
   "predictor": {
     "title": "Peramal Indeks-H",

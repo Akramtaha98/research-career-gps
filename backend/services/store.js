@@ -49,6 +49,7 @@ const memory = {
   verifiedPapers: [], // { id, author_id, external_id, doi, title, year, venue, citation_count, source, updated_at }
   verifiedComparisonResults: [], // { id, author_metrics_id, field_name, submitted_value, verified_value, difference, match, created_at }
   contactMessages: [], // { id, name, email, message, user_id, read_at, created_at } — public "Contact us" form, see schema.sql
+  paperVerifications: [], // { id, researcher_id, external_id, status, note, created_at, updated_at } — see schema.sql's paper_verifications comment
 };
 
 // Monotonic counter so shared-score history sorts deterministically even
@@ -376,10 +377,56 @@ const memoryStore = {
     return rows;
   },
 
+  /**
+   * Sets (or clears, if status is null) a per-paper "this is mine / not mine
+   * / duplicate" correction — see schema.sql's paper_verifications comment
+   * for why this is keyed by external_id rather than the paper's own row id.
+   */
+  async setPaperVerification(researcherId, externalId, status, note) {
+    const now = new Date().toISOString();
+    let row = memory.paperVerifications.find(
+      (v) => v.researcher_id === researcherId && v.external_id === externalId
+    );
+    if (status === null) {
+      memory.paperVerifications = memory.paperVerifications.filter((v) => v !== row);
+      return null;
+    }
+    if (row) {
+      row.status = status;
+      row.note = note ?? null;
+      row.updated_at = now;
+    } else {
+      row = {
+        id: uuid(),
+        researcher_id: researcherId,
+        external_id: externalId,
+        status,
+        note: note ?? null,
+        created_at: now,
+        updated_at: now,
+      };
+      memory.paperVerifications.push(row);
+    }
+    return row;
+  },
+
+  /** All per-paper corrections for a researcher, keyed by external_id for easy lookup by callers. */
+  async getPaperVerifications(researcherId) {
+    const rows = memory.paperVerifications.filter((v) => v.researcher_id === researcherId);
+    const byExternalId = {};
+    for (const row of rows) byExternalId[row.external_id] = row;
+    return byExternalId;
+  },
+
   async listPapers(researcherId) {
-    return memory.papers
+    const papers = memory.papers
       .filter((p) => p.researcher_id === researcherId)
       .sort((a, b) => (b.citations || 0) - (a.citations || 0));
+    const verifications = memory.paperVerifications.filter((v) => v.researcher_id === researcherId);
+    return papers.map((p) => {
+      const v = p.external_id ? verifications.find((v) => v.external_id === p.external_id) : null;
+      return { ...p, verification: v ? v.status : null };
+    });
   },
 
   async getHistory(researcherId) {
@@ -797,10 +844,48 @@ const pgStore = {
 
   async listPapers(researcherId) {
     const { rows } = await query(
-      `SELECT * FROM papers WHERE researcher_id = $1 ORDER BY citations DESC`,
+      `SELECT p.*, v.status AS verification
+       FROM papers p
+       LEFT JOIN paper_verifications v
+         ON v.researcher_id = p.researcher_id AND v.external_id = p.external_id
+       WHERE p.researcher_id = $1
+       ORDER BY p.citations DESC`,
       [researcherId]
     );
     return rows;
+  },
+
+  /**
+   * Sets (or clears, when status is null) a per-paper "this is mine / not
+   * mine / duplicate" correction. Keyed by (researcher_id, external_id) —
+   * NOT papers.id — because replacePapers() deletes and reinserts every
+   * origin='auto' paper with a fresh UUID on each refresh, which would
+   * silently wipe any correction keyed on the internal row id instead.
+   */
+  async setPaperVerification(researcherId, externalId, status, note) {
+    if (status === null) {
+      await query(`DELETE FROM paper_verifications WHERE researcher_id = $1 AND external_id = $2`, [
+        researcherId,
+        externalId,
+      ]);
+      return null;
+    }
+    const { rows } = await query(
+      `INSERT INTO paper_verifications (researcher_id, external_id, status, note)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (researcher_id, external_id)
+       DO UPDATE SET status = EXCLUDED.status, note = EXCLUDED.note, updated_at = now()
+       RETURNING *`,
+      [researcherId, externalId, status, note ?? null]
+    );
+    return rows[0];
+  },
+
+  async getPaperVerifications(researcherId) {
+    const { rows } = await query(`SELECT * FROM paper_verifications WHERE researcher_id = $1`, [researcherId]);
+    const byExternalId = {};
+    for (const row of rows) byExternalId[row.external_id] = row;
+    return byExternalId;
   },
 
   async getHistory(researcherId) {

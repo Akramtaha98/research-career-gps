@@ -210,6 +210,45 @@ async function listPapers(req, res) {
   }
 }
 
+/**
+ * PATCH /api/researchers/:id/paper-verification
+ * Body: { externalId, status } — status is one of 'confirmed' | 'not_mine' |
+ * 'duplicate' | null (null clears it). externalId is taken from the body
+ * rather than the URL path because DOI-based external IDs can contain
+ * slashes (e.g. "10.1038/s41586-020-2649-2"), which a plain Express route
+ * param can't hold safely.
+ *
+ * Lets the researcher's own tracked-profile owner flag a specific paper as
+ * theirs, not theirs, or a duplicate. Stored keyed by external_id (not the
+ * paper's internal row id) so it survives replacePapers() re-fetching and
+ * re-inserting the auto-synced paper list on every refresh — see
+ * store.js's setPaperVerification comment.
+ */
+async function setPaperVerification(req, res) {
+  try {
+    const { id } = req.params;
+    const researcher = await store.findResearcherById(id);
+    if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
+    if (researcher.user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized to update this researcher' });
+    }
+
+    const { externalId, status } = req.body;
+    if (!externalId || typeof externalId !== 'string') {
+      return res.status(400).json({ error: 'externalId is required' });
+    }
+    const allowed = ['confirmed', 'not_mine', 'duplicate', null];
+    if (!allowed.includes(status)) {
+      return res.status(400).json({ error: "status must be one of 'confirmed', 'not_mine', 'duplicate', or null" });
+    }
+
+    const result = await store.setPaperVerification(id, externalId, status, null);
+    return res.json({ verification: result ? result.status : null });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
+}
+
 /** GET /api/researchers/:id/actions — auto-generated recommendations */
 async function getActionItems(req, res) {
   try {
@@ -477,6 +516,7 @@ module.exports = {
   getMyLatestResearcher,
   getResearcher,
   listPapers,
+  setPaperVerification,
   getActionItems,
   getCollaborators,
   getRealHistory,

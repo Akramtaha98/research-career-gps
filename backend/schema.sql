@@ -98,6 +98,31 @@ CREATE TABLE IF NOT EXISTS papers (
   updated_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Per-paper "this is mine / not mine / duplicate" corrections. Deliberately
+-- keyed by (researcher_id, external_id) -- the STABLE source-provided paper
+-- ID -- rather than papers.id, because replacePapers() deletes and
+-- reinserts all 'auto' rows with brand-new UUIDs on every refresh. Keying on
+-- papers.id would silently wipe every correction on the next refresh; keying
+-- on external_id survives it, since the same underlying paper gets the same
+-- external_id again next time. A paper with no external_id (rare, when a
+-- source doesn't supply one) simply can't have a persisted correction --
+-- known, accepted limitation rather than a bug.
+--
+-- status='not_mine' or 'duplicate' means the frontend excludes that paper
+-- from the effective papers list used for the h-index/citations/paper-count
+-- shown, the h-index frontier, predictions, and action items -- see
+-- frontend/src/context/ResearcherContext.jsx's allPapers/papers split.
+CREATE TABLE IF NOT EXISTS paper_verifications (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  researcher_id UUID NOT NULL REFERENCES researchers(id) ON DELETE CASCADE,
+  external_id   VARCHAR(64) NOT NULL,
+  status        VARCHAR(20) NOT NULL CHECK (status IN ('confirmed', 'not_mine', 'duplicate')),
+  note          TEXT,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (researcher_id, external_id)
+);
+
 CREATE TABLE IF NOT EXISTS predictions (
   id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   researcher_id        UUID NOT NULL REFERENCES researchers(id) ON DELETE CASCADE,
@@ -294,3 +319,4 @@ CREATE INDEX IF NOT EXISTS idx_verified_author_metrics_author_id ON verified_aut
 CREATE INDEX IF NOT EXISTS idx_verified_papers_author_id ON verified_papers(author_id);
 CREATE INDEX IF NOT EXISTS idx_verified_comparison_results_metrics_id ON verified_comparison_results(author_metrics_id);
 CREATE INDEX IF NOT EXISTS idx_contact_messages_created_at ON contact_messages(created_at);
+CREATE INDEX IF NOT EXISTS idx_paper_verifications_researcher_id ON paper_verifications(researcher_id);

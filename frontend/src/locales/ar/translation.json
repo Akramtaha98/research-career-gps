@@ -200,7 +200,17 @@
     "realHistoryNote": "محسوب من بيانات استشهاد حقيقية عبر أكثر {{count}} بحث استشهاداً لديك.",
     "realHistorySkipped": "(تم استبعاد {{count}} بحث بسبب نقص البيانات.)",
     "showingSourceNumbers": "يتم عرض الأرقام المُبلَّغ عنها من {{source}}",
-    "wosShort": "WOS"
+    "wosShort": "WOS",
+    "colVerification": "التحقق",
+    "verification": {
+      "confirm": "هذا بحثي",
+      "notMine": "ليس بحثي",
+      "duplicate": "مكرر",
+      "confirmedBadge": "مؤكَّد",
+      "notMineBadge": "ليس بحثي",
+      "duplicateBadge": "مكرر",
+      "undo": "تراجع"
+    }
   },
   "predictor": {
     "title": "متنبئ مؤشر H",

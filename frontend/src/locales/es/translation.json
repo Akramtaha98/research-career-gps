@@ -200,7 +200,17 @@
     "realHistoryNote": "Calculado a partir de datos de citas reales de tus {{count}} artículos más citados.",
     "realHistorySkipped": "({{count}} artículos sin datos suficientes fueron excluidos.)",
     "showingSourceNumbers": "Mostrando los números reportados por {{source}}",
-    "wosShort": "WOS"
+    "wosShort": "WOS",
+    "colVerification": "Verificación",
+    "verification": {
+      "confirm": "Es mío",
+      "notMine": "No es mío",
+      "duplicate": "Duplicado",
+      "confirmedBadge": "Confirmado",
+      "notMineBadge": "No es mío",
+      "duplicateBadge": "Duplicado",
+      "undo": "Deshacer"
+    }
   },
   "predictor": {
     "title": "Predictor de índice H",

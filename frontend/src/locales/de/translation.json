@@ -200,7 +200,17 @@
     "realHistoryNote": "Berechnet aus echten Zitationsdaten deiner {{count}} meistzitierten Publikationen.",
     "realHistorySkipped": "({{count}} Publikationen ohne ausreichende Daten wurden ausgeschlossen.)",
     "showingSourceNumbers": "Zeigt die von {{source}} gemeldeten Zahlen",
-    "wosShort": "WOS"
+    "wosShort": "WOS",
+    "colVerification": "Verifizierung",
+    "verification": {
+      "confirm": "Das ist meins",
+      "notMine": "Nicht meins",
+      "duplicate": "Duplikat",
+      "confirmedBadge": "Bestätigt",
+      "notMineBadge": "Nicht meins",
+      "duplicateBadge": "Duplikat",
+      "undo": "Rückgängig"
+    }
   },
   "predictor": {
     "title": "H-Index-Prognose",

@@ -200,7 +200,17 @@
     "realHistoryNote": "Calculé à partir de données de citations réelles sur vos {{count}} articles les plus cités.",
     "realHistorySkipped": "({{count}} articles sans données suffisantes ont été exclus.)",
     "showingSourceNumbers": "Affichage des chiffres rapportés par {{source}}",
-    "wosShort": "WOS"
+    "wosShort": "WOS",
+    "colVerification": "Vérification",
+    "verification": {
+      "confirm": "C'est le mien",
+      "notMine": "Pas le mien",
+      "duplicate": "Doublon",
+      "confirmedBadge": "Confirmé",
+      "notMineBadge": "Pas le mien",
+      "duplicateBadge": "Doublon",
+      "undo": "Annuler"
+    }
   },
   "predictor": {
     "title": "Prédicteur d'indice H",

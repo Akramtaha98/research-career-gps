@@ -9,7 +9,14 @@ export function ResearcherProvider({ children }) {
   const { user } = useAuth();
   const [source, setSource] = useState('demo'); // 'demo' | 'live'
   const [researcher, setResearcher] = useState(demoResearcher);
-  const [papers, setPapers] = useState(demoPapers);
+  // allPapers is the full tracked list, including each paper's verification
+  // status ('confirmed' | 'not_mine' | 'duplicate' | null/undefined). `papers`
+  // (derived below) excludes 'not_mine' and 'duplicate' entries so every
+  // consumer that already reads `papers` — Predictor, Actions, HIndexFrontier,
+  // Dashboard's own metric cards — automatically respects corrections with no
+  // code changes. Only Dashboard's paper-management table needs the full list.
+  const [allPapers, setAllPapers] = useState(demoPapers);
+  const papers = allPapers.filter((p) => p.verification !== 'not_mine' && p.verification !== 'duplicate');
   const [history, setHistory] = useState(demoHistory);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -25,7 +32,7 @@ export function ResearcherProvider({ children }) {
   const useDemo = useCallback(() => {
     setSource('demo');
     setResearcher(demoResearcher);
-    setPapers(demoPapers);
+    setAllPapers(demoPapers);
     setHistory(demoHistory);
     setSharedScores(null);
     setError(null);
@@ -65,7 +72,7 @@ export function ResearcherProvider({ children }) {
       const detailRes = await client.get(`/researchers/${data.researcher.id}`);
       setSource('live');
       setResearcher(data.researcher);
-      setPapers(papersRes.data.papers);
+      setAllPapers(papersRes.data.papers);
       setHistory(
         detailRes.data.history.map((h) => ({
           recorded_at: h.recorded_at,
@@ -192,7 +199,7 @@ export function ResearcherProvider({ children }) {
       const papersRes = await client.get(`/researchers/${data.researcher.id}/papers`);
       setSource('live');
       setResearcher(data.researcher);
-      setPapers(papersRes.data.papers);
+      setAllPapers(papersRes.data.papers);
       setHistory(data.history || []);
       loadSharedScores(data.researcher.id);
       return true;
@@ -213,6 +220,30 @@ export function ResearcherProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
+  /**
+   * Flags a specific paper as 'confirmed' | 'not_mine' | 'duplicate', or
+   * clears the flag (status = null). Matched by externalId, not the paper's
+   * internal id, since a refresh re-fetches and re-inserts every auto-synced
+   * paper with a fresh id — see backend store.js's setPaperVerification.
+   * In demo mode this is local-only (no backend to persist to, same
+   * convention as the rest of the demo experience); in live mode it calls the
+   * backend first and only updates local state once that succeeds, so a
+   * failed request doesn't leave the UI showing a correction that didn't save.
+   */
+  const setPaperVerification = useCallback(
+    async (externalId, status) => {
+      if (source === 'live' && researcher?.id) {
+        await client.patch(`/researchers/${researcher.id}/paper-verification`, { externalId, status });
+      }
+      // Demo papers have no external_id, so fall back to matching on the
+      // paper's own id — fine for demo mode since nothing is persisted there.
+      setAllPapers((prev) =>
+        prev.map((p) => ((p.external_id || p.id) === externalId ? { ...p, verification: status } : p))
+      );
+    },
+    [source, researcher]
+  );
+
   const refreshResearcher = useCallback(async () => {
     if (source !== 'live' || !researcher?.id) return;
     setLoading(true);
@@ -220,7 +251,7 @@ export function ResearcherProvider({ children }) {
       const detailRes = await client.get(`/researchers/${researcher.id}?refresh=true`);
       const papersRes = await client.get(`/researchers/${researcher.id}/papers`);
       setResearcher(detailRes.data.researcher);
-      setPapers(papersRes.data.papers);
+      setAllPapers(papersRes.data.papers);
       setHistory(detailRes.data.history);
       loadSharedScores(researcher.id);
     } finally {
@@ -234,6 +265,8 @@ export function ResearcherProvider({ children }) {
         source,
         researcher,
         papers,
+        allPapers,
+        setPaperVerification,
         history,
         loading,
         error,

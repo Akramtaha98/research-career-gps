@@ -200,7 +200,17 @@
     "realHistoryNote": "Computed from real citation data across your {{count}} most-cited papers.",
     "realHistorySkipped": "({{count}} papers without enough data were excluded.)",
     "showingSourceNumbers": "Showing {{source}}-reported numbers",
-    "wosShort": "WOS"
+    "wosShort": "WOS",
+    "colVerification": "Verification",
+    "verification": {
+      "confirm": "This is mine",
+      "notMine": "Not mine",
+      "duplicate": "Duplicate",
+      "confirmedBadge": "Confirmed",
+      "notMineBadge": "Not mine",
+      "duplicateBadge": "Duplicate",
+      "undo": "Undo"
+    }
   },
   "predictor": {
     "title": "H-index Predictor",

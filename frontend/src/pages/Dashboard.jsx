@@ -7,21 +7,47 @@ import EmptyState from '../components/EmptyState';
 import ScoreBox from '../components/ScoreBox';
 import HIndexFrontier from '../components/HIndexFrontier';
 import { computeEffectiveMetrics } from '../utils/effectiveMetrics';
+import { calculateHIndex } from '../utils/prediction';
 
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short' });
 }
 
 export default function Dashboard() {
-  const { source, researcher, papers, history, loading, refreshResearcher, getRealHistory, sharedScores } =
-    useResearcher();
+  const {
+    source,
+    researcher,
+    papers,
+    allPapers,
+    setPaperVerification,
+    history,
+    loading,
+    refreshResearcher,
+    getRealHistory,
+    sharedScores,
+  } = useResearcher();
   const { t } = useTranslation();
 
   // Scopus is the "base" source whenever any Scopus data exists (private or
   // community-verified), falling back to WOS, then to the raw OpenAlex/
   // Semantic Scholar snapshot — see utils/effectiveMetrics.js for the exact
   // per-field priority rules the user chose.
-  const effective = computeEffectiveMetrics(researcher, sharedScores);
+  const effectiveRaw = computeEffectiveMetrics(researcher, sharedScores);
+  // When there's no Scopus/WOS data at all, effectiveMetrics falls back to
+  // the server-computed researcher.h_index/total_citations/paper_count —
+  // which don't know about any 'not_mine'/'duplicate' corrections made below.
+  // Recompute from the already-filtered `papers` list instead in that case,
+  // so a correction immediately updates the headline numbers rather than
+  // waiting for a full refetch (see ResearcherContext's papers/allPapers split).
+  const effective =
+    effectiveRaw.source === 'raw'
+      ? {
+          ...effectiveRaw,
+          hIndex: calculateHIndex(papers.map((p) => p.citations || 0)),
+          totalCitations: papers.reduce((sum, p) => sum + (p.citations || 0), 0),
+          paperCount: papers.length,
+        }
+      : effectiveRaw;
   const sourceLabel =
     effective.source === 'scopus'
       ? 'Scopus'
@@ -71,12 +97,15 @@ export default function Dashboard() {
     }
   }
 
+  // The management table below shows EVERY tracked paper (allPapers), not the
+  // filtered `papers` used for metrics/Predictor/Actions — otherwise a paper
+  // marked 'not_mine' would vanish from the table with no way to undo it.
   const filteredPapers = paperFilter.trim()
-    ? papers.filter((p) => {
+    ? allPapers.filter((p) => {
         const q = paperFilter.trim().toLowerCase();
         return (p.title || '').toLowerCase().includes(q) || (p.venue || '').toLowerCase().includes(q);
       })
-    : papers;
+    : allPapers;
 
   const sortedPapers = [...filteredPapers].sort((a, b) => {
     let cmp;
@@ -94,7 +123,7 @@ export default function Dashboard() {
     return <span className="ml-1 text-brand-500">{sortDir === 'asc' ? '↑' : '↓'}</span>;
   }
 
-  if (papers.length === 0) {
+  if (allPapers.length === 0) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-10">
         <div className="card">
@@ -239,20 +268,38 @@ export default function Dashboard() {
                   {t('dashboard.colCitations')}
                   <SortArrow column="citations" />
                 </th>
+                <th className="py-2 pr-4 text-right">{t('dashboard.colVerification')}</th>
               </tr>
             </thead>
             <tbody>
-              {visiblePapers.map((p) => (
-                <tr key={p.id} className="border-b border-slate-50 last:border-0">
-                  <td className="py-2.5 pr-4 font-medium text-slate-700">{p.title}</td>
-                  <td className="py-2.5 pr-4 text-slate-500">{p.year || '—'}</td>
-                  <td className="py-2.5 pr-4 text-slate-500">{p.venue || '—'}</td>
-                  <td className="py-2.5 pr-4 text-right font-semibold text-brand-600">{(p.citations || 0).toLocaleString()}</td>
-                </tr>
-              ))}
+              {visiblePapers.map((p) => {
+                const key = p.external_id || p.id;
+                const verification = p.verification || null;
+                return (
+                  <tr
+                    key={p.id}
+                    className={`border-b border-slate-50 last:border-0 ${
+                      verification === 'not_mine' || verification === 'duplicate' ? 'opacity-50' : ''
+                    }`}
+                  >
+                    <td className="py-2.5 pr-4 font-medium text-slate-700">{p.title}</td>
+                    <td className="py-2.5 pr-4 text-slate-500">{p.year || '—'}</td>
+                    <td className="py-2.5 pr-4 text-slate-500">{p.venue || '—'}</td>
+                    <td className="py-2.5 pr-4 text-right font-semibold text-brand-600">
+                      {(p.citations || 0).toLocaleString()}
+                    </td>
+                    <td className="py-2.5 pr-4">
+                      <PaperVerificationControl
+                        status={verification}
+                        onChange={(status) => setPaperVerification(key, status)}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
               {visiblePapers.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="py-6 text-center text-slate-400">
+                  <td colSpan={5} className="py-6 text-center text-slate-400">
                     {t('dashboard.filterNoResults')}
                   </td>
                 </tr>
@@ -270,6 +317,72 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+/**
+ * Per-paper "this is mine / not mine / duplicate" control. A wrong entry in
+ * an auto-synced paper list (common with common author names or merged
+ * profiles) would otherwise silently inflate h-index, Predictor projections,
+ * and Actions recommendations forever — this lets the owner correct it once,
+ * and the correction survives future refreshes (keyed by external_id, see
+ * ResearcherContext's setPaperVerification).
+ */
+function PaperVerificationControl({ status, onChange }) {
+  const { t } = useTranslation();
+
+  if (status === 'confirmed') {
+    return (
+      <div className="flex items-center justify-end gap-1.5">
+        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+          {t('dashboard.verification.confirmedBadge')}
+        </span>
+        <button onClick={() => onChange(null)} className="text-[11px] text-slate-400 hover:text-slate-600">
+          {t('dashboard.verification.undo')}
+        </button>
+      </div>
+    );
+  }
+
+  if (status === 'not_mine' || status === 'duplicate') {
+    return (
+      <div className="flex items-center justify-end gap-1.5">
+        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">
+          {status === 'not_mine' ? t('dashboard.verification.notMineBadge') : t('dashboard.verification.duplicateBadge')}
+        </span>
+        <button onClick={() => onChange(null)} className="text-[11px] text-slate-400 hover:text-slate-600">
+          {t('dashboard.verification.undo')}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-end gap-1 text-[11px]">
+      <button
+        onClick={() => onChange('confirmed')}
+        className="px-1.5 py-0.5 rounded hover:bg-emerald-50 hover:text-emerald-700 text-slate-400"
+        title={t('dashboard.verification.confirm')}
+      >
+        {t('dashboard.verification.confirm')}
+      </button>
+      <span className="text-slate-200">·</span>
+      <button
+        onClick={() => onChange('not_mine')}
+        className="px-1.5 py-0.5 rounded hover:bg-red-50 hover:text-red-700 text-slate-400"
+        title={t('dashboard.verification.notMine')}
+      >
+        {t('dashboard.verification.notMine')}
+      </button>
+      <span className="text-slate-200">·</span>
+      <button
+        onClick={() => onChange('duplicate')}
+        className="px-1.5 py-0.5 rounded hover:bg-amber-50 hover:text-amber-700 text-slate-400"
+        title={t('dashboard.verification.duplicate')}
+      >
+        {t('dashboard.verification.duplicate')}
+      </button>
     </div>
   );
 }

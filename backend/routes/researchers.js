@@ -5,6 +5,7 @@ const {
   getMyLatestResearcher,
   getResearcher,
   listPapers,
+  setPaperVerification,
   getActionItems,
   getCollaborators,
   getRealHistory,
@@ -31,6 +32,7 @@ router.post('/', addResearcher);
 router.get('/me/latest', getMyLatestResearcher);
 router.get('/:id', getResearcher);
 router.get('/:id/papers', listPapers);
+router.patch('/:id/paper-verification', setPaperVerification);
 router.get('/:id/actions', getActionItems);
 router.get('/:id/collaborators', requirePro, getCollaborators);
 router.get('/:id/real-history', getRealHistory);
