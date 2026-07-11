@@ -363,5 +363,23 @@
     "submitting": "Wird gesendet...",
     "sent": "Danke — deine Nachricht wurde gesendet.",
     "submitFailed": "Senden fehlgeschlagen. Bitte erneut versuchen."
+  },
+  "frontier": {
+    "title": "H-Index-Grenze",
+    "subtitle": "Sieh genau, welche Arbeiten deinem H-Index am nächsten sind, nicht nur die aktuelle Zahl.",
+    "nextMilestone": "Nächster Meilenstein: h = {{next}}",
+    "summarySingle_one": "Dein nächster Meilenstein ist h = {{next}}. Dein aussichtsreichster Kandidat, \"{{title}}\", braucht nur noch {{count}} weiteres Zitat.",
+    "summarySingle_other": "Dein nächster Meilenstein ist h = {{next}}. Dein aussichtsreichster Kandidat, \"{{title}}\", braucht noch {{count}} weitere Zitate.",
+    "summaryMultiple_one": "Um h = {{next}} zu erreichen, muss {{count}} weitere Arbeit diese Zitationsschwelle überschreiten — siehe unten.",
+    "summaryMultiple_other": "Um h = {{next}} zu erreichen, müssen {{count}} weitere Arbeiten diese Zitationsschwelle überschreiten — siehe unten.",
+    "newWorkNeeded_one": "Selbst wenn deine bestehenden Arbeiten aufholen, wäre {{count}} zusätzliche neue Veröffentlichung nötig, um h = {{next}} zu erreichen.",
+    "newWorkNeeded_other": "Selbst wenn deine bestehenden Arbeiten aufholen, wären {{count}} zusätzliche neue Veröffentlichungen nötig, um h = {{next}} zu erreichen.",
+    "colPaper": "Arbeit",
+    "colCitations": "Zitate",
+    "colNeeded": "Fehlend",
+    "citationsNeededValue_one": "+{{count}} Zitat",
+    "citationsNeededValue_other": "+{{count}} Zitate",
+    "untitled": "Ohne Titel",
+    "disclaimer": "Basierend auf deinen {{h}} erfassten Arbeiten und ihrer aktuellen Zitatzahl — wird automatisch neu berechnet, sobald sich Zitate oder Arbeiten ändern."
   }
 }

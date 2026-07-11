@@ -363,5 +363,23 @@
     "submitting": "Sending...",
     "sent": "Thanks — your message has been sent.",
     "submitFailed": "Couldn't send. Try again."
+  },
+  "frontier": {
+    "title": "H-index Frontier",
+    "subtitle": "See exactly which papers are closest to raising your h-index — not just the current number.",
+    "nextMilestone": "Next milestone: h = {{next}}",
+    "summarySingle_one": "Your next milestone is h = {{next}}. Your closest candidate, \"{{title}}\", needs just {{count}} more citation to get there.",
+    "summarySingle_other": "Your next milestone is h = {{next}}. Your closest candidate, \"{{title}}\", needs {{count}} more citations to get there.",
+    "summaryMultiple_one": "Reaching h = {{next}} requires {{count}} more paper to cross its citation threshold — see below.",
+    "summaryMultiple_other": "Reaching h = {{next}} requires {{count}} more papers to cross that citation threshold — see below.",
+    "newWorkNeeded_one": "Even after your existing papers catch up, {{count}} additional new publication would still be needed to reach h = {{next}}.",
+    "newWorkNeeded_other": "Even after your existing papers catch up, {{count}} additional new publications would still be needed to reach h = {{next}}.",
+    "colPaper": "Paper",
+    "colCitations": "Citations",
+    "colNeeded": "Needed",
+    "citationsNeededValue_one": "+{{count}} citation",
+    "citationsNeededValue_other": "+{{count}} citations",
+    "untitled": "Untitled",
+    "disclaimer": "Based on your {{h}} tracked papers and their current citation counts — recalculates automatically as citations and papers update."
   }
 }

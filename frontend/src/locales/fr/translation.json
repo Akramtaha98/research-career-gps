@@ -363,5 +363,23 @@
     "submitting": "Envoi...",
     "sent": "Merci — votre message a été envoyé.",
     "submitFailed": "Échec de l'envoi. Réessayez."
+  },
+  "frontier": {
+    "title": "Frontière de l'indice H",
+    "subtitle": "Voyez exactement quels articles sont les plus proches d'augmenter votre indice H, pas seulement le chiffre actuel.",
+    "nextMilestone": "Prochain palier : h = {{next}}",
+    "summarySingle_one": "Votre prochain palier est h = {{next}}. Votre candidat le plus proche, \"{{title}}\", n'a besoin que de {{count}} citation de plus pour y arriver.",
+    "summarySingle_other": "Votre prochain palier est h = {{next}}. Votre candidat le plus proche, \"{{title}}\", a besoin de {{count}} citations de plus pour y arriver.",
+    "summaryMultiple_one": "Atteindre h = {{next}} nécessite {{count}} article de plus franchissant ce seuil de citations — voir ci-dessous.",
+    "summaryMultiple_other": "Atteindre h = {{next}} nécessite {{count}} articles de plus franchissant ce seuil de citations — voir ci-dessous.",
+    "newWorkNeeded_one": "Même après que vos articles actuels rattrapent le seuil, {{count}} nouvelle publication supplémentaire serait encore nécessaire pour atteindre h = {{next}}.",
+    "newWorkNeeded_other": "Même après que vos articles actuels rattrapent le seuil, {{count}} nouvelles publications supplémentaires seraient encore nécessaires pour atteindre h = {{next}}.",
+    "colPaper": "Article",
+    "colCitations": "Citations",
+    "colNeeded": "Manquant",
+    "citationsNeededValue_one": "+{{count}} citation",
+    "citationsNeededValue_other": "+{{count}} citations",
+    "untitled": "Sans titre",
+    "disclaimer": "Basé sur vos {{h}} articles suivis et leur nombre de citations actuel — recalculé automatiquement à mesure que les citations et les articles évoluent."
   }
 }
