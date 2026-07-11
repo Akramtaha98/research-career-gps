@@ -337,7 +337,7 @@ function ScoreRow({ which, label, researcher, baselineSource, setBaselineSource,
                 value={profileUrl}
                 onChange={(e) => setProfileUrl(e.target.value)}
               />
-              {openHref && (
+              {profileUrl.trim() && (
                 <a
                   href={openHref}
                   target="_blank"
