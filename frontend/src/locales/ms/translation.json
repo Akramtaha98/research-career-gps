@@ -367,5 +367,23 @@
     "submitting": "Menghantar...",
     "sent": "Terima kasih — mesej anda telah dihantar.",
     "submitFailed": "Gagal menghantar. Cuba lagi."
+  },
+  "frontier": {
+    "title": "Sempadan Indeks-H",
+    "subtitle": "Lihat dengan tepat kertas kerja mana yang paling hampir menaikkan indeks-H anda — bukan sekadar nombor semasa.",
+    "nextMilestone": "Pencapaian seterusnya: h = {{next}}",
+    "summarySingle_one": "Pencapaian seterusnya anda ialah h = {{next}}. Calon paling hampir anda, \"{{title}}\", hanya perlukan {{count}} lagi petikan untuk mencapainya.",
+    "summarySingle_other": "Pencapaian seterusnya anda ialah h = {{next}}. Calon paling hampir anda, \"{{title}}\", memerlukan {{count}} lagi petikan untuk mencapainya.",
+    "summaryMultiple_one": "Untuk mencapai h = {{next}}, {{count}} lagi kertas kerja perlu melepasi ambang petikan itu — lihat di bawah.",
+    "summaryMultiple_other": "Untuk mencapai h = {{next}}, {{count}} lagi kertas kerja perlu melepasi ambang petikan itu — lihat di bawah.",
+    "newWorkNeeded_one": "Walaupun selepas kertas kerja sedia ada anda mencapai ambang itu, {{count}} lagi penerbitan baharu masih diperlukan untuk mencapai h = {{next}}.",
+    "newWorkNeeded_other": "Walaupun selepas kertas kerja sedia ada anda mencapai ambang itu, {{count}} lagi penerbitan baharu masih diperlukan untuk mencapai h = {{next}}.",
+    "colPaper": "Kertas kerja",
+    "colCitations": "Petikan",
+    "colNeeded": "Diperlukan",
+    "citationsNeededValue_one": "+{{count}} petikan",
+    "citationsNeededValue_other": "+{{count}} petikan",
+    "untitled": "Tiada tajuk",
+    "disclaimer": "Berdasarkan {{h}} kertas kerja yang dijejaki dan bilangan petikan semasa — dikira semula secara automatik apabila petikan dan kertas kerja dikemas kini."
   }
 }

@@ -5,6 +5,7 @@ import MetricCard from '../components/MetricCard';
 import HIndexChart from '../components/HIndexChart';
 import EmptyState from '../components/EmptyState';
 import ScoreBox from '../components/ScoreBox';
+import HIndexFrontier from '../components/HIndexFrontier';
 import { computeEffectiveMetrics } from '../utils/effectiveMetrics';
 
 function formatDate(iso) {
@@ -156,6 +157,8 @@ export default function Dashboard() {
           accent="amber"
         />
       </div>
+
+      <HIndexFrontier papers={papers} />
 
       {source === 'live' && <ScoreBox researcher={researcher} />}
 

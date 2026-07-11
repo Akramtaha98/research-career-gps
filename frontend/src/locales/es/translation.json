@@ -367,5 +367,23 @@
     "submitting": "Enviando...",
     "sent": "Gracias, tu mensaje ha sido enviado.",
     "submitFailed": "No se pudo enviar. Inténtalo de nuevo."
+  },
+  "frontier": {
+    "title": "Frontera del índice H",
+    "subtitle": "Ve exactamente qué artículos están más cerca de elevar tu índice H, no solo el número actual.",
+    "nextMilestone": "Próximo hito: h = {{next}}",
+    "summarySingle_one": "Tu próximo hito es h = {{next}}. Tu candidato más cercano, \"{{title}}\", solo necesita {{count}} cita más para lograrlo.",
+    "summarySingle_other": "Tu próximo hito es h = {{next}}. Tu candidato más cercano, \"{{title}}\", necesita {{count}} citas más para lograrlo.",
+    "summaryMultiple_one": "Alcanzar h = {{next}} requiere {{count}} artículo más para cruzar ese umbral de citas — ver más abajo.",
+    "summaryMultiple_other": "Alcanzar h = {{next}} requiere {{count}} artículos más para cruzar ese umbral de citas — ver más abajo.",
+    "newWorkNeeded_one": "Incluso después de que tus artículos actuales alcancen el umbral, se necesitaría {{count}} publicación nueva adicional para llegar a h = {{next}}.",
+    "newWorkNeeded_other": "Incluso después de que tus artículos actuales alcancen el umbral, se necesitarían {{count}} publicaciones nuevas adicionales para llegar a h = {{next}}.",
+    "colPaper": "Artículo",
+    "colCitations": "Citas",
+    "colNeeded": "Faltan",
+    "citationsNeededValue_one": "+{{count}} cita",
+    "citationsNeededValue_other": "+{{count}} citas",
+    "untitled": "Sin título",
+    "disclaimer": "Basado en tus {{h}} artículos rastreados y su número actual de citas — se recalcula automáticamente al actualizarse las citas y los artículos."
   }
 }
