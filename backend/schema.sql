@@ -133,13 +133,41 @@ CREATE TABLE IF NOT EXISTS predictions (
   created_at           TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Historical snapshots let the dashboard chart H-index growth over time.
+-- Historical snapshots let the dashboard chart H-index growth over time, and
+-- back the Timeline feature's "recorded by Research GPS" history (distinct
+-- from the reconstructed-from-citation-data history computed on demand by
+-- services/historicalHIndex.js). One row per researcher per calendar day
+-- (snapshot_date), enforced by the unique index below — recording a new
+-- snapshot the same day updates that day's row (via upsert) instead of
+-- piling up duplicates from repeated manual refreshes.
 CREATE TABLE IF NOT EXISTS h_index_history (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  researcher_id   UUID NOT NULL REFERENCES researchers(id) ON DELETE CASCADE,
+  h_index         INTEGER NOT NULL,
+  total_citations INTEGER NOT NULL,
+  paper_count     INTEGER,
+  -- Which upstream source produced this snapshot ('openalex' | 'semantic_scholar').
+  source          VARCHAR(20),
+  snapshot_date   DATE NOT NULL DEFAULT CURRENT_DATE,
+  recorded_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_h_index_history_researcher_snapshot_date
+  ON h_index_history(researcher_id, snapshot_date);
+
+-- Per-paper citation snapshots -- the paper-level counterpart to
+-- h_index_history, powering Timeline's "since your last visit" diff (e.g.
+-- "2 papers gained citations"). Keyed by external_id, not papers.id, for the
+-- same reason as paper_verifications: replacePapers() reinserts every
+-- auto-synced paper with a fresh id on every refresh.
+CREATE TABLE IF NOT EXISTS paper_snapshots (
   id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   researcher_id  UUID NOT NULL REFERENCES researchers(id) ON DELETE CASCADE,
-  h_index        INTEGER NOT NULL,
-  total_citations INTEGER NOT NULL,
-  recorded_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+  external_id    VARCHAR(64) NOT NULL,
+  snapshot_date  DATE NOT NULL DEFAULT CURRENT_DATE,
+  citation_count INTEGER NOT NULL DEFAULT 0,
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (researcher_id, external_id, snapshot_date)
 );
 
 -- Crowdsourced Scopus/WOS pool: ONE canonical current value per (orcid, which),
@@ -319,4 +347,6 @@ CREATE INDEX IF NOT EXISTS idx_verified_author_metrics_author_id ON verified_aut
 CREATE INDEX IF NOT EXISTS idx_verified_papers_author_id ON verified_papers(author_id);
 CREATE INDEX IF NOT EXISTS idx_verified_comparison_results_metrics_id ON verified_comparison_results(author_metrics_id);
 CREATE INDEX IF NOT EXISTS idx_contact_messages_created_at ON contact_messages(created_at);
+CREATE INDEX IF NOT EXISTS idx_paper_snapshots_researcher_id ON paper_snapshots(researcher_id);
+CREATE INDEX IF NOT EXISTS idx_paper_snapshots_researcher_date ON paper_snapshots(researcher_id, snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_paper_verifications_researcher_id ON paper_verifications(researcher_id);

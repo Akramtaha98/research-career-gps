@@ -3,6 +3,7 @@
     "brand": "Research GPS",
     "search": "Search",
     "dashboard": "Dashboard",
+    "timeline": "Timeline",
     "predictor": "Predictor",
     "actions": "Actions",
     "verify": "Verify",
@@ -394,5 +395,33 @@
     "citationsNeededValue_other": "+{{count}} citations",
     "untitled": "Untitled",
     "disclaimer": "Based on your {{h}} tracked papers and their current citation counts — recalculates automatically as citations and papers update."
+  },
+  "timeline": {
+    "title": "Research Career Timeline",
+    "subtitle": "How your research career has developed, what changed recently, and what's next.",
+    "recordedSince": "Recorded by Research GPS since {{date}}",
+    "earliestPublication": "earliest tracked publication {{year}}",
+    "loading": "Loading your timeline...",
+    "loadError": "Couldn't load your timeline. Try again shortly.",
+    "demoEmptyTitle": "Timeline needs a real tracked researcher",
+    "demoEmptyDesc": "Demo data doesn't have snapshot history to show. Look up and track a real researcher to start building your own Timeline.",
+    "demoEmptyCta": "Search for a researcher",
+    "sinceLastVisitTitle": "Since your last visit",
+    "sinceLastVisitEmpty": "This is your first recorded snapshot — come back after your next refresh to see what's changed.",
+    "sinceLastVisitRange": "Comparing {{from}} → {{to}}",
+    "citations": "Citations",
+    "papersGainedCitations_one": "{{count}} paper gained citations",
+    "papersGainedCitations_other": "{{count}} papers gained citations",
+    "chartTitle": "H-index over time",
+    "chartRecordedLabel": "Recorded by Research GPS — only from your first tracked snapshot onward, not your full career history.",
+    "notEnoughHistoryTitle": "Not enough recorded history yet",
+    "notEnoughHistoryDesc": "Only one snapshot so far. Come back after refreshing this researcher over the coming weeks/months to see a recorded trend here.",
+    "milestonesTitle": "Milestones",
+    "milestones": {
+      "firstSnapshot": "First recorded snapshot — H-index {{hIndex}}, {{citations}} citations",
+      "hIndexIncrease": "H-index increased from {{previous}} to {{hIndex}}",
+      "citationMilestone": "Passed {{threshold}} total citations"
+    },
+    "disclaimer": "\"Recorded\" history starts from whenever this researcher was first tracked here — it does not reconstruct H-index from before that date. For a reconstruction of earlier years from citation-by-year data, see the Dashboard's \"Load real historical H-index\"."
   }
 }

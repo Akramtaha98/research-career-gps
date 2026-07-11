@@ -112,6 +112,19 @@ export function ResearcherProvider({ children }) {
   }, [source, researcher]);
 
   /**
+   * Fetches the Timeline feature's data: recorded (not reconstructed —
+   * that's getRealHistory above) snapshot history, a "since your last
+   * visit" diff, and derived milestones. See backend's getTimeline
+   * controller + services/timeline.js. Demo mode has no snapshot history to
+   * show, so this is live-only, same convention as getRealHistory.
+   */
+  const getTimeline = useCallback(async () => {
+    if (source !== 'live' || !researcher?.id) return null;
+    const { data } = await client.get(`/researchers/${researcher.id}/timeline`);
+    return data;
+  }, [source, researcher]);
+
+  /**
    * Saves a self-reported official Scopus or WOS H-index for the current
    * live researcher. Scopus and WOS are independent slots — setting one
    * never touches the other. Not auto-verified against the source — see
@@ -277,6 +290,7 @@ export function ResearcherProvider({ children }) {
         refreshResearcher,
         getCollaborators,
         getRealHistory,
+        getTimeline,
         setScore,
         clearScore,
         getSharedScores,

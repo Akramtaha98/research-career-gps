@@ -3,6 +3,7 @@
     "brand": "Research GPS",
     "search": "Cari",
     "dashboard": "Papan Pemuka",
+    "timeline": "Garis Masa",
     "predictor": "Peramal",
     "actions": "Tindakan",
     "verify": "Sahkan",
@@ -394,5 +395,33 @@
     "citationsNeededValue_other": "+{{count}} petikan",
     "untitled": "Tiada tajuk",
     "disclaimer": "Berdasarkan {{h}} kertas kerja yang dijejaki dan bilangan petikan semasa — dikira semula secara automatik apabila petikan dan kertas kerja dikemas kini."
+  },
+  "timeline": {
+    "title": "Garis Masa Kerjaya Penyelidikan Anda",
+    "subtitle": "Bagaimana kerjaya penyelidikan anda berkembang, apa yang berubah baru-baru ini, dan apa seterusnya.",
+    "recordedSince": "Direkodkan oleh Research GPS sejak {{date}}",
+    "earliestPublication": "penerbitan dijejaki paling awal {{year}}",
+    "loading": "Memuatkan garis masa anda...",
+    "loadError": "Tidak dapat memuatkan garis masa anda. Cuba lagi sebentar lagi.",
+    "demoEmptyTitle": "Garis masa memerlukan penyelidik sebenar yang dijejaki",
+    "demoEmptyDesc": "Data demo tiada sejarah tangkapan untuk dipaparkan. Cari dan jejaki penyelidik sebenar untuk mula membina garis masa anda sendiri.",
+    "demoEmptyCta": "Cari penyelidik",
+    "sinceLastVisitTitle": "Sejak lawatan terakhir anda",
+    "sinceLastVisitEmpty": "Ini adalah tangkapan pertama anda yang direkodkan — kembali selepas kemas kini seterusnya untuk melihat apa yang berubah.",
+    "sinceLastVisitRange": "Membandingkan {{from}} → {{to}}",
+    "citations": "Petikan",
+    "papersGainedCitations_one": "{{count}} kertas kerja mendapat petikan",
+    "papersGainedCitations_other": "{{count}} kertas kerja mendapat petikan",
+    "chartTitle": "Indeks-H mengikut masa",
+    "chartRecordedLabel": "Direkodkan oleh Research GPS — hanya dari tangkapan pertama anda yang dijejaki, bukan keseluruhan sejarah kerjaya anda.",
+    "notEnoughHistoryTitle": "Sejarah direkodkan belum mencukupi",
+    "notEnoughHistoryDesc": "Hanya satu tangkapan setakat ini. Kembali selepas mengemas kini penyelidik ini dalam beberapa minggu/bulan akan datang untuk melihat trend direkodkan di sini.",
+    "milestonesTitle": "Pencapaian",
+    "milestones": {
+      "firstSnapshot": "Tangkapan pertama direkodkan — Indeks-H {{hIndex}}, {{citations}} petikan",
+      "hIndexIncrease": "Indeks-H meningkat daripada {{previous}} kepada {{hIndex}}",
+      "citationMilestone": "Melepasi jumlah {{threshold}} petikan"
+    },
+    "disclaimer": "Sejarah \"direkodkan\" bermula dari bila-bila masa penyelidik ini mula-mula dijejaki di sini — ia tidak membina semula Indeks-H sebelum tarikh itu. Untuk pembinaan semula tahun-tahun lebih awal daripada data petikan mengikut tahun, lihat \"Muatkan Indeks-H sejarah sebenar\" pada Papan Pemuka."
   }
 }

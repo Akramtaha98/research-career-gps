@@ -3,6 +3,7 @@
     "brand": "Research GPS",
     "search": "Suche",
     "dashboard": "Dashboard",
+    "timeline": "Zeitachse",
     "predictor": "Prognose",
     "actions": "Aufgaben",
     "verify": "Verifizieren",
@@ -394,5 +395,33 @@
     "citationsNeededValue_other": "+{{count}} Zitate",
     "untitled": "Ohne Titel",
     "disclaimer": "Basierend auf deinen {{h}} erfassten Arbeiten und ihrer aktuellen Zitatzahl — wird automatisch neu berechnet, sobald sich Zitate oder Arbeiten ändern."
+  },
+  "timeline": {
+    "title": "Zeitachse deiner Forschungskarriere",
+    "subtitle": "Wie sich deine Forschungskarriere entwickelt hat, was sich kürzlich geändert hat, und was als Nächstes kommt.",
+    "recordedSince": "Von Research GPS erfasst seit {{date}}",
+    "earliestPublication": "früheste erfasste Veröffentlichung {{year}}",
+    "loading": "Zeitachse wird geladen...",
+    "loadError": "Zeitachse konnte nicht geladen werden. Versuche es gleich noch einmal.",
+    "demoEmptyTitle": "Die Zeitachse benötigt einen echten erfassten Forscher",
+    "demoEmptyDesc": "Demodaten haben keinen Schnappschuss-Verlauf zum Anzeigen. Suche und erfasse einen echten Forscher, um deine eigene Zeitachse aufzubauen.",
+    "demoEmptyCta": "Nach einem Forscher suchen",
+    "sinceLastVisitTitle": "Seit deinem letzten Besuch",
+    "sinceLastVisitEmpty": "Dies ist dein erster erfasster Schnappschuss — komm nach deiner nächsten Aktualisierung wieder, um zu sehen, was sich geändert hat.",
+    "sinceLastVisitRange": "Vergleich {{from}} → {{to}}",
+    "citations": "Zitate",
+    "papersGainedCitations_one": "{{count}} Arbeit hat Zitate hinzugewonnen",
+    "papersGainedCitations_other": "{{count}} Arbeiten haben Zitate hinzugewonnen",
+    "chartTitle": "H-Index im Zeitverlauf",
+    "chartRecordedLabel": "Von Research GPS erfasst — nur ab deinem ersten erfassten Schnappschuss, nicht deiner gesamten Karrieregeschichte.",
+    "notEnoughHistoryTitle": "Noch nicht genug erfasster Verlauf",
+    "notEnoughHistoryDesc": "Bisher nur ein Schnappschuss. Komm nach weiteren Aktualisierungen dieses Forschers in den kommenden Wochen/Monaten wieder, um hier einen erfassten Trend zu sehen.",
+    "milestonesTitle": "Meilensteine",
+    "milestones": {
+      "firstSnapshot": "Erster erfasster Schnappschuss — H-Index {{hIndex}}, {{citations}} Zitate",
+      "hIndexIncrease": "H-Index stieg von {{previous}} auf {{hIndex}}",
+      "citationMilestone": "Hat {{threshold}} Zitate insgesamt überschritten"
+    },
+    "disclaimer": "Der \"erfasste\" Verlauf beginnt erst, sobald dieser Forscher hier erstmals erfasst wurde — er rekonstruiert den H-Index nicht rückwirkend vor diesem Datum. Für eine Rekonstruktion früherer Jahre aus Zitationsdaten pro Jahr siehe \"Echten historischen H-Index laden\" im Dashboard."
   }
 }

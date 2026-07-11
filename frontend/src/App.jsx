@@ -8,6 +8,7 @@ import ResetPassword from './pages/ResetPassword';
 import OrcidCallback from './pages/OrcidCallback';
 import Search from './pages/Search';
 import Dashboard from './pages/Dashboard';
+import Timeline from './pages/Timeline';
 import Predictor from './pages/Predictor';
 import Actions from './pages/Actions';
 import Verify from './pages/Verify';
@@ -30,6 +31,7 @@ export default function App() {
             <Route path="/auth/orcid/callback" element={<OrcidCallback />} />
             <Route path="/search" element={<Search />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/timeline" element={<Timeline />} />
             <Route path="/predictor" element={<Predictor />} />
             <Route path="/actions" element={<Actions />} />
             <Route path="/verify" element={<Verify />} />

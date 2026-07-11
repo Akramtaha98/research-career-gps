@@ -3,6 +3,7 @@
     "brand": "Research GPS",
     "search": "Recherche",
     "dashboard": "Tableau de bord",
+    "timeline": "Chronologie",
     "predictor": "Prédicteur",
     "actions": "Actions",
     "verify": "Vérifier",
@@ -394,5 +395,33 @@
     "citationsNeededValue_other": "+{{count}} citations",
     "untitled": "Sans titre",
     "disclaimer": "Basé sur vos {{h}} articles suivis et leur nombre de citations actuel — recalculé automatiquement à mesure que les citations et les articles évoluent."
+  },
+  "timeline": {
+    "title": "Chronologie de votre carrière de recherche",
+    "subtitle": "Comment votre carrière de recherche a évolué, ce qui a changé récemment, et ce qui suit.",
+    "recordedSince": "Enregistré par Research GPS depuis le {{date}}",
+    "earliestPublication": "publication suivie la plus ancienne {{year}}",
+    "loading": "Chargement de votre chronologie...",
+    "loadError": "Impossible de charger votre chronologie. Réessayez sous peu.",
+    "demoEmptyTitle": "La chronologie nécessite un chercheur réel suivi",
+    "demoEmptyDesc": "Les données de démonstration n'ont pas d'historique d'instantanés à afficher. Recherchez et suivez un chercheur réel pour commencer à construire votre propre chronologie.",
+    "demoEmptyCta": "Rechercher un chercheur",
+    "sinceLastVisitTitle": "Depuis votre dernière visite",
+    "sinceLastVisitEmpty": "Ceci est votre premier instantané enregistré — revenez après votre prochaine actualisation pour voir ce qui a changé.",
+    "sinceLastVisitRange": "Comparaison {{from}} → {{to}}",
+    "citations": "Citations",
+    "papersGainedCitations_one": "{{count}} article a gagné des citations",
+    "papersGainedCitations_other": "{{count}} articles ont gagné des citations",
+    "chartTitle": "H-index dans le temps",
+    "chartRecordedLabel": "Enregistré par Research GPS — uniquement depuis votre premier instantané suivi, pas tout votre historique de carrière.",
+    "notEnoughHistoryTitle": "Pas encore assez d'historique enregistré",
+    "notEnoughHistoryDesc": "Un seul instantané pour l'instant. Revenez après avoir actualisé ce chercheur dans les semaines/mois à venir pour voir une tendance enregistrée ici.",
+    "milestonesTitle": "Jalons",
+    "milestones": {
+      "firstSnapshot": "Premier instantané enregistré — H-index {{hIndex}}, {{citations}} citations",
+      "hIndexIncrease": "Le H-index est passé de {{previous}} à {{hIndex}}",
+      "citationMilestone": "A dépassé {{threshold}} citations au total"
+    },
+    "disclaimer": "L'historique \"enregistré\" commence à partir du premier suivi de ce chercheur ici — il ne reconstruit pas le H-index d'avant cette date. Pour une reconstruction des années antérieures à partir des données de citations par année, voir \"Charger le H-index historique réel\" sur le tableau de bord."
   }
 }

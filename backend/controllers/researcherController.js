@@ -5,6 +5,7 @@ const openAlex = require('../services/openAlex');
 const { computeHistoricalHIndex } = require('../services/historicalHIndex');
 const { generateActionItems } = require('../utils/actionItems');
 const { checkScopusProfile, checkWosProfile } = require('../services/externalProfileCheck');
+const { computeSinceLastVisit, computeMilestones } = require('../services/timeline');
 
 /**
  * Best-effort, no-AI check of a submitted number against the live profile
@@ -133,6 +134,7 @@ async function addResearcher(req, res) {
     });
 
     await store.replacePapers(researcher.id, profile.papers);
+    await store.snapshotPapers(researcher.id, profile.papers);
 
     return res.status(201).json({ researcher });
   } catch (err) {
@@ -185,6 +187,7 @@ async function getResearcher(req, res) {
         orcid: profile.orcid || null,
       });
       await store.replacePapers(researcher.id, profile.papers);
+      await store.snapshotPapers(researcher.id, profile.papers);
     }
 
     const history = await store.getHistory(researcher.id);
@@ -244,6 +247,38 @@ async function setPaperVerification(req, res) {
 
     const result = await store.setPaperVerification(id, externalId, status, null);
     return res.json({ verification: result ? result.status : null });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
+}
+
+/**
+ * GET /api/researchers/:id/timeline
+ * Returns this researcher's RECORDED snapshot history (h_index_history,
+ * once per calendar day — distinct from the separate, on-demand
+ * RECONSTRUCTED history at GET /:id/real-history, which infers past H-index
+ * from per-paper citation-by-year data going further back than tracking
+ * began), a "since your last visit" diff between the two most recent
+ * snapshots, and a milestone list derived purely from that recorded
+ * history. See services/timeline.js for the actual computation.
+ */
+async function getTimeline(req, res) {
+  try {
+    const { id } = req.params;
+    const researcher = await store.findResearcherById(id);
+    if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
+    if (researcher.user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized to view this researcher' });
+    }
+
+    const snapshots = await store.getHistory(id);
+    const paperSnapshots = await store.getPaperSnapshots(id);
+
+    return res.json({
+      snapshots,
+      sinceLastVisit: computeSinceLastVisit(snapshots, paperSnapshots),
+      milestones: computeMilestones(snapshots),
+    });
   } catch (err) {
     return res.status(err.statusCode || 500).json({ error: err.message });
   }
@@ -517,6 +552,7 @@ module.exports = {
   getResearcher,
   listPapers,
   setPaperVerification,
+  getTimeline,
   getActionItems,
   getCollaborators,
   getRealHistory,

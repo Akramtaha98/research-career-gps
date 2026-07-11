@@ -11,6 +11,7 @@ const verificationRoutes = require('./routes/verification');
 const contactRoutes = require('./routes/contact');
 const { webhook: billingWebhook } = require('./controllers/billingController');
 const { isDemoMode } = require('./config/db');
+const { startSnapshotScheduler } = require('./services/snapshotScheduler');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -61,6 +62,7 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`Research GPS API listening on port ${PORT} (demoMode=${isDemoMode})`);
+  startSnapshotScheduler();
 });
 
 module.exports = app;
