@@ -1,17 +1,18 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useResearcher } from '../context/ResearcherContext';
 import { useAuth } from '../context/AuthContext';
 import client from '../api/client';
 import { projectHIndex } from '../utils/prediction';
+import { effectiveWhichHIndex } from '../utils/effectiveMetrics';
 import { TIERS, getMultiplier, getTierForVenue } from '../utils/venueTiers';
 import HIndexChart from '../components/HIndexChart';
 import UpgradeCTA from '../components/UpgradeCTA';
 import ScoreBox from '../components/ScoreBox';
 
 export default function Predictor() {
-  const { source, researcher, papers } = useResearcher();
+  const { source, researcher, papers, sharedScores } = useResearcher();
   const { user, refreshUser } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
@@ -40,11 +41,41 @@ export default function Predictor() {
   // baseline, we approximate with the minimal citation distribution that
   // produces that H-index (h papers each with exactly h citations) — an
   // approximation, clearly labeled as such in the UI. null | 'scopus' | 'wos'.
+  //
+  // effectiveWhichHIndex (not just researcher.scopus_h_index/wos_h_index
+  // directly) so a VERIFIED community value counts too, not only a number
+  // this specific user separately typed into their own private field —
+  // otherwise Predictor could silently keep using a stale raw H-index even
+  // after the researcher's ORCID-owner-verified number is on file.
   const [baselineSource, setBaselineSource] = useState(
-    researcher.scopus_h_index != null ? 'scopus' : researcher.wos_h_index != null ? 'wos' : null
+    effectiveWhichHIndex(researcher, sharedScores, 'scopus') != null
+      ? 'scopus'
+      : effectiveWhichHIndex(researcher, sharedScores, 'wos') != null
+      ? 'wos'
+      : null
   );
+  // sharedScores loads asynchronously (a separate fetch after the researcher
+  // itself), so the useState initializer above can run before it's ready.
+  // Re-evaluate once it arrives, but never override a choice the user made
+  // themselves via ScoreBox's baseline radio.
+  const userPickedBaseline = useRef(false);
+  useEffect(() => {
+    if (userPickedBaseline.current) return;
+    const next =
+      effectiveWhichHIndex(researcher, sharedScores, 'scopus') != null
+        ? 'scopus'
+        : effectiveWhichHIndex(researcher, sharedScores, 'wos') != null
+        ? 'wos'
+        : null;
+    setBaselineSource((prev) => (prev === next ? prev : next));
+  }, [researcher, sharedScores]);
 
-  const baselineHIndex = baselineSource ? researcher[`${baselineSource}_h_index`] : null;
+  function handleSetBaselineSource(which) {
+    userPickedBaseline.current = true;
+    setBaselineSource(which);
+  }
+
+  const baselineHIndex = effectiveWhichHIndex(researcher, sharedScores, baselineSource);
 
   // Seed the initial target off the active baseline when one exists —
   // otherwise a researcher with e.g. an auto H-index of 36 but a verified
@@ -144,7 +175,7 @@ export default function Predictor() {
           handleSave={handleSave}
           effectiveHIndex={effectiveHIndex}
           baselineSource={baselineSource}
-          setBaselineSource={setBaselineSource}
+          setBaselineSource={handleSetBaselineSource}
         />
       )}
     </div>

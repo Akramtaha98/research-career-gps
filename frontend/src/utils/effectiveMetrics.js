@@ -36,6 +36,28 @@
  *   paperCountIsRaw: boolean,
  * }}
  */
+/**
+ * Best available H-index for ONE specific source ('scopus' | 'wos'),
+ * regardless of which source computeEffectiveMetrics picked as the overall
+ * "primary" one. Priority: verified shared value > this user's own private
+ * self-reported value > unverified shared value > null. Used by the
+ * Predictor, which lets the user explicitly toggle between Scopus and WOS as
+ * their baseline (see ScoreBox's "Use as prediction baseline" radio) — it
+ * needs a per-source number, not the single collapsed effective value
+ * Dashboard uses. Without this, a verified community H-index that the
+ * signed-in user never separately typed into their own private Scopus/WOS
+ * field would be silently ignored and Predictor would fall back to the
+ * stale raw OpenAlex/Semantic Scholar h_index instead.
+ */
+export function effectiveWhichHIndex(researcher, sharedScores, which) {
+  if (!which) return null;
+  const shared = sharedScores?.[which];
+  if (shared?.status === 'verified' && shared.h_index != null) return shared.h_index;
+  if (researcher[`${which}_h_index`] != null) return researcher[`${which}_h_index`];
+  if (shared?.h_index != null) return shared.h_index;
+  return null;
+}
+
 export function computeEffectiveMetrics(researcher, sharedScores) {
   const raw = {
     hIndex: researcher.h_index,
