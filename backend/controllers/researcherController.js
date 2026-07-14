@@ -6,6 +6,7 @@ const { computeHistoricalHIndex } = require('../services/historicalHIndex');
 const { generateActionItems } = require('../utils/actionItems');
 const { checkScopusProfile, checkWosProfile } = require('../services/externalProfileCheck');
 const { computeSinceLastVisit, computeMilestones } = require('../services/timeline');
+const { fetchWorkByDoi } = require('../services/crossref');
 
 /**
  * Best-effort, no-AI check of a submitted number against the live profile
@@ -284,6 +285,80 @@ async function getTimeline(req, res) {
   }
 }
 
+/**
+ * POST /api/researchers/:id/papers/doi
+ * Body: { doi }
+ * Adds a paper OpenAlex/Semantic Scholar hasn't indexed yet (or may never
+ * index) — verified against Crossref first, the DOI registration agency
+ * itself, so a DOI that resolves there is about as authoritative a source as
+ * exists for "this paper is real and this is its metadata." Stored with
+ * origin='manual' so replacePapers() (which only clears origin='auto' rows
+ * on refresh) never wipes it out. See services/crossref.js for the lookup
+ * and store.js's addManualPaper for the duplicate-DOI guard.
+ */
+async function addPaperByDoi(req, res) {
+  try {
+    const { id } = req.params;
+    const researcher = await store.findResearcherById(id);
+    if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
+    if (researcher.user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized to update this researcher' });
+    }
+
+    const { doi } = req.body;
+    if (!doi || typeof doi !== 'string') {
+      return res.status(400).json({ error: 'doi is required' });
+    }
+
+    const work = await fetchWorkByDoi(doi);
+    if (!work) {
+      return res.status(404).json({ error: "That DOI wasn't found on Crossref. Double-check it and try again." });
+    }
+
+    const paper = await store.addManualPaper(id, work);
+    // Best-effort: also record today's snapshot for this one paper so
+    // Timeline's per-paper diffing sees it from day one, not just the next
+    // full refresh. Never allowed to fail the add itself.
+    try {
+      await store.snapshotPapers(id, [{ externalId: work.doi, citations: work.citations }]);
+    } catch {
+      // ignored — see comment above
+    }
+
+    return res.status(201).json({ paper });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
+}
+
+/**
+ * DELETE /api/researchers/:id/papers/manual
+ * Body: { doi }
+ * Removes a manually DOI-added paper. doi is taken from the body (not the
+ * URL path) for the same reason as paper-verification's externalId: DOIs
+ * can contain slashes. store.removeManualPaper is scoped to origin='manual'
+ * so this can never delete an auto-synced paper.
+ */
+async function removeManualPaper(req, res) {
+  try {
+    const { id } = req.params;
+    const researcher = await store.findResearcherById(id);
+    if (!researcher) return res.status(404).json({ error: 'Researcher not found' });
+    if (researcher.user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized to update this researcher' });
+    }
+    const { doi } = req.body;
+    if (!doi || typeof doi !== 'string') {
+      return res.status(400).json({ error: 'doi is required' });
+    }
+    const removed = await store.removeManualPaper(id, doi);
+    if (!removed) return res.status(404).json({ error: 'No manually-added paper with that DOI was found.' });
+    return res.json({ ok: true });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
+}
+
 /** GET /api/researchers/:id/actions — auto-generated recommendations */
 async function getActionItems(req, res) {
   try {
@@ -552,6 +627,8 @@ module.exports = {
   getResearcher,
   listPapers,
   setPaperVerification,
+  addPaperByDoi,
+  removeManualPaper,
   getTimeline,
   getActionItems,
   getCollaborators,

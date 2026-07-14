@@ -6,6 +6,8 @@ const {
   getResearcher,
   listPapers,
   setPaperVerification,
+  addPaperByDoi,
+  removeManualPaper,
   getTimeline,
   getActionItems,
   getCollaborators,
@@ -34,6 +36,8 @@ router.get('/me/latest', getMyLatestResearcher);
 router.get('/:id', getResearcher);
 router.get('/:id/papers', listPapers);
 router.patch('/:id/paper-verification', setPaperVerification);
+router.post('/:id/papers/doi', addPaperByDoi);
+router.delete('/:id/papers/manual', removeManualPaper);
 router.get('/:id/timeline', getTimeline);
 router.get('/:id/actions', getActionItems);
 router.get('/:id/collaborators', requirePro, getCollaborators);

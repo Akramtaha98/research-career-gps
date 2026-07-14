@@ -257,6 +257,34 @@ export function ResearcherProvider({ children }) {
     [source, researcher]
   );
 
+  /**
+   * Adds a paper by DOI, verified against Crossref server-side (see
+   * backend's addPaperByDoi) — for a paper OpenAlex/Semantic Scholar hasn't
+   * indexed yet. Live-only (no backend to verify against in demo mode).
+   * Throws on failure (invalid DOI, not found on Crossref, already tracked)
+   * so the caller can show the exact message; on success, prepends the new
+   * paper to allPapers so it appears immediately without a full refetch.
+   */
+  const addPaperByDoi = useCallback(
+    async (doi) => {
+      if (source !== 'live' || !researcher?.id) throw new Error('Look up a real researcher first.');
+      const { data } = await client.post(`/researchers/${researcher.id}/papers/doi`, { doi });
+      setAllPapers((prev) => [data.paper, ...prev]);
+      return data.paper;
+    },
+    [source, researcher]
+  );
+
+  /** Removes a manually DOI-added paper — see backend's removeManualPaper (scoped to origin='manual'). */
+  const removeManualPaper = useCallback(
+    async (doi) => {
+      if (source !== 'live' || !researcher?.id) return;
+      await client.delete(`/researchers/${researcher.id}/papers/manual`, { data: { doi } });
+      setAllPapers((prev) => prev.filter((p) => p.external_id !== doi));
+    },
+    [source, researcher]
+  );
+
   const refreshResearcher = useCallback(async () => {
     if (source !== 'live' || !researcher?.id) return;
     setLoading(true);
@@ -280,6 +308,8 @@ export function ResearcherProvider({ children }) {
         papers,
         allPapers,
         setPaperVerification,
+        addPaperByDoi,
+        removeManualPaper,
         history,
         loading,
         error,

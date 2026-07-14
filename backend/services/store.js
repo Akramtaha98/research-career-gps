@@ -456,6 +456,49 @@ const memoryStore = {
   },
 
   /**
+   * Adds a paper the auto-sync (OpenAlex/Semantic Scholar) hasn't indexed
+   * yet, verified against Crossref first (see services/crossref.js) —
+   * origin='manual' so replacePapers() (which only clears origin='auto'
+   * rows) never wipes it on the next refresh. Keyed by DOI as external_id;
+   * rejects if a paper with that same external_id already exists for this
+   * researcher (auto or manual) rather than creating a duplicate — a
+   * Semantic-Scholar-sourced paper can itself have a bare DOI as its
+   * external_id when it has no native paperId, so this also protects
+   * against re-adding something auto-sync already has.
+   */
+  async addManualPaper(researcherId, { doi, title, year, citations, venue }) {
+    const existing = memory.papers.find((p) => p.researcher_id === researcherId && p.external_id === doi);
+    if (existing) {
+      const err = new Error('This paper is already in your tracked list.');
+      err.statusCode = 409;
+      throw err;
+    }
+    const now = new Date().toISOString();
+    const row = {
+      id: uuid(),
+      researcher_id: researcherId,
+      external_id: doi,
+      title,
+      year: year || null,
+      citations: citations || 0,
+      venue: venue || null,
+      origin: 'manual',
+      updated_at: now,
+    };
+    memory.papers.push(row);
+    return row;
+  },
+
+  /** Removes a manually-added paper. Scoped to origin='manual' so this can never delete an auto-synced row. */
+  async removeManualPaper(researcherId, externalId) {
+    const before = memory.papers.length;
+    memory.papers = memory.papers.filter(
+      (p) => !(p.researcher_id === researcherId && p.external_id === externalId && p.origin === 'manual')
+    );
+    return memory.papers.length < before;
+  },
+
+  /**
    * Sets (or clears, if status is null) a per-paper "this is mine / not mine
    * / duplicate" correction — see schema.sql's paper_verifications comment
    * for why this is keyed by external_id rather than the paper's own row id.
@@ -964,6 +1007,34 @@ const pgStore = {
       inserted.push(rows[0]);
     }
     return inserted;
+  },
+
+  /** See memoryStore's version for the full rationale. */
+  async addManualPaper(researcherId, { doi, title, year, citations, venue }) {
+    const existing = await query(`SELECT id FROM papers WHERE researcher_id = $1 AND external_id = $2`, [
+      researcherId,
+      doi,
+    ]);
+    if (existing.rows.length > 0) {
+      const err = new Error('This paper is already in your tracked list.');
+      err.statusCode = 409;
+      throw err;
+    }
+    const { rows } = await query(
+      `INSERT INTO papers (researcher_id, external_id, title, year, citations, venue, origin)
+       VALUES ($1, $2, $3, $4, $5, $6, 'manual') RETURNING *`,
+      [researcherId, doi, title, year || null, citations || 0, venue || null]
+    );
+    return rows[0];
+  },
+
+  /** Scoped to origin='manual' so this can never delete an auto-synced row. */
+  async removeManualPaper(researcherId, externalId) {
+    const { rowCount } = await query(
+      `DELETE FROM papers WHERE researcher_id = $1 AND external_id = $2 AND origin = 'manual'`,
+      [researcherId, externalId]
+    );
+    return rowCount > 0;
   },
 
   async listPapers(researcherId) {

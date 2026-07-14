@@ -20,6 +20,8 @@ export default function Dashboard() {
     papers,
     allPapers,
     setPaperVerification,
+    addPaperByDoi,
+    removeManualPaper,
     history,
     loading,
     refreshResearcher,
@@ -245,6 +247,9 @@ export default function Dashboard() {
             className="input sm:max-w-xs"
           />
         </div>
+
+        {source === 'live' && <AddPaperByDoi onAdd={addPaperByDoi} />}
+
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -282,17 +287,36 @@ export default function Dashboard() {
                       verification === 'not_mine' || verification === 'duplicate' ? 'opacity-50' : ''
                     }`}
                   >
-                    <td className="py-2.5 pr-4 font-medium text-slate-700">{p.title}</td>
+                    <td className="py-2.5 pr-4 font-medium text-slate-700">
+                      {p.title}
+                      {p.origin === 'manual' && (
+                        <span className="ml-1.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-700 align-middle">
+                          {t('dashboard.manualBadge')}
+                        </span>
+                      )}
+                    </td>
                     <td className="py-2.5 pr-4 text-slate-500">{p.year || '—'}</td>
                     <td className="py-2.5 pr-4 text-slate-500">{p.venue || '—'}</td>
                     <td className="py-2.5 pr-4 text-right font-semibold text-brand-600">
                       {(p.citations || 0).toLocaleString()}
                     </td>
                     <td className="py-2.5 pr-4">
-                      <PaperVerificationControl
-                        status={verification}
-                        onChange={(status) => setPaperVerification(key, status)}
-                      />
+                      {p.origin === 'manual' ? (
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => removeManualPaper(p.external_id)}
+                            className="text-[11px] text-red-500 hover:text-red-700 underline"
+                          >
+                            {t('dashboard.removeManual')}
+                          </button>
+                        </div>
+                      ) : (
+                        <PaperVerificationControl
+                          status={verification}
+                          onChange={(status) => setPaperVerification(key, status)}
+                        />
+                      )}
                     </td>
                   </tr>
                 );
@@ -384,5 +408,74 @@ function PaperVerificationControl({ status, onChange }) {
         {t('dashboard.verification.duplicate')}
       </button>
     </div>
+  );
+}
+
+/**
+ * Lets the user add a paper OpenAlex/Semantic Scholar hasn't indexed yet by
+ * pasting its DOI — verified server-side against Crossref (the DOI
+ * registration agency itself) before it's added, so this can't be used to
+ * inflate numbers with fabricated entries the way freely typing a title
+ * could. See backend/services/crossref.js and the addPaperByDoi endpoint.
+ */
+function AddPaperByDoi({ onAdd }) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [doi, setDoi] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState(null);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!doi.trim()) return;
+    setSubmitting(true);
+    setMessage(null);
+    try {
+      const paper = await onAdd(doi.trim());
+      setMessage({ ok: true, text: t('dashboard.addDoiSuccess', { title: paper.title }) });
+      setDoi('');
+      setOpen(false);
+    } catch (err) {
+      setMessage({ ok: false, text: err.response?.data?.error || t('dashboard.addDoiFailed') });
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (!open) {
+    return (
+      <div className="mb-4">
+        <button type="button" onClick={() => setOpen(true)} className="text-xs text-brand-600 underline">
+          {t('dashboard.addDoiOpen')}
+        </button>
+        {message && (
+          <p className={`mt-1 text-xs ${message.ok ? 'text-emerald-600' : 'text-red-600'}`}>{message.text}</p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="mb-4 p-3 rounded-lg border border-slate-100 bg-slate-50">
+      <label className="block text-xs font-medium text-slate-600 mb-1">{t('dashboard.addDoiLabel')}</label>
+      <div className="flex flex-col sm:flex-row gap-2">
+        <input
+          className="input flex-1"
+          placeholder={t('dashboard.addDoiPlaceholder')}
+          value={doi}
+          onChange={(e) => setDoi(e.target.value)}
+        />
+        <div className="flex gap-2 shrink-0">
+          <button type="submit" disabled={submitting} className="btn-primary text-xs px-3 py-1.5">
+            {submitting ? t('dashboard.addDoiSubmitting') : t('dashboard.addDoiSubmit')}
+          </button>
+          <button type="button" onClick={() => setOpen(false)} className="text-xs text-slate-500 underline">
+            {t('scoreBox.cancel')}
+          </button>
+        </div>
+      </div>
+      <p className="mt-1.5 text-[11px] text-slate-400">{t('dashboard.addDoiHint')}</p>
+      {message && <p className={`mt-1 text-xs ${message.ok ? 'text-emerald-600' : 'text-red-600'}`}>{message.text}</p>}
+    </form>
   );
 }
