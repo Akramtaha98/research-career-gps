@@ -1,0 +1,51 @@
+name: CI
+
+# Runs the backend's node:test suite, the frontend's Vitest suite, and a
+# production frontend build on every push/PR — nothing here deploys
+# anything (Vercel/Railway handle that separately, see CLAUDE.md); this is
+# purely a "does the code still work" gate.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - name: Run tests (DEMO_MODE, no external services)
+        run: npm test
+        env:
+          DEMO_MODE: 'true'
+          JWT_SECRET: ci-test-secret
+          ENABLE_SNAPSHOT_CRON: 'false'
+          ENABLE_DIGEST_CRON: 'false'
+
+  frontend:
+    name: Frontend tests + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build

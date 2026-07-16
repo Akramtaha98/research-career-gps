@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Hand-written and intentionally short — this is a client-rendered SPA with
+  no server-side per-page content, so only the genuinely useful public
+  entry points are listed (not every authenticated dashboard route, which
+  renders mostly empty state without a signed-in user's own tracked data).
+  Update the domain here (and in index.html + robots.txt) once the custom
+  domain from the domain-setup work goes live.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://research-career-gps.vercel.app/search</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://research-career-gps.vercel.app/verify</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://research-career-gps.vercel.app/signup</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://research-career-gps.vercel.app/login</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://research-career-gps.vercel.app/contact</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>

@@ -94,7 +94,11 @@ export default function OrcidCallback() {
           <>
             <div className="mx-auto h-8 w-8 rounded-full border-2 border-brand-200 border-t-brand-600 animate-spin" />
             <p className="text-sm text-slate-600">
-              {status === 'looking-up' ? t('orcidLogin.lookingUp') : t('orcidLogin.signingIn')}
+              {linked
+                ? t('orcidLogin.linkedOk')
+                : status === 'looking-up'
+                ? t('orcidLogin.lookingUp')
+                : t('orcidLogin.signingIn')}
             </p>
           </>
         )}

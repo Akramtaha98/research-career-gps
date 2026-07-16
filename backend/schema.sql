@@ -30,6 +30,17 @@ CREATE TABLE IF NOT EXISTS users (
   -- reset or when a new request overwrites them. See authController.js.
   reset_token_hash    VARCHAR(64),
   reset_token_expires TIMESTAMPTZ,
+  -- Email confirmation (signup). Same hash-only-never-raw-token pattern as
+  -- reset_token_hash above. Defaults true at the column level so pre-
+  -- existing rows aren't retroactively locked out; new local signups
+  -- explicitly insert false. See migrations/010_email_verification_and_digest.sql.
+  email_verified              BOOLEAN NOT NULL DEFAULT true,
+  verification_token_hash     VARCHAR(64),
+  verification_token_expires  TIMESTAMPTZ,
+  -- Weekly "progress toward your H-index goal" email — opt-out (default
+  -- true), only ever sent to email_verified accounts. See
+  -- services/digestScheduler.js.
+  digest_subscribed    BOOLEAN NOT NULL DEFAULT true,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -350,3 +361,4 @@ CREATE INDEX IF NOT EXISTS idx_contact_messages_created_at ON contact_messages(c
 CREATE INDEX IF NOT EXISTS idx_paper_snapshots_researcher_id ON paper_snapshots(researcher_id);
 CREATE INDEX IF NOT EXISTS idx_paper_snapshots_researcher_date ON paper_snapshots(researcher_id, snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_paper_verifications_researcher_id ON paper_verifications(researcher_id);
+CREATE INDEX IF NOT EXISTS idx_users_digest_subscribed ON users(digest_subscribed) WHERE digest_subscribed = true;

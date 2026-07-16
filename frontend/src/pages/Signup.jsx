@@ -40,7 +40,7 @@ export default function Signup() {
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">{t('signup.name')}</label>
-            <input required className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder={t('signup.namePlaceholder')} />
+            <input required autoFocus className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder={t('signup.namePlaceholder')} />
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">{t('signup.email')}</label>

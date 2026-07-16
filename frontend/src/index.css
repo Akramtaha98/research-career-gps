@@ -123,3 +123,33 @@ body {
 .dark .bg-red-50 { background-color: rgba(127, 29, 29, 0.2); } /* red-900/20 */
 .dark .border-red-100 { border-color: rgba(153, 27, 27, 0.4); } /* red-800/40 */
 .dark .text-red-700 { color: #fca5a5; } /* red-300 */
+
+/*
+ * Page-to-page transition: a short fade + slight rise applied to the routed
+ * content on every navigation (see App.jsx, which remounts this wrapper via
+ * `key={pathname}` so the animation replays each time). Kept to a single
+ * cheap opacity/transform animation rather than anything that could shift
+ * layout or delay interactivity — the goal is "feels like one continuous
+ * app" instead of tabs snapping in, not a showcase animation.
+ *
+ * Respects prefers-reduced-motion: users who've asked their OS for reduced
+ * motion get an instant swap instead, same as every other transition in
+ * this file arguably should but this is the one most likely to actually
+ * bother someone sensitive to motion.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .page-transition {
+    animation: page-fade-in 0.22s ease-out;
+  }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

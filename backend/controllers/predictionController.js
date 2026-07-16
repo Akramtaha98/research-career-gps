@@ -1,6 +1,7 @@
 const store = require('../services/store');
 const { projectHIndex } = require('../utils/prediction');
 const { getMultiplier } = require('../utils/venueTiers');
+const { sendError } = require('../utils/sendError');
 
 /**
  * POST /api/predictions
@@ -26,9 +27,15 @@ async function createPrediction(req, res) {
 
     const papers = await store.listPapers(researcherId);
     const currentCitations = papers.map((p) => p.citations || 0);
+    // Each paper's actual publish year, in the same order — switches
+    // projectHIndex into its age-aware "real" citation-lifecycle model
+    // instead of a flat monthly rate applied uniformly. See
+    // utils/prediction.js's ageGrowthMultiplier for the rationale.
+    const currentPaperYears = papers.map((p) => p.year || null);
 
     const projection = projectHIndex({
       currentCitations,
+      currentPaperYears,
       targetH: Number(targetH),
       monthlyCitationRate: Number(monthlyCitationRate),
       papersPerYear: Number(papersPerYear),
@@ -45,7 +52,7 @@ async function createPrediction(req, res) {
 
     return res.status(201).json({ prediction: saved, projection });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 

@@ -1,18 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useResearcher } from '../context/ResearcherContext';
 import { useAuth } from '../context/AuthContext';
 import client from '../api/client';
 import { projectHIndex } from '../utils/prediction';
-import { effectiveWhichHIndex } from '../utils/effectiveMetrics';
 import { TIERS, getMultiplier, getTierForVenue } from '../utils/venueTiers';
 import HIndexChart from '../components/HIndexChart';
 import UpgradeCTA from '../components/UpgradeCTA';
-import ScoreBox from '../components/ScoreBox';
 
 export default function Predictor() {
-  const { source, researcher, papers, sharedScores } = useResearcher();
+  const { source, researcher, papers } = useResearcher();
   const { user, refreshUser } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
@@ -35,66 +33,27 @@ export default function Predictor() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // A self-reported official H-index (Scopus/WOS) has no per-paper citation
-  // breakdown behind it, so it can't directly drive the simulation the way
-  // the real papers list does. When the user opts to use one as the
-  // baseline, we approximate with the minimal citation distribution that
-  // produces that H-index (h papers each with exactly h citations) — an
-  // approximation, clearly labeled as such in the UI. null | 'scopus' | 'wos'.
-  //
-  // effectiveWhichHIndex (not just researcher.scopus_h_index/wos_h_index
-  // directly) so a VERIFIED community value counts too, not only a number
-  // this specific user separately typed into their own private field —
-  // otherwise Predictor could silently keep using a stale raw H-index even
-  // after the researcher's ORCID-owner-verified number is on file.
-  const [baselineSource, setBaselineSource] = useState(
-    effectiveWhichHIndex(researcher, sharedScores, 'scopus') != null
-      ? 'scopus'
-      : effectiveWhichHIndex(researcher, sharedScores, 'wos') != null
-      ? 'wos'
-      : null
-  );
-  // sharedScores loads asynchronously (a separate fetch after the researcher
-  // itself), so the useState initializer above can run before it's ready.
-  // Re-evaluate once it arrives, but never override a choice the user made
-  // themselves via ScoreBox's baseline radio.
-  const userPickedBaseline = useRef(false);
-  useEffect(() => {
-    if (userPickedBaseline.current) return;
-    const next =
-      effectiveWhichHIndex(researcher, sharedScores, 'scopus') != null
-        ? 'scopus'
-        : effectiveWhichHIndex(researcher, sharedScores, 'wos') != null
-        ? 'wos'
-        : null;
-    setBaselineSource((prev) => (prev === next ? prev : next));
-  }, [researcher, sharedScores]);
-
-  function handleSetBaselineSource(which) {
-    userPickedBaseline.current = true;
-    setBaselineSource(which);
-  }
-
-  const baselineHIndex = effectiveWhichHIndex(researcher, sharedScores, baselineSource);
-
-  // Seed the initial target off the active baseline when one exists —
-  // otherwise a researcher with e.g. an auto H-index of 36 but a verified
-  // Scopus H-index of 48 would start on a target already below their real
-  // current number.
-  const [targetH, setTargetH] = useState((baselineHIndex ?? researcher.h_index) + 5);
+  // H-index/citations are always driven directly by the real, tracked papers
+  // list (OpenAlex/Semantic Scholar auto-synced, ORCID-resolved when
+  // applicable via the Verify page) — no more Scopus/WOS self-reported
+  // baseline to choose between.
+  const [targetH, setTargetH] = useState(researcher.h_index + 5);
   const [monthlyCitationRate, setMonthlyCitationRate] = useState(0.5);
   const [papersPerYear, setPapersPerYear] = useState(2);
   const [venueName, setVenueName] = useState('');
   const [venueTier, setVenueTier] = useState('average');
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState(null);
+  const [digestSaving, setDigestSaving] = useState(false);
+  const [digestMessage, setDigestMessage] = useState(null);
 
-  const currentCitations = useMemo(() => {
-    if (baselineHIndex != null) return Array(baselineHIndex).fill(baselineHIndex);
-    return papers.map((p) => p.citations || 0);
-  }, [papers, baselineHIndex]);
+  const currentCitations = useMemo(() => papers.map((p) => p.citations || 0), [papers]);
+  // Each paper's actual publish year — feeds projectHIndex's age-aware
+  // "real" citation model (see utils/prediction.js) instead of the old flat
+  // monthly-rate-for-every-paper assumption.
+  const currentPaperYears = useMemo(() => papers.map((p) => p.year || null), [papers]);
 
-  const effectiveHIndex = baselineHIndex ?? researcher.h_index;
+  const effectiveHIndex = researcher.h_index;
 
   // If the typed venue name matches a known pattern, suggest its tier —
   // the dropdown remains the source of truth the user can override.
@@ -104,12 +63,13 @@ export default function Predictor() {
     () =>
       projectHIndex({
         currentCitations,
+        currentPaperYears,
         targetH: Number(targetH) || 0,
         monthlyCitationRate: Number(monthlyCitationRate) || 0,
         papersPerYear: Number(papersPerYear) || 0,
         newPaperCitationMultiplier: getMultiplier(venueTier),
       }),
-    [currentCitations, targetH, monthlyCitationRate, papersPerYear, venueTier]
+    [currentCitations, currentPaperYears, targetH, monthlyCitationRate, papersPerYear, venueTier]
   );
 
   async function handleSave() {
@@ -135,6 +95,22 @@ export default function Predictor() {
     }
   }
 
+  async function handleToggleDigest() {
+    if (!user) return;
+    const next = !user.digestSubscribed;
+    setDigestSaving(true);
+    setDigestMessage(null);
+    try {
+      await client.patch('/auth/email-preferences', { digestSubscribed: next });
+      await refreshUser();
+      setDigestMessage(next ? t('predictor.digestOnMessage') : t('predictor.digestOffMessage'));
+    } catch (err) {
+      setDigestMessage(err.response?.data?.error || t('predictor.digestFailed'));
+    } finally {
+      setDigestSaving(false);
+    }
+  }
+
   const years = projection.estimatedMonths != null ? (projection.estimatedMonths / 12).toFixed(1) : null;
 
   // Demo data is always free to play with; a real tracked researcher's
@@ -154,8 +130,6 @@ export default function Predictor() {
         </div>
       ) : (
         <PredictorBody
-          researcher={researcher}
-          source={source}
           papers={papers}
           targetH={targetH}
           setTargetH={setTargetH}
@@ -174,8 +148,10 @@ export default function Predictor() {
           saveMessage={saveMessage}
           handleSave={handleSave}
           effectiveHIndex={effectiveHIndex}
-          baselineSource={baselineSource}
-          setBaselineSource={handleSetBaselineSource}
+          user={user}
+          digestSaving={digestSaving}
+          digestMessage={digestMessage}
+          handleToggleDigest={handleToggleDigest}
         />
       )}
     </div>
@@ -183,8 +159,6 @@ export default function Predictor() {
 }
 
 function PredictorBody({
-  researcher,
-  source,
   papers,
   targetH,
   setTargetH,
@@ -203,8 +177,10 @@ function PredictorBody({
   saveMessage,
   handleSave,
   effectiveHIndex,
-  baselineSource,
-  setBaselineSource,
+  user,
+  digestSaving,
+  digestMessage,
+  handleToggleDigest,
 }) {
   const { t } = useTranslation();
   return (
@@ -213,10 +189,6 @@ function PredictorBody({
         <div className="card border border-amber-100 bg-amber-50">
           <p className="text-sm text-amber-700">{t('predictor.noPapersWarning')}</p>
         </div>
-      )}
-
-      {source === 'live' && (
-        <ScoreBox researcher={researcher} baselineSource={baselineSource} setBaselineSource={setBaselineSource} />
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -260,6 +232,7 @@ function PredictorBody({
               value={monthlyCitationRate}
               onChange={(e) => setMonthlyCitationRate(e.target.value)}
             />
+            <p className="mt-1 text-xs text-slate-400">{t('predictor.realCurveHint')}</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">{t('predictor.papersPerYear')}</label>
@@ -317,6 +290,22 @@ function PredictorBody({
             {saving ? t('predictor.saving') : t('predictor.save')}
           </button>
           {saveMessage && <p className="text-xs text-slate-500">{saveMessage}</p>}
+
+          {user && (
+            <div className="pt-3 border-t border-slate-100">
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="mt-0.5"
+                  checked={Boolean(user.digestSubscribed)}
+                  disabled={digestSaving}
+                  onChange={handleToggleDigest}
+                />
+                <span className="text-xs text-slate-600">{t('predictor.digestLabel')}</span>
+              </label>
+              {digestMessage && <p className="mt-1 text-xs text-slate-500">{digestMessage}</p>}
+            </div>
+          )}
         </div>
 
         <div className="card lg:col-span-2 flex flex-col justify-center items-center text-center">

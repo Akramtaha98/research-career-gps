@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import client from '../api/client';
 import MetricCard from '../components/MetricCard';
+import OrcidButton from '../components/OrcidButton';
 
 const FIELD_NAME_KEYS = {
   h_index: 'dashboard.hIndex',
@@ -140,6 +141,18 @@ export default function Verify() {
         <h1 className="text-2xl font-bold text-slate-900">{t('verify.title')}</h1>
         <p className="mt-1 text-sm text-slate-500">{t('verify.subtitle')}</p>
       </div>
+
+      {/* Signed in but no ORCID linked yet — offer to connect it here, since
+          the owner-override path below only trusts submissions whose account
+          ORCID matches the profile being verified. */}
+      {user && !user.orcid && (
+        <div className="card sm:flex items-center justify-between gap-4 space-y-2 sm:space-y-0">
+          <p className="text-sm text-slate-600">{t('orcidLogin.connectHint')}</p>
+          <div className="shrink-0 sm:w-56">
+            <OrcidButton connect />
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="card space-y-4">
         <div>

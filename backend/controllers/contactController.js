@@ -1,5 +1,6 @@
 const store = require('../services/store');
 const { sendContactNotificationEmail } = require('../services/email');
+const { sendError } = require('../utils/sendError');
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_NAME_LEN = 200;
@@ -45,7 +46,7 @@ async function submitContactMessage(req, res) {
 
     return res.status(201).json({ ok: true, id: saved.id, emailed });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 

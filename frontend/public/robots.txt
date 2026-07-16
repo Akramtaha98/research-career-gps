@@ -1,0 +1,6 @@
+# Everything here is either public marketing/auth pages or requires sign-in
+# to see any real data — nothing to block crawlers from.
+User-agent: *
+Allow: /
+
+Sitemap: https://research-career-gps.vercel.app/sitemap.xml
