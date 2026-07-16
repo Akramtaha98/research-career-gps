@@ -334,4 +334,5 @@ module.exports = {
   searchAuthors,
   fetchTopCollaborators,
   fetchPaperCitationYears,
+  fetchBatchPaperCitationYears,
 };
