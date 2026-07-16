@@ -4,9 +4,7 @@ import { useResearcher } from '../context/ResearcherContext';
 import MetricCard from '../components/MetricCard';
 import HIndexChart from '../components/HIndexChart';
 import EmptyState from '../components/EmptyState';
-import ScoreBox from '../components/ScoreBox';
 import HIndexFrontier from '../components/HIndexFrontier';
-import { computeEffectiveMetrics } from '../utils/effectiveMetrics';
 import { calculateHIndex } from '../utils/prediction';
 
 function formatDate(iso) {
@@ -26,36 +24,19 @@ export default function Dashboard() {
     loading,
     refreshResearcher,
     getRealHistory,
-    sharedScores,
   } = useResearcher();
   const { t } = useTranslation();
 
-  // Scopus is the "base" source whenever any Scopus data exists (private or
-  // community-verified), falling back to WOS, then to the raw OpenAlex/
-  // Semantic Scholar snapshot — see utils/effectiveMetrics.js for the exact
-  // per-field priority rules the user chose.
-  const effectiveRaw = computeEffectiveMetrics(researcher, sharedScores);
-  // When there's no Scopus/WOS data at all, effectiveMetrics falls back to
-  // the server-computed researcher.h_index/total_citations/paper_count —
-  // which don't know about any 'not_mine'/'duplicate' corrections made below.
-  // Recompute from the already-filtered `papers` list instead in that case,
-  // so a correction immediately updates the headline numbers rather than
-  // waiting for a full refetch (see ResearcherContext's papers/allPapers split).
-  const effective =
-    effectiveRaw.source === 'raw'
-      ? {
-          ...effectiveRaw,
-          hIndex: calculateHIndex(papers.map((p) => p.citations || 0)),
-          totalCitations: papers.reduce((sum, p) => sum + (p.citations || 0), 0),
-          paperCount: papers.length,
-        }
-      : effectiveRaw;
-  const sourceLabel =
-    effective.source === 'scopus'
-      ? 'Scopus'
-      : effective.source === 'wos'
-      ? t('dashboard.wosShort')
-      : null;
+  // H-index/citations/paper count are always computed directly from the
+  // tracked `papers` list (OpenAlex/Semantic Scholar auto-synced, ORCID-
+  // resolved when applicable via the Verify page) — so a 'not_mine'/
+  // 'duplicate' correction immediately updates the headline numbers rather
+  // than waiting for a full refetch.
+  const effective = {
+    hIndex: calculateHIndex(papers.map((p) => p.citations || 0)),
+    totalCitations: papers.reduce((sum, p) => sum + (p.citations || 0), 0),
+    paperCount: papers.length,
+  };
 
   const [realHistory, setRealHistory] = useState(null); // { history, papersConsidered, papersSkipped, cached }
   const [realHistoryLoading, setRealHistoryLoading] = useState(false);
@@ -142,7 +123,6 @@ export default function Dashboard() {
             }
           />
         </div>
-        {source === 'live' && <div className="mt-6"><ScoreBox researcher={researcher} /></div>}
       </div>
     );
   }
@@ -163,17 +143,6 @@ export default function Dashboard() {
         )}
       </div>
 
-      {source === 'live' && sourceLabel && (
-        <p className="text-xs text-slate-500 -mb-4">
-          {t('dashboard.showingSourceNumbers', { source: sourceLabel })}
-          {effective.verified && (
-            <span className="ml-1.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
-              {t('scoreBox.community.verified')}
-            </span>
-          )}
-        </p>
-      )}
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard label={t('dashboard.hIndex')} value={effective.hIndex} accent="brand" />
         <MetricCard
@@ -190,8 +159,6 @@ export default function Dashboard() {
       </div>
 
       <HIndexFrontier papers={papers} />
-
-      {source === 'live' && <ScoreBox researcher={researcher} />}
 
       <div className="card">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
@@ -470,7 +437,7 @@ function AddPaperByDoi({ onAdd }) {
             {submitting ? t('dashboard.addDoiSubmitting') : t('dashboard.addDoiSubmit')}
           </button>
           <button type="button" onClick={() => setOpen(false)} className="text-xs text-slate-500 underline">
-            {t('scoreBox.cancel')}
+            {t('dashboard.addDoiCancel')}
           </button>
         </div>
       </div>
