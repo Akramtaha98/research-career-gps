@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import VerifyEmailBanner from './components/VerifyEmailBanner';
 import ScrollToTop from './components/ScrollToTop';
 import FeedbackWidget from './components/FeedbackWidget';
+import ChatWidget from './components/ChatWidget';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
@@ -11,6 +12,7 @@ import ResetPassword from './pages/ResetPassword';
 import VerifyEmail from './pages/VerifyEmail';
 import OrcidCallback from './pages/OrcidCallback';
 import Search from './pages/Search';
+import HowItWorks from './pages/HowItWorks';
 import Dashboard from './pages/Dashboard';
 import Timeline from './pages/Timeline';
 import Predictor from './pages/Predictor';
@@ -43,6 +45,7 @@ export default function App() {
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/auth/orcid/callback" element={<OrcidCallback />} />
               <Route path="/search" element={<Search />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/timeline" element={<Timeline />} />
               <Route path="/predictor" element={<Predictor />} />
@@ -64,6 +67,7 @@ export default function App() {
           </p>
         </footer>
         <FeedbackWidget />
+        <ChatWidget />
       </div>
     </ResearcherProvider>
   );

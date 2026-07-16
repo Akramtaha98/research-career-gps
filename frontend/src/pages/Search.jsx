@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useResearcher } from '../context/ResearcherContext';
@@ -78,13 +78,42 @@ export default function Search() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-16">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">{t('search.title')}</h1>
+    <div className="relative max-w-2xl mx-auto px-4 py-16 overflow-hidden">
+      {/*
+        Purely decorative, low-opacity gradient blobs drifting slowly behind
+        the hero — the "break the ice" touch on the first page a visitor
+        sees. aria-hidden + pointer-events-none since they carry no
+        information and must never intercept clicks on the real content
+        that sits above them (z-10 below). Clipped by this wrapper's
+        overflow-hidden so they can't cause horizontal scroll on narrow
+        viewports.
+      */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full bg-brand-400/20 blur-3xl animate-blob-drift"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-16 -right-16 w-80 h-80 rounded-full bg-sky-400/20 blur-3xl animate-blob-drift-slow"
+      />
+
+      <div className="relative z-10 text-center mb-8 opacity-0 animate-hero-in">
+        <span className="inline-block text-4xl mb-2" aria-hidden="true">🧭</span>
+        <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">{t('search.title')}</h1>
         <p className="mt-2 text-slate-500">{t('search.subtitle')}</p>
+        <Link
+          to="/how-it-works"
+          className="mt-3 inline-flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700 underline underline-offset-2"
+        >
+          {t('search.howItWorksLink')}
+        </Link>
       </div>
 
-      <form onSubmit={handleSubmit} className="card space-y-4">
+      <form
+        onSubmit={handleSubmit}
+        className="relative z-10 card space-y-4 opacity-0 animate-hero-in"
+        style={{ animationDelay: '120ms' }}
+      >
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">{t('search.label')}</label>
           <input
@@ -126,7 +155,7 @@ export default function Search() {
       </form>
 
       {candidates && (
-        <div className="card mt-6">
+        <div className="relative z-10 card mt-6">
           <h2 className="text-sm font-semibold text-slate-700 mb-3">
             {candidates.length > 0
               ? t('search.matchesFound', { count: candidates.length })

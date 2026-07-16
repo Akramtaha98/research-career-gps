@@ -9,7 +9,8 @@
     "verify": "Vérifier",
     "logout": "Déconnexion",
     "login": "Connexion",
-    "contact": "Contact"
+    "contact": "Contact",
+    "guide": "Guide"
   },
   "footer": {
     "tagline": "© {{year}} Research GPS",
@@ -108,7 +109,8 @@
     "citations": "citations",
     "hIndexLabel": "indice h",
     "select": "Sélectionner →",
-    "pickLoading": "Chargement..."
+    "pickLoading": "Chargement...",
+    "howItWorksLink": "Voir comment ça marche →"
   },
   "dashboard": {
     "demoData": "Données de démonstration",
@@ -407,5 +409,52 @@
     "sent": "Merci ! Votre avis nous aide à améliorer Research GPS.",
     "close": "Fermer",
     "submitFailed": "Impossible d'envoyer votre avis. Réessayez."
+  },
+  "chat": {
+    "openButton": "Demander à l'assistant",
+    "title": "Assistant Research GPS",
+    "subtitle": "Basé sur vos données réelles",
+    "placeholder": "Posez une question sur votre indice H...",
+    "send": "Envoyer",
+    "close": "Fermer"
+  },
+  "howItWorks": {
+    "title": "Comment fonctionne Research GPS",
+    "subtitle": "Une visite de 2 minutes de tout le site — sans vidéo nécessaire.",
+    "steps": {
+      "search": {
+        "title": "1. Trouvez-vous (ou essayez la démo)",
+        "desc": "Recherchez votre nom pour trouver votre profil Semantic Scholar/OpenAlex, ou utilisez les données de démonstration pour explorer sans engagement."
+      },
+      "dashboard": {
+        "title": "2. Consultez votre véritable indice H",
+        "desc": "Votre tableau de bord affiche votre indice H en direct, le total des citations et chaque article suivi — synchronisé automatiquement, avec des corrections si un article ne vous appartient pas réellement."
+      },
+      "frontier": {
+        "title": "3. Sachez exactement ce qui vient ensuite",
+        "desc": "La Frontière de l'indice H vous indique précisément quels articles ont besoin de plus de citations — et combien — pour faire monter votre indice H d'un point."
+      },
+      "actions": {
+        "title": "4. Obtenez des recommandations prioritaires",
+        "desc": "Actions transforme cela en une liste de tâches classée : quels articles promouvoir en premier, où concentrer votre stratégie de publication."
+      },
+      "predictor": {
+        "title": "5. Projetez votre futur indice H",
+        "desc": "Le Prédicteur simule quand vous atteindrez un indice H cible, à l'aide d'un modèle réaliste de vieillissement des citations — ajustez vos hypothèses et voyez le chemin."
+      },
+      "timeline": {
+        "title": "6. Suivez votre progression dans le temps",
+        "desc": "La Chronologie montre ce qui a changé depuis votre dernière visite et célèbre les étapes franchies."
+      },
+      "verify": {
+        "title": "Bonus : vérifiez avec ORCID",
+        "desc": "Associez votre ORCID pour une correspondance d'articles la plus précise, surtout si vous partagez un nom avec d'autres chercheurs."
+      }
+    },
+    "assistantTitle": "Une question ? Demandez simplement.",
+    "assistantDesc": "Le bouton boussole en bas à gauche ouvre un assistant de chat basé sur vos données réelles — posez des questions sur votre indice H, que faire ensuite, ou comment tout cela fonctionne.",
+    "feedbackTitle": "Quelque chose de confus ou manquant ?",
+    "feedbackDesc": "Le bouton de message en bas à droite envoie vos commentaires directement — nous les lisons tous.",
+    "ctaSearch": "Commencer — recherchez votre profil"
   }
 }

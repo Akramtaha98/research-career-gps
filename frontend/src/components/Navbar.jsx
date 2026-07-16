@@ -75,6 +75,7 @@ export default function Navbar() {
         {/* Desktop nav — hidden below md */}
         <div className="hidden md:flex items-center gap-1 shrink-0">
           <NavLink to="/search" className={navItem}>{t('nav.search')}</NavLink>
+          <NavLink to="/how-it-works" className={navItem}>{t('nav.guide')}</NavLink>
           <NavLink to="/dashboard" className={navItem}>{t('nav.dashboard')}</NavLink>
           <NavLink to="/timeline" className={navItem}>{t('nav.timeline')}</NavLink>
           <NavLink to="/predictor" className={navItem}>{t('nav.predictor')}</NavLink>
@@ -122,6 +123,7 @@ export default function Navbar() {
       {open && (
         <div className="md:hidden border-t border-white/10 px-4 sm:px-6 py-3 space-y-1">
           <NavLink to="/search" onClick={closeMenu} className={mobileNavItem}>{t('nav.search')}</NavLink>
+          <NavLink to="/how-it-works" onClick={closeMenu} className={mobileNavItem}>{t('nav.guide')}</NavLink>
           <NavLink to="/dashboard" onClick={closeMenu} className={mobileNavItem}>{t('nav.dashboard')}</NavLink>
           <NavLink to="/timeline" onClick={closeMenu} className={mobileNavItem}>{t('nav.timeline')}</NavLink>
           <NavLink to="/predictor" onClick={closeMenu} className={mobileNavItem}>{t('nav.predictor')}</NavLink>

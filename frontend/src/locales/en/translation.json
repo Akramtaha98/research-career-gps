@@ -9,7 +9,8 @@
     "verify": "Verify",
     "logout": "Log out",
     "login": "Log in",
-    "contact": "Contact"
+    "contact": "Contact",
+    "guide": "Guide"
   },
   "footer": {
     "tagline": "© {{year}} Research GPS",
@@ -108,7 +109,8 @@
     "citations": "citations",
     "hIndexLabel": "h-index",
     "select": "Select →",
-    "pickLoading": "Loading..."
+    "pickLoading": "Loading...",
+    "howItWorksLink": "See how it works →"
   },
   "dashboard": {
     "demoData": "Demo data",
@@ -407,5 +409,52 @@
     "sent": "Thank you! Your feedback helps us improve Research GPS.",
     "close": "Close",
     "submitFailed": "Couldn't send your feedback. Please try again."
+  },
+  "chat": {
+    "openButton": "Ask assistant",
+    "title": "Research GPS assistant",
+    "subtitle": "Grounded in your real data",
+    "placeholder": "Ask about your H-index...",
+    "send": "Send",
+    "close": "Close"
+  },
+  "howItWorks": {
+    "title": "How Research GPS works",
+    "subtitle": "A 2-minute tour of everything on this site — no video required.",
+    "steps": {
+      "search": {
+        "title": "1. Find yourself (or try the demo)",
+        "desc": "Search by name to find your Semantic Scholar/OpenAlex profile, or use the demo data to explore first with no commitment."
+      },
+      "dashboard": {
+        "title": "2. See your real H-index",
+        "desc": "Your Dashboard shows your live H-index, total citations, and every tracked paper — auto-synced, with corrections if a paper isn't actually yours."
+      },
+      "frontier": {
+        "title": "3. Know exactly what's next",
+        "desc": "The H-index Frontier tells you precisely which papers need more citations — and how many — to push your H-index up by one."
+      },
+      "actions": {
+        "title": "4. Get prioritized recommendations",
+        "desc": "Actions turns that into a ranked to-do list: which papers to promote first, where to focus your publishing strategy."
+      },
+      "predictor": {
+        "title": "5. Project your future H-index",
+        "desc": "Predictor simulates when you'll hit a target H-index, using a realistic citation-aging model — tune your assumptions and see the path."
+      },
+      "timeline": {
+        "title": "6. Track your progress over time",
+        "desc": "Timeline shows what's changed since your last visit and celebrates milestones as you hit them."
+      },
+      "verify": {
+        "title": "Bonus: verify with ORCID",
+        "desc": "Link your ORCID for the most accurate paper matching, especially if you share a name with other researchers."
+      }
+    },
+    "assistantTitle": "Have a question? Just ask.",
+    "assistantDesc": "The compass button in the bottom-left corner opens a chat assistant grounded in your real data — ask about your H-index, what to do next, or how any of this works.",
+    "feedbackTitle": "Something confusing or missing?",
+    "feedbackDesc": "The message button in the bottom-right corner sends feedback straight to us — we read every one.",
+    "ctaSearch": "Get started — search for yourself"
   }
 }

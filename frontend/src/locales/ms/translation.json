@@ -9,7 +9,8 @@
     "verify": "Sahkan",
     "logout": "Log keluar",
     "login": "Log masuk",
-    "contact": "Hubungi"
+    "contact": "Hubungi",
+    "guide": "Panduan"
   },
   "footer": {
     "tagline": "© {{year}} Research GPS",
@@ -108,7 +109,8 @@
     "citations": "petikan",
     "hIndexLabel": "indeks-h",
     "select": "Pilih →",
-    "pickLoading": "Sedang memuatkan..."
+    "pickLoading": "Sedang memuatkan...",
+    "howItWorksLink": "Lihat cara ia berfungsi →"
   },
   "dashboard": {
     "demoData": "Data demo",
@@ -407,5 +409,52 @@
     "sent": "Terima kasih! Maklum balas anda membantu kami menambah baik Research GPS.",
     "close": "Tutup",
     "submitFailed": "Gagal menghantar maklum balas anda. Sila cuba lagi."
+  },
+  "chat": {
+    "openButton": "Tanya pembantu",
+    "title": "Pembantu Research GPS",
+    "subtitle": "Berdasarkan data sebenar anda",
+    "placeholder": "Tanya tentang indeks-H anda...",
+    "send": "Hantar",
+    "close": "Tutup"
+  },
+  "howItWorks": {
+    "title": "Bagaimana Research GPS berfungsi",
+    "subtitle": "Lawatan 2 minit merentasi seluruh laman — tanpa perlu video.",
+    "steps": {
+      "search": {
+        "title": "1. Cari diri anda (atau cuba demo)",
+        "desc": "Cari nama anda untuk menemui profil Semantic Scholar/OpenAlex anda, atau gunakan data demo untuk meneroka tanpa sebarang komitmen."
+      },
+      "dashboard": {
+        "title": "2. Lihat indeks-H sebenar anda",
+        "desc": "Papan Pemuka anda memaparkan indeks-H terkini, jumlah petikan, dan setiap kertas kerja yang dijejaki — disegerakkan secara automatik, dengan pembetulan jika sesuatu kertas kerja bukan milik anda."
+      },
+      "frontier": {
+        "title": "3. Ketahui dengan tepat apa yang seterusnya",
+        "desc": "Sempadan Indeks-H memberitahu anda dengan tepat kertas kerja mana yang memerlukan lebih banyak petikan — dan berapa banyak — untuk menaikkan indeks-H anda sebanyak satu."
+      },
+      "actions": {
+        "title": "4. Dapatkan cadangan mengikut keutamaan",
+        "desc": "Tindakan mengubahnya menjadi senarai tugasan mengikut susunan: kertas kerja mana perlu dipromosi dahulu, dan di mana perlu menumpukan strategi penerbitan anda."
+      },
+      "predictor": {
+        "title": "5. Unjurkan indeks-H masa depan anda",
+        "desc": "Peramal mensimulasikan bila anda akan mencapai sasaran indeks-H, menggunakan model penuaan petikan yang realistik — laraskan andaian anda dan lihat lintasannya."
+      },
+      "timeline": {
+        "title": "6. Jejaki kemajuan anda dari semasa ke semasa",
+        "desc": "Garis Masa memaparkan apa yang berubah sejak lawatan terakhir anda dan meraikan pencapaian penting yang dicapai."
+      },
+      "verify": {
+        "title": "Bonus: sahkan dengan ORCID",
+        "desc": "Pautkan ORCID anda untuk pemadanan kertas kerja yang paling tepat, terutamanya jika anda berkongsi nama dengan penyelidik lain."
+      }
+    },
+    "assistantTitle": "Ada soalan? Tanya sahaja.",
+    "assistantDesc": "Butang kompas di sudut kiri bawah membuka pembantu sembang yang berasaskan data sebenar anda — tanya tentang indeks-H anda, apa perlu dilakukan seterusnya, atau bagaimana semua ini berfungsi.",
+    "feedbackTitle": "Ada sesuatu yang mengelirukan atau tertinggal?",
+    "feedbackDesc": "Butang mesej di sudut kanan bawah menghantar maklum balas terus kepada kami — kami membaca setiap satu.",
+    "ctaSearch": "Mula — cari profil anda"
   }
 }

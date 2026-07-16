@@ -9,7 +9,8 @@
     "verify": "Verifizieren",
     "logout": "Abmelden",
     "login": "Anmelden",
-    "contact": "Kontakt"
+    "contact": "Kontakt",
+    "guide": "Anleitung"
   },
   "footer": {
     "tagline": "© {{year}} Research GPS",
@@ -108,7 +109,8 @@
     "citations": "Zitationen",
     "hIndexLabel": "H-Index",
     "select": "Auswählen →",
-    "pickLoading": "Wird geladen..."
+    "pickLoading": "Wird geladen...",
+    "howItWorksLink": "So funktioniert's →"
   },
   "dashboard": {
     "demoData": "Demodaten",
@@ -407,5 +409,52 @@
     "sent": "Danke! Ihr Feedback hilft uns, Research GPS zu verbessern.",
     "close": "Schließen",
     "submitFailed": "Feedback konnte nicht gesendet werden. Bitte erneut versuchen."
+  },
+  "chat": {
+    "openButton": "Assistent fragen",
+    "title": "Research GPS-Assistent",
+    "subtitle": "Basiert auf deinen echten Daten",
+    "placeholder": "Frag zu deinem H-Index...",
+    "send": "Senden",
+    "close": "Schließen"
+  },
+  "howItWorks": {
+    "title": "So funktioniert Research GPS",
+    "subtitle": "Eine 2-minütige Tour durch die ganze Seite — kein Video nötig.",
+    "steps": {
+      "search": {
+        "title": "1. Finde dich selbst (oder probiere die Demo)",
+        "desc": "Suche nach deinem Namen, um dein Semantic-Scholar-/OpenAlex-Profil zu finden, oder nutze die Demo-Daten, um unverbindlich zu erkunden."
+      },
+      "dashboard": {
+        "title": "2. Sieh deinen echten H-Index",
+        "desc": "Dein Dashboard zeigt deinen aktuellen H-Index, Gesamtzitate und jede erfasste Publikation — automatisch synchronisiert, mit Korrekturmöglichkeit, falls eine Publikation nicht wirklich deine ist."
+      },
+      "frontier": {
+        "title": "3. Wisse genau, was als Nächstes kommt",
+        "desc": "Die H-Index-Grenze zeigt dir genau, welche Publikationen mehr Zitate brauchen — und wie viele —, um deinen H-Index um eins zu steigern."
+      },
+      "actions": {
+        "title": "4. Erhalte priorisierte Empfehlungen",
+        "desc": "Aktionen verwandelt das in eine geordnete To-Do-Liste: welche Publikationen zuerst gefördert werden sollten, worauf sich deine Publikationsstrategie konzentrieren sollte."
+      },
+      "predictor": {
+        "title": "5. Projiziere deinen zukünftigen H-Index",
+        "desc": "Der Predictor simuliert, wann du einen Ziel-H-Index erreichst, mit einem realistischen Zitations-Alterungsmodell — passe deine Annahmen an und sieh den Weg."
+      },
+      "timeline": {
+        "title": "6. Verfolge deinen Fortschritt über die Zeit",
+        "desc": "Der Verlauf zeigt, was sich seit deinem letzten Besuch geändert hat, und feiert erreichte Meilensteine."
+      },
+      "verify": {
+        "title": "Extra: mit ORCID verifizieren",
+        "desc": "Verknüpfe deine ORCID für die genaueste Publikationszuordnung, besonders wenn du einen Namen mit anderen Forschenden teilst."
+      }
+    },
+    "assistantTitle": "Hast du eine Frage? Frag einfach.",
+    "assistantDesc": "Der Kompass-Button unten links öffnet einen Chat-Assistenten, der auf deinen echten Daten basiert — frag nach deinem H-Index, was als Nächstes zu tun ist, oder wie alles funktioniert.",
+    "feedbackTitle": "Etwas verwirrend oder fehlt etwas?",
+    "feedbackDesc": "Der Nachrichten-Button unten rechts sendet Feedback direkt an uns — wir lesen jedes einzelne.",
+    "ctaSearch": "Los geht's — suche nach dir selbst"
   }
 }

@@ -153,3 +153,66 @@ body {
     transform: translateY(0);
   }
 }
+
+/*
+ * Staggered entrance for HowItWorks.jsx's step cards (each gets an inline
+ * animation-delay so they cascade in rather than popping simultaneously) and
+ * for Search.jsx's landing hero. `opacity-0` is applied as a base Tailwind
+ * class so content is never invisible if this rule fails to load for any
+ * reason — animation-fill-mode: forwards holds the final "visible" state
+ * rather than the element resetting to opacity:0 after the animation ends.
+ * Reduced-motion users get the element shown immediately, same pattern as
+ * page-fade-in above.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-guide-step-in {
+    animation: guide-step-in 0.5s ease-out forwards;
+  }
+  .animate-hero-in {
+    animation: guide-step-in 0.6s ease-out forwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-guide-step-in,
+  .animate-hero-in {
+    opacity: 1;
+  }
+}
+
+@keyframes guide-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*
+ * Slow, ambient drift for the Search.jsx landing page's background blobs —
+ * decorative only (aria-hidden), never on interactive content, and paused
+ * entirely for reduced-motion users via the same guard as everything above.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-blob-drift {
+    animation: blob-drift 14s ease-in-out infinite;
+  }
+  .animate-blob-drift-slow {
+    animation: blob-drift 20s ease-in-out infinite reverse;
+  }
+}
+
+@keyframes blob-drift {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(3%, -4%) scale(1.08);
+  }
+  66% {
+    transform: translate(-3%, 3%) scale(0.95);
+  }
+}
