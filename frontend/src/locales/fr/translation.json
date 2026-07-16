@@ -391,5 +391,21 @@
     "sending": "Envoi en cours...",
     "sent": "E-mail de confirmation envoyé — vérifiez votre boîte de réception.",
     "failed": "Impossible d'envoyer l'e-mail de confirmation. Réessayez plus tard."
+  },
+  "feedback": {
+    "openButton": "Avis",
+    "title": "Partagez votre avis",
+    "subtitle": "Qu'est-ce qui fonctionne bien ? Qu'est-ce qui prête à confusion ? Que souhaiteriez-vous voir ensuite ? Nous lisons chaque message.",
+    "messageLabel": "Votre avis",
+    "messagePlaceholder": "Dites-nous ce que vous en pensez...",
+    "nameLabel": "Nom",
+    "namePlaceholder": "Votre nom",
+    "emailLabel": "E-mail",
+    "emailPlaceholder": "vous@exemple.com",
+    "submit": "Envoyer l'avis",
+    "submitting": "Envoi en cours...",
+    "sent": "Merci ! Votre avis nous aide à améliorer Research GPS.",
+    "close": "Fermer",
+    "submitFailed": "Impossible d'envoyer votre avis. Réessayez."
   }
 }

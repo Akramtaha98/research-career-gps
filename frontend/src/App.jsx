@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Navbar from './components/Navbar';
 import VerifyEmailBanner from './components/VerifyEmailBanner';
 import ScrollToTop from './components/ScrollToTop';
+import FeedbackWidget from './components/FeedbackWidget';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
@@ -62,6 +63,7 @@ export default function App() {
             </Link>
           </p>
         </footer>
+        <FeedbackWidget />
       </div>
     </ResearcherProvider>
   );

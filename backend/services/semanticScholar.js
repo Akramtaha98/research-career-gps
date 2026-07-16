@@ -215,12 +215,81 @@ async function fetchTopCollaborators(semanticScholarId, { limit = 5 } = {}) {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Semantic Scholar's /paper/batch endpoint accepts up to 500 ids per call;
+// chunking well under that (and under MAX_PAPERS in historicalHIndex.js,
+// which is 60) keeps this to a single request for the overwhelming majority
+// of researchers regardless.
+const BATCH_CHUNK_SIZE = 100;
+
+/**
+ * Fetches citing-paper publication years for MANY papers in one or two
+ * requests instead of one request per paper — see historicalHIndex.js for
+ * why this matters (that computation used to take 60+ seconds sequentially
+ * for a prolific researcher). Uses /paper/batch with the nested
+ * `citations.year` field rather than N calls to the dedicated
+ * /paper/{id}/citations endpoint.
+ *
+ * Trade-off: unlike fetchPaperCitationYears below, this nested-field form
+ * does NOT support pagination and is capped at (typically) the first 1000
+ * citing papers per paper — fine for the vast majority of papers, but a
+ * paper at or above that cap would under-count older citations. Callers
+ * that need exact correctness for a specific highly-cited paper should fall
+ * back to fetchPaperCitationYears for just that paper (see
+ * historicalHIndex.js's cap-detection logic).
+ *
+ * @param {string[]} paperIds - Semantic Scholar paper IDs (not DOIs)
+ * @returns {Promise<Map<string, number[]>>} paperId -> citing-paper publication years (possibly capped/truncated)
+ */
+async function fetchBatchPaperCitationYears(paperIds, { retry = true } = {}) {
+  const results = new Map();
+  if (paperIds.length === 0) return results;
+
+  for (let i = 0; i < paperIds.length; i += BATCH_CHUNK_SIZE) {
+    const chunk = paperIds.slice(i, i + BATCH_CHUNK_SIZE);
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const { data } = await client.post(
+        '/paper/batch',
+        { ids: chunk },
+        { params: { fields: 'citations.year' } }
+      );
+      (data || []).forEach((paper, idx) => {
+        const id = chunk[idx];
+        const years = (paper?.citations || [])
+          .map((c) => c.year)
+          .filter((y) => typeof y === 'number');
+        results.set(id, years);
+      });
+    } catch (err) {
+      if (err.response && err.response.status === 429 && retry) {
+        // eslint-disable-next-line no-await-in-loop
+        await sleep(2000);
+        // eslint-disable-next-line no-await-in-loop
+        const retried = await fetchBatchPaperCitationYears(chunk, { retry: false });
+        for (const [id, years] of retried) results.set(id, years);
+        continue;
+      }
+      // A whole chunk failing shouldn't abort the computation — the papers
+      // in it just get an empty result, same as a single-paper failure does
+      // in fetchPaperCitationYears below, and the caller's fallback to
+      // known current-citation totals still applies for "now".
+      for (const id of chunk) results.set(id, []);
+    }
+  }
+
+  return results;
+}
+
 /**
  * Fetches every citing paper's publication year for one paper, so callers
  * can reconstruct "how many citations did this paper actually have by year
  * Y" instead of only knowing today's total. Paginated (Semantic Scholar caps
  * this endpoint at 1000/page) and retries once on 429 with backoff, same
  * pattern as fetchAuthorProfile/searchAuthors above.
+ *
+ * Slower than fetchBatchPaperCitationYears above (one request per page of
+ * citations for a SINGLE paper) but has no cap — used as the accuracy
+ * fallback for papers whose batched result looks truncated.
  *
  * @param {string} paperId - Semantic Scholar paper ID (not a DOI)
  * @returns {Promise<number[]>} publication years of papers citing this one

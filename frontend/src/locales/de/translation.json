@@ -391,5 +391,21 @@
     "sending": "Wird gesendet...",
     "sent": "Bestätigungs-E-Mail gesendet — bitte Posteingang prüfen.",
     "failed": "Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte später erneut versuchen."
+  },
+  "feedback": {
+    "openButton": "Feedback",
+    "title": "Teilen Sie Ihr Feedback",
+    "subtitle": "Was funktioniert gut? Was ist verwirrend? Was würden Sie sich als Nächstes wünschen? Wir lesen jede Nachricht.",
+    "messageLabel": "Ihr Feedback",
+    "messagePlaceholder": "Teilen Sie uns Ihre Gedanken mit...",
+    "nameLabel": "Name",
+    "namePlaceholder": "Ihr Name",
+    "emailLabel": "E-Mail",
+    "emailPlaceholder": "sie@beispiel.com",
+    "submit": "Feedback senden",
+    "submitting": "Wird gesendet...",
+    "sent": "Danke! Ihr Feedback hilft uns, Research GPS zu verbessern.",
+    "close": "Schließen",
+    "submitFailed": "Feedback konnte nicht gesendet werden. Bitte erneut versuchen."
   }
 }

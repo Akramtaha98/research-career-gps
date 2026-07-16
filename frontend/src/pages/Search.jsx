@@ -94,6 +94,13 @@ export default function Search() {
             onChange={(e) => setQuery(e.target.value)}
             autoFocus
             required
+            autoComplete="off"
+            // Chrome's newer "suggest a saved payment card" autofill can
+            // trigger on any generic text input once it's focused/typed
+            // into, not just ones that look like a card-number field --
+            // name="search" plus autoComplete="off" is the combination that
+            // reliably keeps it from offering saved cards/addresses here.
+            name="search"
           />
           <p className="mt-1 text-xs text-slate-400">{t('search.hint')}</p>
         </div>

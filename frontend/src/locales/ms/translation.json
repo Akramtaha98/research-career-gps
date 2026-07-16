@@ -391,5 +391,21 @@
     "sending": "Menghantar...",
     "sent": "E-mel pengesahan telah dihantar — semak peti masuk anda.",
     "failed": "Gagal menghantar e-mel pengesahan. Cuba lagi kemudian."
+  },
+  "feedback": {
+    "openButton": "Maklum Balas",
+    "title": "Kongsikan maklum balas anda",
+    "subtitle": "Apa yang berfungsi dengan baik? Apa yang mengelirukan? Apa yang anda ingin lihat seterusnya? Kami membaca setiap mesej.",
+    "messageLabel": "Maklum balas anda",
+    "messagePlaceholder": "Beritahu kami apa yang anda fikirkan...",
+    "nameLabel": "Nama",
+    "namePlaceholder": "Nama anda",
+    "emailLabel": "E-mel",
+    "emailPlaceholder": "anda@contoh.com",
+    "submit": "Hantar maklum balas",
+    "submitting": "Menghantar...",
+    "sent": "Terima kasih! Maklum balas anda membantu kami menambah baik Research GPS.",
+    "close": "Tutup",
+    "submitFailed": "Gagal menghantar maklum balas anda. Sila cuba lagi."
   }
 }

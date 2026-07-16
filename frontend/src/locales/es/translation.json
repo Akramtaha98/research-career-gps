@@ -391,5 +391,21 @@
     "sending": "Enviando...",
     "sent": "Correo de confirmación enviado — revisa tu bandeja de entrada.",
     "failed": "No se pudo enviar el correo de confirmación. Inténtalo más tarde."
+  },
+  "feedback": {
+    "openButton": "Comentarios",
+    "title": "Comparte tu opinión",
+    "subtitle": "¿Qué funciona bien? ¿Qué resulta confuso? ¿Qué te gustaría ver a continuación? Leemos todos los mensajes.",
+    "messageLabel": "Tu opinión",
+    "messagePlaceholder": "Cuéntanos qué piensas...",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "Tu nombre",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "tu@ejemplo.com",
+    "submit": "Enviar comentarios",
+    "submitting": "Enviando...",
+    "sent": "¡Gracias! Tu opinión nos ayuda a mejorar Research GPS.",
+    "close": "Cerrar",
+    "submitFailed": "No se pudo enviar tu opinión. Inténtalo de nuevo."
   }
 }

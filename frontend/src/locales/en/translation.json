@@ -391,5 +391,21 @@
     "sending": "Sending...",
     "sent": "Confirmation email sent — check your inbox.",
     "failed": "Couldn't send confirmation email. Try again later."
+  },
+  "feedback": {
+    "openButton": "Feedback",
+    "title": "Share your feedback",
+    "subtitle": "What's working well? What's confusing? What would you love to see next? We read every message.",
+    "messageLabel": "Your feedback",
+    "messagePlaceholder": "Tell us what's on your mind...",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "submit": "Send feedback",
+    "submitting": "Sending...",
+    "sent": "Thank you! Your feedback helps us improve Research GPS.",
+    "close": "Close",
+    "submitFailed": "Couldn't send your feedback. Please try again."
   }
 }

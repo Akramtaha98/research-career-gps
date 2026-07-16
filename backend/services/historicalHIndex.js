@@ -1,14 +1,29 @@
 const { calculateHIndex } = require('../utils/hIndex');
-const { fetchPaperCitationYears } = require('./semanticScholar');
+const { fetchBatchPaperCitationYears, fetchPaperCitationYears } = require('./semanticScholar');
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Semantic Scholar's public rate limit is ~100 requests / 5 minutes without
-// an API key. This computation makes one extra request per paper, so we
-// space them out and cap how many papers we look at to stay well under that
-// limit and keep the wait bounded for prolific researchers.
-const REQUEST_DELAY_MS = 1100;
+// an API key. This used to make one request PER PAPER (with a 1.1s delay
+// between each) to stay under that -- correct, but slow: 60+ seconds for a
+// prolific researcher. Now it fetches all papers' citation-years via a
+// single batched /paper/batch call (see fetchBatchPaperCitationYears in
+// semanticScholar.js) and only falls back to the slower per-paper endpoint
+// for papers whose batched result looks truncated (see BATCH_CAP below) --
+// typically 0-2 requests total instead of up to MAX_PAPERS.
 const MAX_PAPERS = 60;
+
+// The nested `citations.year` field on /paper/batch is capped per paper --
+// confirmed live against the API (a paper with 117k+ real citations, e.g.
+// the BERT paper, comes back with exactly 9999 entries, not the full
+// count). Undocumented exact behavior, so this stays a little conservative
+// (9990, not 9999) -- if a paper's batched result meets or exceeds this,
+// treat it as "possibly truncated" and re-fetch that one paper via the
+// paginated fetchPaperCitationYears instead of silently under-counting it.
+// In practice this only ever fires for a handful of extremely highly-cited
+// papers; everything else gets its full, exact citation history from the
+// single batched call.
+const BATCH_CAP = 9990;
 
 /**
  * Reconstructs a researcher's REAL H-index for each year from firstYear to
@@ -44,15 +59,36 @@ async function computeHistoricalHIndex(papers) {
     return { history: [], papersConsidered: 0, papersSkipped: papers.length };
   }
 
-  // Fetch sequentially (not in parallel) with a delay between calls — this
-  // is intentionally slower than it could be, in exchange for not tripping
-  // Semantic Scholar's rate limit on researchers with many papers.
-  const perPaperYears = [];
-  for (const paper of topPapers) {
-    const citingYears = await fetchPaperCitationYears(paper.externalId);
-    perPaperYears.push({ paperYear: paper.year, citingYears, currentCitations: paper.citations || 0 });
-    await sleep(REQUEST_DELAY_MS);
+  // One batched request for every paper's citation-years (instead of the
+  // old one-request-per-paper-with-a-sleep loop) — see BATCH_CAP above for
+  // why a handful of outlier papers might still need a second, slower
+  // request each.
+  const batchResults = await fetchBatchPaperCitationYears(topPapers.map((p) => p.externalId));
+
+  const possiblyTruncated = topPapers.filter(
+    (p) => (batchResults.get(p.externalId) || []).length >= BATCH_CAP
+  );
+  if (possiblyTruncated.length > 0) {
+    // eslint-disable-next-line no-console
+    console.log(
+      `Historical H-index: ${possiblyTruncated.length} paper(s) hit the batch citation cap, re-fetching exactly via pagination.`
+    );
   }
+  for (const paper of possiblyTruncated) {
+    // eslint-disable-next-line no-await-in-loop
+    const exact = await fetchPaperCitationYears(paper.externalId);
+    batchResults.set(paper.externalId, exact);
+    // Small courtesy delay only for this rare fallback path, not the common
+    // case — these are individual, potentially paginated requests.
+    // eslint-disable-next-line no-await-in-loop
+    await sleep(500);
+  }
+
+  const perPaperYears = topPapers.map((paper) => ({
+    paperYear: paper.year,
+    citingYears: batchResults.get(paper.externalId) || [],
+    currentCitations: paper.citations || 0,
+  }));
 
   const history = [];
   for (let year = earliestYear; year <= currentYear; year += 1) {

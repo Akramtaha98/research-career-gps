@@ -150,6 +150,8 @@ export default function Verify() {
             placeholder="0000-0002-1825-0097"
             value={form.orcid}
             onChange={(e) => update('orcid', e.target.value)}
+            autoComplete="off"
+            name="orcid-search"
           />
         </div>
 
