@@ -1,5 +1,6 @@
 const store = require('../services/store');
 const { createCheckoutSession, constructWebhookEvent } = require('../services/stripeService');
+const { sendError } = require('../utils/sendError');
 
 /**
  * POST /api/billing/create-checkout-session
@@ -16,7 +17,7 @@ async function createSession(req, res) {
     }
     return res.json({ url });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 

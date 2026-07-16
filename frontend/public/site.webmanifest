@@ -1,0 +1,16 @@
+{
+  "name": "Research GPS",
+  "short_name": "Research GPS",
+  "description": "Track your H-index and citation growth, and get AI-assisted predictions for your next research milestone.",
+  "start_url": "/search",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

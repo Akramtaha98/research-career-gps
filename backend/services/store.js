@@ -122,7 +122,12 @@ function resolveSharedScoreSubmission(
 }
 
 const memoryStore = {
-  async createUser({ email, name, passwordHash, authProvider = 'local', orcid = null }) {
+  // emailVerified defaults to true so social sign-ins (which pass no
+  // explicit value) and any other future caller aren't accidentally locked
+  // out; authController.signup is the one caller that explicitly passes
+  // false for a fresh local account. See schema.sql's users.email_verified
+  // comment for the full rationale.
+  async createUser({ email, name, passwordHash, authProvider = 'local', orcid = null, emailVerified = true }) {
     const user = {
       id: uuid(),
       email,
@@ -133,6 +138,10 @@ const memoryStore = {
       stripe_customer_id: null,
       plan: 'free',
       subscription_status: 'inactive',
+      email_verified: emailVerified,
+      verification_token_hash: null,
+      verification_token_expires: null,
+      digest_subscribed: true,
       created_at: new Date().toISOString(),
     };
     memory.users.push(user);
@@ -191,6 +200,63 @@ const memoryStore = {
     user.reset_token_hash = null;
     user.reset_token_expires = null;
     return user;
+  },
+
+  /** Email-confirmation flow: same shape as setResetToken, see authController.js#resendVerificationEmail. */
+  async setEmailVerificationToken(userId, { tokenHash, expiresAt }) {
+    const user = memory.users.find((u) => u.id === userId);
+    if (!user) return null;
+    user.verification_token_hash = tokenHash;
+    user.verification_token_expires = expiresAt;
+    return user;
+  },
+
+  async findUserByValidVerificationToken(tokenHash) {
+    const now = Date.now();
+    return (
+      memory.users.find(
+        (u) =>
+          u.verification_token_hash === tokenHash &&
+          u.verification_token_expires &&
+          new Date(u.verification_token_expires).getTime() > now
+      ) || null
+    );
+  },
+
+  async markEmailVerified(userId) {
+    const user = memory.users.find((u) => u.id === userId);
+    if (!user) return null;
+    user.email_verified = true;
+    user.verification_token_hash = null;
+    user.verification_token_expires = null;
+    return user;
+  },
+
+  /** Weekly progress-digest opt-in/out — see services/digestScheduler.js. */
+  async updateDigestSubscription(userId, subscribed) {
+    const user = memory.users.find((u) => u.id === userId);
+    if (!user) return null;
+    user.digest_subscribed = subscribed;
+    return user;
+  },
+
+  /**
+   * Every user eligible for the weekly progress digest: opted in AND has a
+   * confirmed email (so this can never be used to spam an address nobody
+   * has verified control of). digestScheduler.js does the rest — finding
+   * each user's latest tracked researcher/goal and deciding whether there's
+   * actually anything to report.
+   */
+  async getDigestSubscribers() {
+    return memory.users.filter((u) => u.digest_subscribed && u.email_verified);
+  },
+
+  /** Most recently saved H-index goal for a researcher, or null if none has ever been set. See predictionController.js#createPrediction. */
+  async getLatestPrediction(researcherId) {
+    const rows = memory.predictions
+      .filter((p) => p.researcher_id === researcherId)
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    return rows[0] || null;
   },
 
   async upsertResearcher({ userId, semanticScholarId, name, hIndex, totalCitations, paperCount, source = 'semantic_scholar', orcid = null }) {
@@ -738,10 +804,12 @@ const memoryStore = {
 // Postgres-backed store
 // ---------------------------------------------------------------------------
 const pgStore = {
-  async createUser({ email, name, passwordHash, authProvider = 'local', orcid = null }) {
+  // See memoryStore.createUser above for why emailVerified defaults to true.
+  async createUser({ email, name, passwordHash, authProvider = 'local', orcid = null, emailVerified = true }) {
     const { rows } = await query(
-      `INSERT INTO users (email, name, password_hash, auth_provider, orcid) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [email, name, passwordHash, authProvider, orcid]
+      `INSERT INTO users (email, name, password_hash, auth_provider, orcid, email_verified)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [email, name, passwordHash, authProvider, orcid, emailVerified]
     );
     return rows[0];
   },
@@ -800,6 +868,58 @@ const pgStore = {
       `UPDATE users SET password_hash = $2, reset_token_hash = NULL, reset_token_expires = NULL
        WHERE id = $1 RETURNING *`,
       [userId, passwordHash]
+    );
+    return rows[0] || null;
+  },
+
+  /** Email-confirmation flow: same shape as setResetToken, see authController.js#resendVerificationEmail. */
+  async setEmailVerificationToken(userId, { tokenHash, expiresAt }) {
+    const { rows } = await query(
+      `UPDATE users SET verification_token_hash = $2, verification_token_expires = $3 WHERE id = $1 RETURNING *`,
+      [userId, tokenHash, expiresAt]
+    );
+    return rows[0] || null;
+  },
+
+  async findUserByValidVerificationToken(tokenHash) {
+    const { rows } = await query(
+      `SELECT * FROM users WHERE verification_token_hash = $1 AND verification_token_expires > now()`,
+      [tokenHash]
+    );
+    return rows[0] || null;
+  },
+
+  async markEmailVerified(userId) {
+    const { rows } = await query(
+      `UPDATE users SET email_verified = true, verification_token_hash = NULL, verification_token_expires = NULL
+       WHERE id = $1 RETURNING *`,
+      [userId]
+    );
+    return rows[0] || null;
+  },
+
+  /** Weekly progress-digest opt-in/out — see services/digestScheduler.js. */
+  async updateDigestSubscription(userId, subscribed) {
+    const { rows } = await query(
+      `UPDATE users SET digest_subscribed = $2 WHERE id = $1 RETURNING *`,
+      [userId, subscribed]
+    );
+    return rows[0] || null;
+  },
+
+  /** See memoryStore's version for the full rationale. */
+  async getDigestSubscribers() {
+    const { rows } = await query(
+      `SELECT * FROM users WHERE digest_subscribed = true AND email_verified = true`
+    );
+    return rows;
+  },
+
+  /** Most recently saved H-index goal for a researcher, or null. See predictionController.js#createPrediction. */
+  async getLatestPrediction(researcherId) {
+    const { rows } = await query(
+      `SELECT * FROM predictions WHERE researcher_id = $1 ORDER BY created_at DESC LIMIT 1`,
+      [researcherId]
     );
     return rows[0] || null;
   },

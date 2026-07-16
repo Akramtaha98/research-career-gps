@@ -6,4 +6,12 @@ export default defineConfig({
   server: {
     port: 5173,
   },
+  // Vitest reads this same config (`vitest run`) rather than needing a
+  // separate vitest.config.js -- see src/setupTests.js for the jest-dom
+  // matcher setup this `setupFiles` entry wires in.
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./src/setupTests.js'],
+    globals: true,
+  },
 });

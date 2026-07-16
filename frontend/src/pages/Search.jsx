@@ -92,6 +92,7 @@ export default function Search() {
             placeholder={t('search.placeholder')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            autoFocus
             required
           />
           <p className="mt-1 text-xs text-slate-400">{t('search.hint')}</p>

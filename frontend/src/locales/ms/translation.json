@@ -188,7 +188,12 @@
     "notReachedTitle": "Tidak dapat dicapai dalam masa 20 tahun pada kadar ini",
     "notReachedDesc": "Cuba tingkatkan pertumbuhan petikan atau kadar penerbitan.",
     "pathTitle": "Trajektori indeks-H yang diunjurkan",
-    "now": "Sekarang"
+    "now": "Sekarang",
+    "digestLabel": "Hantar kemas kini kemajuan mingguan ke arah matlamat ini kepada saya",
+    "digestOnMessage": "Anda telah melanggan kemas kini kemajuan mingguan.",
+    "digestOffMessage": "Anda telah berhenti melanggan kemas kini kemajuan mingguan.",
+    "digestFailed": "Gagal mengemas kini pilihan e-mel anda. Sila cuba lagi.",
+    "realCurveHint": "Digunakan bagi setiap kertas menggunakan lengkung petikan yang realistik berdasarkan tahun penerbitannya — kertas baharu bermula perlahan, memuncak sekitar tahun ke-2 hingga ke-4, kemudian beransur menurun."
   },
   "actions": {
     "title": "Item Tindakan",
@@ -370,5 +375,21 @@
       "citationMilestone": "Melepasi jumlah {{threshold}} petikan"
     },
     "disclaimer": "Sejarah \"direkodkan\" bermula dari bila-bila masa penyelidik ini mula-mula dijejaki di sini — ia tidak membina semula Indeks-H sebelum tarikh itu. Untuk pembinaan semula tahun-tahun lebih awal daripada data petikan mengikut tahun, lihat \"Muatkan Indeks-H sejarah sebenar\" pada Papan Pemuka."
+  },
+  "verifyEmail": {
+    "verifying": "Mengesahkan e-mel anda...",
+    "success": "E-mel anda telah disahkan!",
+    "failed": "Kami tidak dapat mengesahkan e-mel anda.",
+    "missingToken": "Pautan pengesahan ini tidak sah.",
+    "errorFallback": "Sesuatu telah berlaku. Pautan mungkin tidak sah atau telah tamat tempoh.",
+    "goToDashboard": "Pergi ke papan pemuka",
+    "goToLogin": "Pergi ke log masuk"
+  },
+  "verifyBanner": {
+    "message": "Sila sahkan alamat e-mel anda untuk mengaktifkan akaun anda.",
+    "resend": "Hantar semula e-mel pengesahan",
+    "sending": "Menghantar...",
+    "sent": "E-mel pengesahan telah dihantar — semak peti masuk anda.",
+    "failed": "Gagal menghantar e-mel pengesahan. Cuba lagi kemudian."
   }
 }

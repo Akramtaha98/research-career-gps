@@ -4,7 +4,35 @@ const jwt = require('jsonwebtoken');
 const store = require('../services/store');
 const { verifyGoogleToken } = require('../services/socialAuth');
 const { exchangeOrcidCode } = require('../services/orcidAuth');
-const { sendPasswordResetEmail } = require('../services/email');
+const { sendPasswordResetEmail, sendVerificationEmail } = require('../services/email');
+const { sendError } = require('../utils/sendError');
+
+// Signup-confirmation links expire in 24h — longer than the 1h password-reset
+// window since there's no account-takeover risk in someone confirming an
+// email later (unlike a stale reset link staying valid).
+const VERIFICATION_TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
+
+/** Generates a random token + its SHA-256 hash — shared by both the forgot-password and email-verification flows (only the hash is ever persisted). */
+function generateHashedToken() {
+  const rawToken = crypto.randomBytes(32).toString('hex');
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+  return { rawToken, tokenHash };
+}
+
+/** Best-effort send of the signup-confirmation email; never throws — a delivery failure must not block signup. */
+async function sendVerificationEmailBestEffort(user) {
+  try {
+    const { rawToken, tokenHash } = generateHashedToken();
+    const expiresAt = new Date(Date.now() + VERIFICATION_TOKEN_TTL_MS);
+    await store.setEmailVerificationToken(user.id, { tokenHash, expiresAt });
+
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const verifyUrl = `${frontendUrl}/verify-email?token=${rawToken}`;
+    await sendVerificationEmail({ to: user.email, name: user.name, verifyUrl });
+  } catch (err) {
+    console.error('Failed to send verification email:', err.message);
+  }
+}
 
 function signToken(user) {
   return jwt.sign({ sub: user.id, email: user.email }, process.env.JWT_SECRET, {
@@ -23,6 +51,8 @@ function sanitizeUser(user) {
     orcid: user.orcid || null,
     plan: user.plan || 'free',
     subscriptionStatus: user.subscription_status || 'inactive',
+    emailVerified: user.email_verified !== false,
+    digestSubscribed: user.digest_subscribed !== false,
     created_at: user.created_at,
   };
 }
@@ -43,6 +73,8 @@ async function findOrCreateSocialUser({ email, name, provider }) {
     name: name || email.split('@')[0],
     passwordHash,
     authProvider: provider,
+    // Google has already confirmed this address; no confirmation email needed.
+    emailVerified: true,
   });
 }
 
@@ -62,12 +94,21 @@ async function signup(req, res) {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const user = await store.createUser({ email: email.toLowerCase(), name, passwordHash });
+    const user = await store.createUser({
+      email: email.toLowerCase(),
+      name,
+      passwordHash,
+      emailVerified: false,
+    });
     const token = signToken(user);
+
+    // Best-effort — a failed send never blocks account creation; the user
+    // can always request a new link via /auth/resend-verification.
+    sendVerificationEmailBestEffort(user);
 
     return res.status(201).json({ token, user: sanitizeUser(user) });
   } catch (err) {
-    return res.status(500).json({ error: 'Signup failed', detail: err.message });
+    return sendError(res, err, 'Signup failed');
   }
 }
 
@@ -91,7 +132,7 @@ async function login(req, res) {
     const token = signToken(user);
     return res.json({ token, user: sanitizeUser(user) });
   } catch (err) {
-    return res.status(500).json({ error: 'Login failed', detail: err.message });
+    return sendError(res, err, 'Login failed');
   }
 }
 
@@ -116,7 +157,7 @@ async function googleLogin(req, res) {
     const token = signToken(user);
     return res.json({ token, user: sanitizeUser(user) });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -139,6 +180,8 @@ async function findOrCreateOrcidUser({ orcid, name }) {
     passwordHash,
     authProvider: 'orcid',
     orcid,
+    // Placeholder, never-delivered address — nothing to confirm by email.
+    emailVerified: true,
   });
 }
 
@@ -191,8 +234,7 @@ async function forgotPassword(req, res) {
     const user = await store.findUserByEmail(email.toLowerCase());
 
     if (user && user.auth_provider === 'local') {
-      const rawToken = crypto.randomBytes(32).toString('hex');
-      const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+      const { rawToken, tokenHash } = generateHashedToken();
       const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
       await store.setResetToken(user.id, { tokenHash, expiresAt });
@@ -211,7 +253,7 @@ async function forgotPassword(req, res) {
 
     return res.json({ message: genericMessage });
   } catch (err) {
-    return res.status(500).json({ error: 'Request failed', detail: err.message });
+    return sendError(res, err, 'Request failed');
   }
 }
 
@@ -240,8 +282,122 @@ async function resetPassword(req, res) {
 
     return res.json({ message: 'Password reset successfully' });
   } catch (err) {
-    return res.status(500).json({ error: 'Reset failed', detail: err.message });
+    return sendError(res, err, 'Reset failed');
   }
 }
 
-module.exports = { signup, login, me, googleLogin, orcidCallback, forgotPassword, resetPassword };
+/**
+ * POST /api/auth/verify-email
+ * Body: { token }
+ * Confirms a signup — flips email_verified to true and clears the token so
+ * it can't be replayed. Returns the refreshed user so the frontend can
+ * update its own state without an extra /auth/me round trip.
+ */
+async function verifyEmail(req, res) {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(400).json({ error: 'token is required' });
+    }
+
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await store.findUserByValidVerificationToken(tokenHash);
+    if (!user) {
+      return res.status(400).json({ error: 'This confirmation link is invalid or has expired' });
+    }
+
+    const updated = await store.markEmailVerified(user.id);
+    return res.json({ message: 'Email confirmed', user: sanitizeUser(updated) });
+  } catch (err) {
+    return sendError(res, err, 'Verification failed');
+  }
+}
+
+/**
+ * POST /api/auth/resend-verification
+ * Requires auth (the signed-in user resending their own confirmation link,
+ * same as clicking "resend" from the in-app banner). No-op with a friendly
+ * message if the account is already confirmed.
+ */
+async function resendVerificationEmail(req, res) {
+  try {
+    const user = await store.findUserById(req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    if (user.email_verified) {
+      return res.json({ message: 'This email is already confirmed.' });
+    }
+    if (user.auth_provider !== 'local') {
+      return res.json({ message: 'This account does not need email confirmation.' });
+    }
+
+    await sendVerificationEmailBestEffort(user);
+    return res.json({ message: 'Confirmation email sent — check your inbox.' });
+  } catch (err) {
+    return sendError(res, err, 'Could not send confirmation email');
+  }
+}
+
+/**
+ * PATCH /api/auth/email-preferences
+ * Body: { digestSubscribed: boolean }
+ * Toggles the weekly goal-progress digest (see services/digestScheduler.js).
+ * Requires auth — this is a self-service preference, not a public endpoint.
+ */
+async function updateEmailPreferences(req, res) {
+  try {
+    const { digestSubscribed } = req.body;
+    if (typeof digestSubscribed !== 'boolean') {
+      return res.status(400).json({ error: 'digestSubscribed (boolean) is required' });
+    }
+
+    const updated = await store.updateDigestSubscription(req.user.id, digestSubscribed);
+    if (!updated) return res.status(404).json({ error: 'User not found' });
+
+    return res.json({ user: sanitizeUser(updated) });
+  } catch (err) {
+    return sendError(res, err, 'Update failed');
+  }
+}
+
+/**
+ * GET /api/auth/unsubscribe-digest?token=...
+ * One-click unsubscribe link embedded in every weekly digest email (see
+ * services/digestScheduler.js) — deliberately a plain signed-JWT GET link
+ * rather than requiring the recipient to sign in first, matching standard
+ * "unsubscribe" UX/email-deliverability expectations. The JWT's only claim
+ * is the user id + a `purpose` guard so a leaked/forwarded link can't be
+ * reused for anything else (e.g. it will NOT pass requireAuth's checks).
+ */
+async function unsubscribeDigest(req, res) {
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+  try {
+    const { token } = req.query;
+    if (!token) return res.redirect(`${frontendUrl}/predictor`);
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (payload.purpose !== 'digest-unsubscribe') {
+      return res.redirect(`${frontendUrl}/predictor`);
+    }
+
+    await store.updateDigestSubscription(payload.sub, false);
+    return res.redirect(`${frontendUrl}/predictor?digestUnsubscribed=1`);
+  } catch {
+    // Expired/invalid token — fail open to the app rather than an error page.
+    return res.redirect(`${frontendUrl}/predictor`);
+  }
+}
+
+module.exports = {
+  signup,
+  login,
+  me,
+  googleLogin,
+  orcidCallback,
+  forgotPassword,
+  resetPassword,
+  verifyEmail,
+  resendVerificationEmail,
+  updateEmailPreferences,
+  unsubscribeDigest,
+};

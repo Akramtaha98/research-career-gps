@@ -1,5 +1,6 @@
 const store = require('../services/store');
 const verificationService = require('../services/verificationService');
+const { sendError } = require('../utils/sendError');
 
 const NUMERIC_FIELDS = ['hIndex', 'paperCount', 'citationCount'];
 
@@ -95,7 +96,7 @@ async function runVerification(req, res) {
       isOwner,
     });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -109,7 +110,7 @@ async function getVerification(req, res) {
     if (!record) return res.json({ author: null, metrics: null, papers: [], comparisons: [] });
     return res.json(record);
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -122,7 +123,7 @@ async function getVerificationHistory(req, res) {
     const history = await store.getVerificationHistory(normalized);
     return res.json({ history });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 

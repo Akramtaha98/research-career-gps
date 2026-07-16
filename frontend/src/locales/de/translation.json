@@ -188,7 +188,12 @@
     "notReachedTitle": "Bei dieser Rate innerhalb von 20 Jahren nicht erreichbar",
     "notReachedDesc": "Versuche, das Zitationswachstum oder die Publikationsrate zu erhöhen.",
     "pathTitle": "Prognostizierter H-Index-Verlauf",
-    "now": "Jetzt"
+    "now": "Jetzt",
+    "digestLabel": "Wöchentliche Fortschrittsupdates zu diesem Ziel per E-Mail erhalten",
+    "digestOnMessage": "Sie erhalten jetzt wöchentliche Fortschrittsupdates.",
+    "digestOffMessage": "Sie haben die wöchentlichen Fortschrittsupdates abbestellt.",
+    "digestFailed": "Ihre E-Mail-Einstellung konnte nicht aktualisiert werden. Bitte erneut versuchen.",
+    "realCurveHint": "Wird pro Artikel anhand einer realistischen Zitationskurve basierend auf dem Erscheinungsjahr angewendet — neue Artikel starten langsam, erreichen ihren Höhepunkt um Jahr 2-4 und klingen danach ab."
   },
   "actions": {
     "title": "Aufgaben",
@@ -370,5 +375,21 @@
       "citationMilestone": "Hat {{threshold}} Zitate insgesamt überschritten"
     },
     "disclaimer": "Der \"erfasste\" Verlauf beginnt erst, sobald dieser Forscher hier erstmals erfasst wurde — er rekonstruiert den H-Index nicht rückwirkend vor diesem Datum. Für eine Rekonstruktion früherer Jahre aus Zitationsdaten pro Jahr siehe \"Echten historischen H-Index laden\" im Dashboard."
+  },
+  "verifyEmail": {
+    "verifying": "E-Mail wird bestätigt...",
+    "success": "Ihre E-Mail wurde bestätigt!",
+    "failed": "Wir konnten Ihre E-Mail nicht bestätigen.",
+    "missingToken": "Dieser Bestätigungslink ist ungültig.",
+    "errorFallback": "Etwas ist schiefgelaufen. Der Link ist möglicherweise ungültig oder abgelaufen.",
+    "goToDashboard": "Zum Dashboard",
+    "goToLogin": "Zur Anmeldung"
+  },
+  "verifyBanner": {
+    "message": "Bitte bestätigen Sie Ihre E-Mail-Adresse, um Ihr Konto zu aktivieren.",
+    "resend": "Bestätigungs-E-Mail erneut senden",
+    "sending": "Wird gesendet...",
+    "sent": "Bestätigungs-E-Mail gesendet — bitte Posteingang prüfen.",
+    "failed": "Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte später erneut versuchen."
   }
 }

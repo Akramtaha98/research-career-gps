@@ -188,7 +188,12 @@
     "notReachedTitle": "Non atteignable en 20 ans à ce rythme",
     "notReachedDesc": "Essayez d'augmenter la croissance des citations ou le rythme de publication.",
     "pathTitle": "Trajectoire projetée de l'indice H",
-    "now": "Maintenant"
+    "now": "Maintenant",
+    "digestLabel": "M'envoyer des mises à jour hebdomadaires sur cet objectif",
+    "digestOnMessage": "Vous êtes abonné(e) aux mises à jour hebdomadaires.",
+    "digestOffMessage": "Vous vous êtes désabonné(e) des mises à jour hebdomadaires.",
+    "digestFailed": "Impossible de mettre à jour votre préférence. Réessayez.",
+    "realCurveHint": "Appliqué par article selon une courbe de citations réaliste basée sur son année de publication : les nouveaux articles démarrent lentement, atteignent un pic vers les années 2-4, puis ralentissent."
   },
   "actions": {
     "title": "Actions recommandées",
@@ -370,5 +375,21 @@
       "citationMilestone": "A dépassé {{threshold}} citations au total"
     },
     "disclaimer": "L'historique \"enregistré\" commence à partir du premier suivi de ce chercheur ici — il ne reconstruit pas le H-index d'avant cette date. Pour une reconstruction des années antérieures à partir des données de citations par année, voir \"Charger le H-index historique réel\" sur le tableau de bord."
+  },
+  "verifyEmail": {
+    "verifying": "Confirmation de votre e-mail...",
+    "success": "Votre e-mail a été confirmé !",
+    "failed": "Nous n'avons pas pu confirmer votre e-mail.",
+    "missingToken": "Ce lien de confirmation n'est pas valide.",
+    "errorFallback": "Une erreur s'est produite. Le lien est peut-être invalide ou expiré.",
+    "goToDashboard": "Aller au tableau de bord",
+    "goToLogin": "Aller à la connexion"
+  },
+  "verifyBanner": {
+    "message": "Veuillez confirmer votre adresse e-mail pour activer votre compte.",
+    "resend": "Renvoyer l'e-mail de confirmation",
+    "sending": "Envoi en cours...",
+    "sent": "E-mail de confirmation envoyé — vérifiez votre boîte de réception.",
+    "failed": "Impossible d'envoyer l'e-mail de confirmation. Réessayez plus tard."
   }
 }

@@ -188,7 +188,12 @@
     "notReachedTitle": "No alcanzable en 20 años a esta tasa",
     "notReachedDesc": "Intenta aumentar el crecimiento de citas o la tasa de publicación.",
     "pathTitle": "Trayectoria proyectada del índice H",
-    "now": "Ahora"
+    "now": "Ahora",
+    "digestLabel": "Enviarme actualizaciones semanales de progreso hacia esta meta",
+    "digestOnMessage": "Te has suscrito a las actualizaciones semanales de progreso.",
+    "digestOffMessage": "Has cancelado la suscripción a las actualizaciones semanales de progreso.",
+    "digestFailed": "No se pudo actualizar tu preferencia de correo. Inténtalo de nuevo.",
+    "realCurveHint": "Se aplica por artículo usando una curva de citas realista según su año de publicación: los artículos nuevos empiezan lento, alcanzan su punto máximo entre los años 2 y 4, y luego disminuyen."
   },
   "actions": {
     "title": "Tareas recomendadas",
@@ -370,5 +375,21 @@
       "citationMilestone": "Superó {{threshold}} citas totales"
     },
     "disclaimer": "El historial \"registrado\" comienza desde que este investigador fue rastreado por primera vez aquí — no reconstruye el H-index de antes de esa fecha. Para una reconstrucción de años anteriores a partir de datos de citas por año, consulta \"Cargar H-index histórico real\" en el panel."
+  },
+  "verifyEmail": {
+    "verifying": "Confirmando tu correo electrónico...",
+    "success": "¡Tu correo electrónico ha sido confirmado!",
+    "failed": "No pudimos confirmar tu correo electrónico.",
+    "missingToken": "Este enlace de confirmación no es válido.",
+    "errorFallback": "Algo salió mal. El enlace puede ser inválido o haber expirado.",
+    "goToDashboard": "Ir al panel",
+    "goToLogin": "Ir a iniciar sesión"
+  },
+  "verifyBanner": {
+    "message": "Confirma tu dirección de correo electrónico para activar tu cuenta.",
+    "resend": "Reenviar correo de confirmación",
+    "sending": "Enviando...",
+    "sent": "Correo de confirmación enviado — revisa tu bandeja de entrada.",
+    "failed": "No se pudo enviar el correo de confirmación. Inténtalo más tarde."
   }
 }

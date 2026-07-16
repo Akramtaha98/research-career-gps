@@ -44,8 +44,14 @@ export default function Predictor() {
   const [venueTier, setVenueTier] = useState('average');
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState(null);
+  const [digestSaving, setDigestSaving] = useState(false);
+  const [digestMessage, setDigestMessage] = useState(null);
 
   const currentCitations = useMemo(() => papers.map((p) => p.citations || 0), [papers]);
+  // Each paper's actual publish year — feeds projectHIndex's age-aware
+  // "real" citation model (see utils/prediction.js) instead of the old flat
+  // monthly-rate-for-every-paper assumption.
+  const currentPaperYears = useMemo(() => papers.map((p) => p.year || null), [papers]);
 
   const effectiveHIndex = researcher.h_index;
 
@@ -57,12 +63,13 @@ export default function Predictor() {
     () =>
       projectHIndex({
         currentCitations,
+        currentPaperYears,
         targetH: Number(targetH) || 0,
         monthlyCitationRate: Number(monthlyCitationRate) || 0,
         papersPerYear: Number(papersPerYear) || 0,
         newPaperCitationMultiplier: getMultiplier(venueTier),
       }),
-    [currentCitations, targetH, monthlyCitationRate, papersPerYear, venueTier]
+    [currentCitations, currentPaperYears, targetH, monthlyCitationRate, papersPerYear, venueTier]
   );
 
   async function handleSave() {
@@ -85,6 +92,22 @@ export default function Predictor() {
       setSaveMessage(err.response?.data?.error || t('predictor.saveFailed'));
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleToggleDigest() {
+    if (!user) return;
+    const next = !user.digestSubscribed;
+    setDigestSaving(true);
+    setDigestMessage(null);
+    try {
+      await client.patch('/auth/email-preferences', { digestSubscribed: next });
+      await refreshUser();
+      setDigestMessage(next ? t('predictor.digestOnMessage') : t('predictor.digestOffMessage'));
+    } catch (err) {
+      setDigestMessage(err.response?.data?.error || t('predictor.digestFailed'));
+    } finally {
+      setDigestSaving(false);
     }
   }
 
@@ -125,6 +148,10 @@ export default function Predictor() {
           saveMessage={saveMessage}
           handleSave={handleSave}
           effectiveHIndex={effectiveHIndex}
+          user={user}
+          digestSaving={digestSaving}
+          digestMessage={digestMessage}
+          handleToggleDigest={handleToggleDigest}
         />
       )}
     </div>
@@ -150,6 +177,10 @@ function PredictorBody({
   saveMessage,
   handleSave,
   effectiveHIndex,
+  user,
+  digestSaving,
+  digestMessage,
+  handleToggleDigest,
 }) {
   const { t } = useTranslation();
   return (
@@ -201,6 +232,7 @@ function PredictorBody({
               value={monthlyCitationRate}
               onChange={(e) => setMonthlyCitationRate(e.target.value)}
             />
+            <p className="mt-1 text-xs text-slate-400">{t('predictor.realCurveHint')}</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">{t('predictor.papersPerYear')}</label>
@@ -258,6 +290,22 @@ function PredictorBody({
             {saving ? t('predictor.saving') : t('predictor.save')}
           </button>
           {saveMessage && <p className="text-xs text-slate-500">{saveMessage}</p>}
+
+          {user && (
+            <div className="pt-3 border-t border-slate-100">
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="mt-0.5"
+                  checked={Boolean(user.digestSubscribed)}
+                  disabled={digestSaving}
+                  onChange={handleToggleDigest}
+                />
+                <span className="text-xs text-slate-600">{t('predictor.digestLabel')}</span>
+              </label>
+              {digestMessage && <p className="mt-1 text-xs text-slate-500">{digestMessage}</p>}
+            </div>
+          )}
         </div>
 
         <div className="card lg:col-span-2 flex flex-col justify-center items-center text-center">

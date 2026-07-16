@@ -188,7 +188,12 @@
     "notReachedTitle": "Not reachable within 20 years at this rate",
     "notReachedDesc": "Try increasing citation growth or publication rate.",
     "pathTitle": "Projected H-index path",
-    "now": "Now"
+    "now": "Now",
+    "digestLabel": "Email me weekly progress updates toward this goal",
+    "digestOnMessage": "You're subscribed to weekly progress emails.",
+    "digestOffMessage": "You've unsubscribed from weekly progress emails.",
+    "digestFailed": "Couldn't update your email preference. Please try again.",
+    "realCurveHint": "Applied per paper using a realistic citation curve based on its publish year — new papers start slow, peak around year 2-4, then taper off."
   },
   "actions": {
     "title": "Action Items",
@@ -370,5 +375,21 @@
       "citationMilestone": "Passed {{threshold}} total citations"
     },
     "disclaimer": "\"Recorded\" history starts from whenever this researcher was first tracked here — it does not reconstruct H-index from before that date. For a reconstruction of earlier years from citation-by-year data, see the Dashboard's \"Load real historical H-index\"."
+  },
+  "verifyEmail": {
+    "verifying": "Confirming your email...",
+    "success": "Your email has been confirmed!",
+    "failed": "We couldn't confirm your email.",
+    "missingToken": "This confirmation link is invalid.",
+    "errorFallback": "Something went wrong. The link may be invalid or expired.",
+    "goToDashboard": "Go to dashboard",
+    "goToLogin": "Go to log in"
+  },
+  "verifyBanner": {
+    "message": "Please confirm your email address to activate your account.",
+    "resend": "Resend confirmation email",
+    "sending": "Sending...",
+    "sent": "Confirmation email sent — check your inbox.",
+    "failed": "Couldn't send confirmation email. Try again later."
   }
 }

@@ -7,6 +7,7 @@ const { generateActionItems } = require('../utils/actionItems');
 const { checkScopusProfile, checkWosProfile } = require('../services/externalProfileCheck');
 const { computeSinceLastVisit, computeMilestones } = require('../services/timeline');
 const { fetchWorkByDoi } = require('../services/crossref');
+const { sendError } = require('../utils/sendError');
 
 /**
  * Best-effort, no-AI check of a submitted number against the live profile
@@ -104,7 +105,7 @@ async function searchResearchers(req, res) {
 
     return res.json({ candidates });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -139,7 +140,7 @@ async function addResearcher(req, res) {
 
     return res.status(201).json({ researcher });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -157,7 +158,7 @@ async function getMyLatestResearcher(req, res) {
     const history = await store.getHistory(researcher.id);
     return res.json({ researcher, history });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -194,7 +195,7 @@ async function getResearcher(req, res) {
     const history = await store.getHistory(researcher.id);
     return res.json({ researcher, history });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -210,7 +211,7 @@ async function listPapers(req, res) {
     const papers = await store.listPapers(id);
     return res.json({ papers });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -249,7 +250,7 @@ async function setPaperVerification(req, res) {
     const result = await store.setPaperVerification(id, externalId, status, null);
     return res.json({ verification: result ? result.status : null });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -281,7 +282,7 @@ async function getTimeline(req, res) {
       milestones: computeMilestones(snapshots),
     });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -327,7 +328,7 @@ async function addPaperByDoi(req, res) {
 
     return res.status(201).json({ paper });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -355,7 +356,7 @@ async function removeManualPaper(req, res) {
     if (!removed) return res.status(404).json({ error: 'No manually-added paper with that DOI was found.' });
     return res.json({ ok: true });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -372,7 +373,7 @@ async function getActionItems(req, res) {
     const items = generateActionItems({ papers });
     return res.json({ actionItems: items });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -399,7 +400,7 @@ async function getCollaborators(req, res) {
     const collaborators = await fetchTopCollaborators(researcher.semantic_scholar_id);
     return res.json({ collaborators });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -445,7 +446,7 @@ async function getRealHistory(req, res) {
     realHistoryCache.set(id, { computedAt: Date.now(), data: result });
     return res.json({ ...result, cached: false });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -498,7 +499,7 @@ function setScore(which) {
 
       return res.json({ researcher: updated, autoCheck });
     } catch (err) {
-      return res.status(err.statusCode || 500).json({ error: err.message });
+      return sendError(res, err);
     }
   };
 }
@@ -516,7 +517,7 @@ function clearScore(which) {
       const updated = await store.clearScore(id, which);
       return res.json({ researcher: updated });
     } catch (err) {
-      return res.status(err.statusCode || 500).json({ error: err.message });
+      return sendError(res, err);
     }
   };
 }
@@ -547,7 +548,7 @@ async function getSharedScores(req, res) {
     const shared = await store.getSharedScores(researcher.orcid);
     return res.json({ orcid: researcher.orcid, ...shared });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ error: err.message });
+    return sendError(res, err);
   }
 }
 
@@ -615,7 +616,7 @@ function submitSharedScore(which) {
 
       return res.json({ ...result, autoCheck }); // { current, resultStatus, applied, autoCheck }
     } catch (err) {
-      return res.status(err.statusCode || 500).json({ error: err.message });
+      return sendError(res, err);
     }
   };
 }
