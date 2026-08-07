@@ -64,8 +64,12 @@ export default function Navbar() {
     setOpen(false);
   }
 
+  // `sticky top-0`: the nav is the only way between the six main sections,
+  // so forcing a scroll back to the top of a long Dashboard/paper table just
+  // to switch tabs was the biggest piece of friction in the layout. Sits
+  // below the modal/chat z-layers (z-50) on purpose.
   return (
-    <nav className="bg-brand-gradient shadow-md relative z-40">
+    <nav className="bg-brand-gradient shadow-md sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-2">
         <Link to="/" onClick={closeMenu} className="flex items-center gap-2 text-white font-bold text-lg shrink-0 min-w-0">
           <span aria-hidden className="shrink-0">🧭</span>

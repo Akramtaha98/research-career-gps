@@ -144,17 +144,24 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard label={t('dashboard.hIndex')} value={effective.hIndex} accent="brand" />
+        <MetricCard label={t('dashboard.hIndex')} value={effective.hIndex} accent="brand" icon="📈" />
         <MetricCard
           label={t('dashboard.totalCitations')}
           value={effective.totalCitations?.toLocaleString?.() ?? effective.totalCitations}
           accent="sky"
+          icon="❝"
         />
-        <MetricCard label={t('dashboard.trackedPapers')} value={effective.paperCount ?? papers.length} accent="emerald" />
+        <MetricCard
+          label={t('dashboard.trackedPapers')}
+          value={effective.paperCount ?? papers.length}
+          accent="emerald"
+          icon="📄"
+        />
         <MetricCard
           label={t('dashboard.avgCitations')}
           value={(papers.length ? Math.round((effective.totalCitations || 0) / papers.length) : 0).toLocaleString()}
           accent="amber"
+          icon="⌀"
         />
       </div>
 
@@ -220,7 +227,7 @@ export default function Dashboard() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-slate-400 border-b border-slate-100 select-none">
+              <tr className="text-left text-[11px] uppercase tracking-wide font-semibold text-slate-400 border-b border-slate-100 select-none">
                 <th className="py-2 pr-4 cursor-pointer hover:text-slate-600" onClick={() => toggleSort('title')}>
                   {t('dashboard.colTitle')}
                   <SortArrow column="title" />
@@ -250,7 +257,7 @@ export default function Dashboard() {
                 return (
                   <tr
                     key={p.id}
-                    className={`border-b border-slate-50 last:border-0 ${
+                    className={`border-b border-slate-50 last:border-0 transition-colors hover:bg-slate-50/70 ${
                       verification === 'not_mine' || verification === 'duplicate' ? 'opacity-50' : ''
                     }`}
                   >

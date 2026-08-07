@@ -100,7 +100,7 @@ function GuideStep({ index, icon, to, title, desc }) {
       </span>
       <Link
         to={to}
-        className="card flex items-start gap-3 hover:shadow-md hover:border-brand-100 transition group"
+        className="card card-interactive flex items-start gap-3 group"
       >
         <span className="sm:hidden text-xl shrink-0" aria-hidden="true">{icon}</span>
         <div className="min-w-0">

@@ -167,7 +167,7 @@ export default function Search() {
                 key={c.semanticScholarId}
                 onClick={() => handlePick(c)}
                 disabled={pickingId === c.semanticScholarId}
-                className="w-full text-left px-4 py-3 rounded-xl border border-slate-100 hover:border-brand-300 hover:bg-brand-50 transition flex items-center justify-between gap-3 disabled:opacity-50"
+                className="w-full text-left px-4 py-3 rounded-xl border border-slate-100 hover:border-brand-300 hover:bg-brand-50 hover:shadow-btn transition duration-200 flex items-center justify-between gap-3 disabled:opacity-50 disabled:hover:border-slate-100 disabled:hover:bg-transparent"
               >
                 <div>
                   <p className="font-medium text-slate-800">{c.fullName || c.name}</p>

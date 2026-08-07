@@ -11,9 +11,10 @@ const billingRoutes = require('./routes/billing');
 const verificationRoutes = require('./routes/verification');
 const contactRoutes = require('./routes/contact');
 const { webhook: billingWebhook } = require('./controllers/billingController');
-const { isDemoMode } = require('./config/db');
+const { isDemoMode, pool } = require('./config/db');
 const { startSnapshotScheduler } = require('./services/snapshotScheduler');
 const { startDigestScheduler } = require('./services/digestScheduler');
+const { startKeepAlive } = require('./services/keepAlive');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -89,8 +90,41 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
+// Liveness probe: deliberately cheap and dependency-free — it answers "is
+// this process up and serving?" and nothing more. This is what the
+// keep-alive cron (services/keepAlive.js) and any uptime monitor should
+// hit, precisely BECAUSE it doesn't touch the database: a health check that
+// queries Postgres every 10 minutes forever would add pointless load, and
+// worse, would report the API as down during a transient DB blip even
+// though the process is perfectly healthy and able to serve cached/demo
+// routes. Use /ready below when you actually want dependency status.
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', demoMode: isDemoMode, timestamp: new Date().toISOString() });
+  res.json({
+    status: 'ok',
+    demoMode: isDemoMode,
+    uptimeSeconds: Math.round(process.uptime()),
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Readiness probe: verifies the app can actually reach its database, so a
+// deploy that came up with a bad DATABASE_URL is visibly broken here rather
+// than only failing later on a real user's first request. Returns 503 (not
+// 500) when the DB is unreachable — that's the status load balancers and
+// uptime monitors interpret as "temporarily can't serve", which is exactly
+// the situation. Always 200 in demo mode, where there's no database by
+// design and unreachability isn't a fault.
+app.get('/ready', async (req, res) => {
+  if (isDemoMode) {
+    return res.json({ status: 'ok', demoMode: true, database: 'skipped (demo mode)' });
+  }
+  try {
+    const started = Date.now();
+    await pool.query('SELECT 1');
+    return res.json({ status: 'ok', demoMode: false, database: 'connected', latencyMs: Date.now() - started });
+  } catch (err) {
+    return res.status(503).json({ status: 'degraded', demoMode: false, database: 'unreachable', error: err.message });
+  }
 });
 
 app.use('/api/auth', authRoutes);
@@ -121,6 +155,7 @@ if (require.main === module) {
     console.log(`Research GPS API listening on port ${PORT} (demoMode=${isDemoMode})`);
     startSnapshotScheduler();
     startDigestScheduler();
+    startKeepAlive();
   });
 }
 

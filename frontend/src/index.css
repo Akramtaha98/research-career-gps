@@ -30,23 +30,87 @@ html.dark {
 }
 
 body {
-  @apply bg-slate-50 text-slate-900;
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+/*
+ * Tighter tracking on large headings. Inter (like most geometric UI faces)
+ * is spaced for body copy, so headline sizes look loose and slightly
+ * amateurish at default tracking — pulling them in is the single highest-
+ * impact typographic change for making the app read as polished.
+ */
+h1,
+h2,
+h3 {
+  @apply tracking-tight;
+}
+
+/*
+ * Visible keyboard focus, globally. Tailwind's reset removes the browser's
+ * default focus ring, and the old component classes only styled `:focus` on
+ * inputs — meaning keyboard users got no indicator at all on buttons and
+ * links. `:focus-visible` shows the ring for keyboard navigation only, so
+ * mouse users don't see a ring after every click.
+ */
+/* No border-radius here on purpose: the ring is rendered as a box-shadow,
+   which already follows each element's own radius. Setting one would
+   reshape rounded-full buttons the moment they receive focus. */
+*:focus-visible {
+  @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-white;
+}
+
+.dark *:focus-visible {
+  @apply ring-offset-slate-900;
 }
 
 .card {
-  @apply bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-6;
+  @apply bg-white rounded-2xl shadow-card border border-slate-100 p-5 sm:p-6;
+}
+
+/*
+ * Opt-in hover lift for cards that are actually clickable (the guide steps,
+ * search results). Deliberately NOT on `.card` itself — a static container
+ * that rises when the pointer crosses it reads as broken, not responsive.
+ */
+.card-interactive {
+  @apply transition duration-200 hover:shadow-card-hover hover:-translate-y-0.5 hover:border-brand-200;
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-btn transition duration-200 hover:bg-brand-700 hover:shadow-card active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-brand-600 disabled:hover:shadow-btn disabled:active:translate-y-0;
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 border border-slate-200 shadow-sm transition hover:bg-slate-50;
+  @apply inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 border border-slate-200 shadow-btn transition duration-200 hover:bg-slate-50 hover:border-slate-300 active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Low-emphasis third tier, for destructive/dismissive actions that shouldn't
+   compete visually with the primary action next to them. */
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-slate-500 transition duration-200 hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
 .input {
-  @apply w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm shadow-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition;
+  @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm shadow-btn transition duration-200 placeholder:text-slate-400 hover:border-slate-300 focus:border-brand-500 focus:ring-4 focus:ring-brand-100 outline-none;
+}
+
+/* Small status pill, used for verification states and badges. Colour comes
+   from a utility class at the call site; this only owns the shape. */
+.badge {
+  @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold;
+}
+
+/*
+ * Skeleton placeholder for loading states — a shimmering block reads as
+ * "content is on its way" far better than a spinner or an empty page, and
+ * prevents the layout jump that happens when real content finally lands.
+ */
+.skeleton {
+  @apply animate-pulse rounded-lg bg-slate-200/70;
+}
+
+.dark .skeleton {
+  @apply bg-slate-700/50;
 }
 
 /*

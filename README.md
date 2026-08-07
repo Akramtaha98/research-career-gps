@@ -1,163 +1,95 @@
-<div align="center">
+# Research GPS
 
-# 🧭 Research GPS
+Track your H-index, understand exactly what's holding it back, and see when you'll hit your next milestone.
 
-**Track your H-index. Project your growth. Know what to work on next.**
+Research GPS pulls a researcher's real publication record from Semantic Scholar and OpenAlex, recomputes their H-index from the underlying citation data rather than trusting a cached number, and turns that into something actionable: which specific papers are closest to pushing the H-index up, what to prioritise, and a realistic projection of when a target is reachable.
 
-[![Node](https://img.shields.io/badge/node-%3E%3D18-339933?logo=node.js&logoColor=white)](https://nodejs.org)
-[![React](https://img.shields.io/badge/react-18-61DAFB?logo=react&logoColor=white)](https://react.dev)
-[![Express](https://img.shields.io/badge/express-4.x-000000?logo=express&logoColor=white)](https://expressjs.com)
-[![PostgreSQL](https://img.shields.io/badge/postgres-13%2B-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org)
-[![Vite](https://img.shields.io/badge/vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
-[![Semantic Scholar](https://img.shields.io/badge/data-Semantic%20Scholar%20API-1857B6)](https://www.semanticscholar.org/product/api)
-[![Stripe](https://img.shields.io/badge/billing-Stripe-635BFF?logo=stripe&logoColor=white)](https://stripe.com)
-
-</div>
+**Live:** [research-career-gps.vercel.app](https://research-career-gps.vercel.app)
 
 ---
 
-Pulls real citation data from the [Semantic Scholar API](https://www.semanticscholar.org/product/api), recalculates your H-index directly from raw per-paper citation counts, and runs a simple projection model to estimate when you'll hit your next milestone. Auto-generates prioritized action items — which papers are one citation away from raising your H-index, and where to focus effort next.
-
-## Contents
-
-- [Status](#status)
-- [Features](#features)
-- [Freemium model](#freemium-model)
-- [Stack](#stack)
-- [Quick start](#quick-start)
-- [Project structure](#project-structure)
-- [How the core algorithms work](#how-the-core-algorithms-work)
-- [Docs](#docs)
-- [Scope notes](#notes-on-scope-vs-the-original-spec)
-
-## Status
-
-Working MVP, verified end-to-end:
-
-| Component | Status |
-|---|---|
-| Backend API | ✅ All endpoints tested live against a real Semantic Scholar author (auth, search, researcher lookup, papers, action items, collaborators, predictions, billing) |
-| Unit tests | ✅ 11/11 passing (`backend/tests/`) — H-index, prediction engine, venue-tier weighting |
-| Paywall | ✅ Verified end-to-end — free plan blocked with 402, simulated upgrade unlocks Pro routes immediately |
-| Frontend | ✅ Builds clean with Vite, works standalone on demo data with zero backend required |
-| Deployment | ⏳ Not yet live — needs your Railway/Vercel/Supabase accounts, see [`docs/SETUP.md`](docs/SETUP.md) |
-| Beta users | ⏳ Not started |
-
 ## Features
 
-- **Search by name** — type a researcher's name, pick the right match from Semantic Scholar's disambiguated results (or paste a known Author ID directly)
-- **Live H-index tracking** — real papers and citation counts pulled straight from Semantic Scholar
-- **Growth chart** — H-index and citation history over time
-- **Prediction calculator** — set a target H-index, growth rate, and target-venue tier, see an estimated timeline *(Pro)*
-- **Collaboration advisor** — your most frequent real co-authors, ranked by their own h-index *(Pro)*
-- **Auto-generated action items** — near-miss papers, publication cadence, venue strategy *(free)*
-- **Google sign-in** — alongside email+password (needs a free Google Cloud OAuth client to activate, see `docs/SETUP.md`)
-- **Demo mode** — the whole app works instantly with sample data, no signup, database, or payment required
-- **6 languages** — English, Arabic (RTL), Spanish, German, French, Bahasa Melayu. Auto-detected from the browser, switchable anytime from the 🌐 menu in the navbar, remembered on return visits
-
-## Freemium model
-
-| Plan | Includes |
-|---|---|
-| Free | Search, live H-index/citation tracking, growth chart, action items, demo mode (fully functional, no card needed) |
-| Pro ($4.99/mo) | Prediction calculator + venue-tier weighting, collaboration advisor — for a real (non-demo) tracked researcher |
-
-Billed via Stripe Checkout (`docs/SETUP.md` has the full walkthrough). This app never touches card details directly — Stripe hosts the payment form, and a webhook keeps each user's plan in sync.
+| Area | What it does |
+| --- | --- |
+| **Search** | Find a researcher by name (public, no account needed) or by Semantic Scholar author ID. Demo data available without signing up. |
+| **Dashboard** | Live H-index, total citations, tracked-paper count and averages, all recomputed from the paper list. Per-paper "not mine / duplicate" corrections that survive refreshes. Add papers by DOI, verified against Crossref. |
+| **H-index Frontier** | Exactly which papers need how many more citations to reach the next H-index — correctly handling the case where several papers must cross the threshold at once. |
+| **Actions** | Prioritised recommendations: near-miss papers to promote, low-citation work to boost, venue strategy, publication cadence. |
+| **Predictor** | Projects time-to-target-H using an age-aware citation model (slow start, peak around years 2–4, long tail) rather than a flat monthly rate. Venue tier adjusts the trajectory of future papers only. |
+| **Timeline** | Recorded snapshot history, a "since your last visit" diff, and milestone celebrations. |
+| **Real H-index history** | Reconstructs H-index year by year from actual per-paper citation-year data, going back further than tracking began. |
+| **Verify** | Standalone ORCID-based academic verification: resolves the real profile, compares field by field, keeps an append-only history. |
+| **Assistant** | In-app chat grounded entirely in the user's own computed data — it can't invent citation counts. |
+| **Guide** | A step-by-step "How it works" tour of every section. |
+| **Accounts** | Email/password, Google Sign-In, and Sign in with ORCID. Email verification, password reset, and an opt-in weekly progress digest. |
+| **Also** | Dark mode, 6 languages (EN/ES/FR/DE/AR/MS), a site-wide feedback widget, and a Contact page. |
 
 ## Stack
 
-| Layer | Tech |
-|---|---|
-| Backend | Node.js 18+, Express, PostgreSQL (`pg`), JWT auth, bcrypt, Stripe |
-| Frontend | React 18, Vite, Tailwind CSS, Chart.js (`react-chartjs-2`), React Router, Axios |
-| Data source | Semantic Scholar Graph API (no key required) |
-| Demo mode | In-memory data store (`DEMO_MODE=true`) — no database needed for local dev |
+- **Backend** — Node/Express, deployed on Railway. JWT auth, bcrypt, helmet, per-route rate limiting.
+- **Frontend** — React + Vite + Tailwind, deployed on Vercel. react-i18next for localisation.
+- **Database** — Supabase Postgres, reached over a direct `DATABASE_URL`.
+- **Data sources** — Semantic Scholar (primary), OpenAlex (fallback and enrichment), Crossref (DOI verification), ORCID (identity).
+- **Email** — Resend.
+- **Payments** — Stripe (Pro tier gates Predictor on live data, plus collaborator suggestions).
 
 ## Quick start
 
 ```bash
+git clone https://github.com/Akramtaha98/research-career-gps.git
+cd research-career-gps
+
 # Backend
 cd backend
-cp .env.example .env   # DEMO_MODE=true by default — no DB needed to start
+cp .env.example .env          # DEMO_MODE=true works with no database
 npm install
-npm start               # http://localhost:4000
+npm run dev                   # http://localhost:4000
 
-# Frontend (separate terminal)
-cd frontend
+# Frontend (second terminal)
+cd ../frontend
 cp .env.example .env
 npm install
-npm run dev             # http://localhost:5173
+npm run dev                   # http://localhost:5173
 ```
 
-Open `http://localhost:5173` — it lands on the researcher search page. Click **"Use demo data"** to explore the dashboard, predictor, and action items instantly, or sign up and enter a real Semantic Scholar Author ID (e.g. `1741101`) to pull live data.
+`DEMO_MODE=true` runs against an in-memory store, so the whole app is explorable without provisioning Postgres. See `docs/SETUP.md` for the full walkthrough including Supabase, Google, ORCID, Stripe, and Resend setup.
+
+## Tests
+
+```bash
+cd backend  && npm test        # 56 integration + unit tests (node:test + supertest)
+cd frontend && npx vitest run  # 48 component + unit tests (Vitest + Testing Library)
+cd frontend && npm run build   # production build must stay clean
+```
+
+Both suites plus the frontend build run in CI on every push — see `.github/workflows/ci.yml`.
 
 ## Project structure
 
-<details>
-<summary>Expand file tree</summary>
-
 ```
-research-career-gps/
-├── backend/
-│   ├── server.js                  Express app entrypoint (Stripe webhook mounted with raw body parsing)
-│   ├── config/db.js               Postgres pool + demo-mode switch
-│   ├── services/
-│   │   ├── store.js                Data layer (Postgres or in-memory, same interface)
-│   │   ├── semanticScholar.js      Semantic Scholar API wrapper, search, collaborators, rate-limit handling
-│   │   ├── socialAuth.js            Google ID token verification
-│   │   └── stripeService.js         Checkout session creation + webhook signature verification
-│   ├── utils/
-│   │   ├── hIndex.js                H-index calculation
-│   │   ├── prediction.js            Linear projection engine (with venue-tier multiplier)
-│   │   ├── actionItems.js           Recommendation heuristics
-│   │   └── venueTiers.js            Hand-curated venue-tier multipliers (not a real impact-factor DB)
-│   ├── middleware/                requireAuth (JWT), requirePro (subscription gate)
-│   ├── controllers/, routes/
-│   ├── schema.sql                 Postgres schema (run against Supabase/any Postgres)
-│   └── tests/hIndex.test.js       Unit tests (node:test — no extra deps)
-├── frontend/
-│   └── src/
-│       ├── pages/                 Login, Signup, Search, Dashboard, Predictor, Actions
-│       ├── components/            Navbar, MetricCard, HIndexChart, EmptyState, SocialLogin,
-│       │                          CollaborationAdvisor, UpgradeCTA, ProtectedRoute
-│       ├── context/                AuthContext, ResearcherContext
-│       ├── data/demoData.js        Standalone demo dataset (incl. demo collaborators)
-│       ├── i18n.js, locales/       6-language i18n config (en, ar, es, de, fr, ms) + RTL handling
-│       └── utils/                  Client-side mirrors of the H-index/prediction/action/venue logic
-└── docs/
-    ├── API.md
-    ├── SETUP.md
-    └── USER_GUIDE.md
+backend/
+  controllers/     route handlers
+  services/        store (dual memory/pg), external APIs, email, schedulers, keep-alive
+  utils/           h-index, prediction model, action items, error handling
+  migrations/      numbered, idempotent SQL — applied to Supabase manually
+  tests/
+frontend/src/
+  pages/           Search, Dashboard, Timeline, Predictor, Actions, Verify, HowItWorks, ...
+  components/      MetricCard, HIndexChart, ChatWidget, FeedbackWidget, Modal, ...
+  context/         Auth, Researcher, Theme
+  utils/           mirrors of the backend's h-index/prediction logic for demo mode
+  locales/         6 translation files, key parity enforced
+docs/              SETUP.md, API.md, USER_GUIDE.md, DEPLOYMENT.md
 ```
 
-</details>
+## Notes on the numbers
 
-## How the core algorithms work
+- **H-index is always recomputed** from the tracked paper list rather than read from an upstream `hIndex` field, so a "not mine" correction immediately changes the headline figure.
+- **Predictions are a model, not a promise.** The citation-aging curve is a deliberately simplified stand-in for the log-normal shapes documented in bibliometrics literature (e.g. Wang, Song & Barabási 2013), not a fitted model.
+- **Reconstructed history is a lower bound** for past years: citing papers with no publication year on file can't be dated, so older years count only what can be dated. The current year uses the authoritative total instead.
+- **Self-reported Scopus/WOS numbers are not scraped or auto-verified** beyond a single best-effort public GET. This was a deliberate decision — see `backend/services/externalProfileCheck.js`.
 
-**H-index** — standard definition: the largest `h` such that `h` papers have at least `h` citations each. Recomputed from Semantic Scholar's raw per-paper citation counts (not trusted from their cached `hIndex` field), so it's always internally consistent with the citation data shown in the dashboard.
+## License
 
-**Prediction engine** — a simple linear simulation. Each month, every existing tracked paper gains `monthlyCitationRate` citations on average; new papers are added at `papersPerYear`, entering at 0 citations. An optional venue-tier multiplier scales how fast *new* papers (not existing ones) accumulate citations, modeling "publishing in a higher-impact venue going forward." The simulation runs month-by-month (capped at 20 years) until the target H-index is reached, returning the month count and a full path for charting.
-
-**Action items** — heuristic, not ML. Flags papers within 5 citations of crossing the H-index threshold (fastest wins), papers with 0-1 citations (visibility/collaboration push), publication cadence over the last 2 years, and a general venue-strategy nudge.
-
-**Collaboration advisor** — aggregates co-authors across the researcher's real tracked papers (from Semantic Scholar's `papers.authors` field), batch-fetches each co-author's own stats, and ranks them by h-index. Surfaces existing strong collaborators rather than inventing connections.
-
-**Venue tiers** — a small hand-maintained list (`utils/venueTiers.js`), explicitly *not* a real journal impact-factor/SJR database (those require a paid license). Treat it as a directional heuristic you can edit for your own field.
-
-## Docs
-
-| Doc | Contents |
-|---|---|
-| [`docs/API.md`](docs/API.md) | Full endpoint reference |
-| [`docs/SETUP.md`](docs/SETUP.md) | Local dev + Railway/Vercel/Supabase deployment steps |
-| [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md) | How to use the app, FAQ |
-
-## Notes on scope vs. the original spec
-
-A few deliberate substitutions, made for stability/time:
-
-- **React 18** instead of React 19 — `react-chartjs-2` and the broader ecosystem are most battle-tested there; upgrading later is a low-risk change.
-- **Google sign-in only** — Apple Sign In was evaluated but requires a paid ($99/yr) Apple Developer account plus domain verification, so it was dropped from this pass. Google needs only a free OAuth client.
-- **Venue-tier weighting is a heuristic, not a real database** — no free, reliable journal impact-factor/SJR API exists; the multiplier list in `utils/venueTiers.js` is hand-curated and editable.
-- **Translations are AI-generated, not reviewed by native speakers** — all UI text (navigation, forms, dashboard, predictor, action items) is translated across all 6 languages, but phrasing in Arabic/Spanish/German/French/Malay hasn't been checked by a native speaker yet. Strings live in one JSON file per language (`frontend/src/locales/<lang>/translation.json`), so any awkward phrasing is a quick one-line fix. Backend error messages and Semantic Scholar's own data (paper titles, venue names) remain in their original language — translating those is future scope.
-- Deployment, Stripe account setup, beta testing with real users, and marketing posts need your accounts and outreach — see [`docs/SETUP.md`](docs/SETUP.md) for copy-pasteable steps.
+Not currently licensed for redistribution.

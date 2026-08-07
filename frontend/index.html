@@ -6,6 +6,18 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#4f46e5" />
+    <!-- Inter, the app's UI typeface (see tailwind.config.js fontFamily.sans
+         for the fallback stack). preconnect warms the TLS handshake to
+         Google's font CDN before the CSS is parsed, and display=swap means
+         text paints immediately in the fallback font rather than staying
+         invisible while the webfont downloads. Only the weights actually
+         used are requested, to keep the transfer small. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <title>Research GPS — Track your H-index, plan your next paper</title>
     <meta
       name="description"
