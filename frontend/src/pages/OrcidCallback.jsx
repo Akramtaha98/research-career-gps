@@ -16,6 +16,7 @@ import { useResearcher } from '../context/ResearcherContext';
 export default function OrcidCallback() {
   const [status, setStatus] = useState('signing-in'); // signing-in | looking-up | error
   const [errorMessage, setErrorMessage] = useState(null);
+  const [linked, setLinked] = useState(false);
   const { loginWithToken, user } = useAuth();
   const { searchByName, lookupResearcher } = useResearcher();
   const navigate = useNavigate();
@@ -37,6 +38,10 @@ export default function OrcidCallback() {
       setErrorMessage(t('orcidLogin.missingToken'));
       return;
     }
+    // `linked=1` means this was a "Connect ORCID" link (not a fresh sign-in),
+    // so the user was already using the app — just refresh their session and
+    // send them back without hijacking whatever researcher they had open.
+    if (hash.get('linked') === '1') setLinked(true);
     loginWithToken(token);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -44,6 +49,11 @@ export default function OrcidCallback() {
   useEffect(() => {
     if (status !== 'signing-in' || !user || lookupStarted.current) return;
     lookupStarted.current = true;
+
+    if (linked) {
+      navigate('/dashboard');
+      return;
+    }
 
     if (!user.orcid) {
       // Shouldn't normally happen (this page only runs after ORCID sign-in),
@@ -84,7 +94,11 @@ export default function OrcidCallback() {
           <>
             <div className="mx-auto h-8 w-8 rounded-full border-2 border-brand-200 border-t-brand-600 animate-spin" />
             <p className="text-sm text-slate-600">
-              {status === 'looking-up' ? t('orcidLogin.lookingUp') : t('orcidLogin.signingIn')}
+              {linked
+                ? t('orcidLogin.linkedOk')
+                : status === 'looking-up'
+                ? t('orcidLogin.lookingUp')
+                : t('orcidLogin.signingIn')}
             </p>
           </>
         )}

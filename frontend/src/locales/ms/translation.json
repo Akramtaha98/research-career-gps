@@ -22,6 +22,11 @@
   },
   "orcidLogin": {
     "cta": "Teruskan dengan ORCID",
+    "connectHint": "Pautkan ORCID anda ke akaun anda — pengesahan yang anda hantar untuk profil sendiri terus dipercayai.",
+    "connectCta": "Sambungkan ORCID anda",
+    "connecting": "Menyambung…",
+    "connectFailed": "Gagal memulakan sambungan ORCID. Cuba lagi.",
+    "linkedOk": "ORCID dipautkan ke akaun anda.",
     "notConfigured": "Teruskan dengan ORCID (belum dikonfigurasi)",
     "notConfiguredTitle": "Tetapkan VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI untuk mengaktifkan — lihat docs/SETUP.md",
     "signingIn": "Sedang log masuk...",

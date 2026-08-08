@@ -22,6 +22,11 @@
   },
   "orcidLogin": {
     "cta": "Weiter mit ORCID",
+    "connectHint": "Verknüpfe deine ORCID mit deinem Konto — Verifizierungen deines eigenen Profils gelten sofort als vertrauenswürdig.",
+    "connectCta": "ORCID verknüpfen",
+    "connecting": "Wird verknüpft…",
+    "connectFailed": "ORCID-Verknüpfung konnte nicht gestartet werden. Bitte erneut versuchen.",
+    "linkedOk": "ORCID mit deinem Konto verknüpft.",
     "notConfigured": "Weiter mit ORCID (nicht konfiguriert)",
     "notConfiguredTitle": "VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI setzen, um dies zu aktivieren — siehe docs/SETUP.md",
     "signingIn": "Anmeldung läuft...",

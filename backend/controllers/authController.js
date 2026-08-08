@@ -186,13 +186,34 @@ async function findOrCreateOrcidUser({ orcid, name }) {
 }
 
 /**
- * GET /api/auth/orcid/callback?code=...
- * Where ORCID redirects the browser back to after the user approves sign-in
- * at orcid.org/oauth/authorize. Runs entirely server-side (the code-for-
- * token exchange needs the Client Secret), then hands off to the frontend
- * by redirecting again with the app's own JWT in the URL fragment — a
- * fragment (not a query string) so the token never lands in server access
- * logs or gets forwarded via a Referer header.
+ * GET /api/auth/orcid/link-state  (auth required)
+ * Mints a short-lived, single-purpose token identifying the signed-in user,
+ * to be passed as the OAuth `state` when they click "Connect ORCID". The
+ * ORCID callback below trusts this to know WHICH existing account to attach
+ * the returned ORCID iD to. Purpose-scoped and short-lived so that, even if
+ * it leaks via the redirect chain, it can't be used as a general auth token.
+ */
+async function getOrcidLinkState(req, res) {
+  const state = jwt.sign({ sub: req.user.id, purpose: 'orcid-link' }, process.env.JWT_SECRET, {
+    expiresIn: '10m',
+  });
+  return res.json({ state });
+}
+
+/**
+ * GET /api/auth/orcid/callback?code=...&state=...
+ * Where ORCID redirects the browser back to after the user approves the
+ * flow at orcid.org. Runs entirely server-side (the code-for-token exchange
+ * needs the Client Secret), then hands off to the frontend by redirecting
+ * with the app's own JWT in the URL fragment — a fragment (not a query
+ * string) so the token never lands in server access logs or a Referer.
+ *
+ * Two modes, distinguished by the OAuth `state`:
+ *  - No/!link state  → plain SIGN-IN: find-or-create an account keyed by ORCID.
+ *  - Valid link state → LINK: attach this ORCID to the already-signed-in
+ *    account named by the state token, instead of minting a separate account
+ *    (this is what stops one person from splitting into an email account +
+ *    an ORCID account — see the account-merge history).
  */
 async function orcidCallback(req, res) {
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
@@ -200,12 +221,41 @@ async function orcidCallback(req, res) {
     res.redirect(`${frontendUrl}/auth/orcid/callback#error=${encodeURIComponent(message)}`);
 
   try {
-    const { code, error, error_description: errorDescription } = req.query;
+    const { code, state, error, error_description: errorDescription } = req.query;
     if (error) return failRedirect(errorDescription || error);
     if (!code) return failRedirect('missing_code');
     if (!process.env.ORCID_REDIRECT_URI) return failRedirect('ORCID_REDIRECT_URI is not configured on the server');
 
+    // Is this a "Connect ORCID" link request from an already-signed-in user?
+    let linkUserId = null;
+    if (state) {
+      try {
+        const decoded = jwt.verify(state, process.env.JWT_SECRET);
+        if (decoded.purpose === 'orcid-link') linkUserId = decoded.sub;
+      } catch {
+        return failRedirect('Your Connect-ORCID request expired or was invalid. Please try again.');
+      }
+    }
+
     const { orcid, name } = await exchangeOrcidCode(code, process.env.ORCID_REDIRECT_URI);
+
+    if (linkUserId) {
+      const account = await store.findUserById(linkUserId);
+      if (!account) return failRedirect('The account to link to no longer exists.');
+
+      const holder = await store.findUserByOrcid(orcid);
+      if (holder && holder.id !== account.id) {
+        return failRedirect('That ORCID iD is already linked to a different Research GPS account.');
+      }
+      if (account.orcid && account.orcid !== orcid) {
+        return failRedirect('Your account already has a different ORCID iD linked.');
+      }
+
+      const updated = (await store.setUserOrcid(account.id, orcid)) || account;
+      const token = signToken(updated);
+      return res.redirect(`${frontendUrl}/auth/orcid/callback#token=${encodeURIComponent(token)}&linked=1`);
+    }
+
     const user = await findOrCreateOrcidUser({ orcid, name });
     const token = signToken(user);
     return res.redirect(`${frontendUrl}/auth/orcid/callback#token=${encodeURIComponent(token)}`);
@@ -394,6 +444,7 @@ module.exports = {
   me,
   googleLogin,
   orcidCallback,
+  getOrcidLinkState,
   forgotPassword,
   resetPassword,
   verifyEmail,

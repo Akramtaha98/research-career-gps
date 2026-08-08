@@ -22,6 +22,11 @@
   },
   "orcidLogin": {
     "cta": "Continue with ORCID",
+    "connectHint": "Link your ORCID iD to your account — verifications you submit for your own profile become instantly trusted.",
+    "connectCta": "Connect your ORCID",
+    "connecting": "Connecting…",
+    "connectFailed": "Couldn't start ORCID connection. Try again.",
+    "linkedOk": "ORCID linked to your account.",
     "notConfigured": "Continue with ORCID (not configured)",
     "notConfiguredTitle": "Set VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI to enable — see docs/SETUP.md",
     "signingIn": "Signing you in...",

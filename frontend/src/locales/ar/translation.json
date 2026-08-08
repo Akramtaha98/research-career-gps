@@ -22,6 +22,11 @@
   },
   "orcidLogin": {
     "cta": "المتابعة عبر ORCID",
+    "connectHint": "اربط معرّف ORCID بحسابك — عمليات التحقق التي ترسلها لملفك الشخصي تصبح موثوقة فوراً.",
+    "connectCta": "ربط معرّف ORCID",
+    "connecting": "جارٍ الربط…",
+    "connectFailed": "تعذّر بدء ربط ORCID. حاول مرة أخرى.",
+    "linkedOk": "تم ربط ORCID بحسابك.",
     "notConfigured": "المتابعة عبر ORCID (غير مُعدّ)",
     "notConfiguredTitle": "اضبط VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI للتفعيل — راجع docs/SETUP.md",
     "signingIn": "جارٍ تسجيل الدخول...",
