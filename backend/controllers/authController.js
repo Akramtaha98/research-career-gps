@@ -332,7 +332,7 @@ async function resendVerificationEmail(req, res) {
     }
 
     await sendVerificationEmailBestEffort(user);
-    return res.json({ message: 'Confirmation email sent — check your inbox.' });
+    return res.json({ message: 'Confirmation email sent. Check your inbox.' });
   } catch (err) {
     return sendError(res, err, 'Could not send confirmation email');
   }

@@ -141,7 +141,7 @@ function buildComparisons(submitted, verified) {
     comparisons.push({
       fieldName: 'journal_impact_factor',
       submittedValue: String(submitted.journalImpactFactor),
-      verifiedValue: 'Not available from OpenAlex/Semantic Scholar — unverifiable with current sources',
+      verifiedValue: 'Not available from OpenAlex/Semantic Scholar. Unverifiable with current sources',
       difference: null,
       match: false,
       unverifiableField: true,

@@ -36,7 +36,7 @@ describe('VerifyEmailBanner', () => {
 
   it('shows the confirmation prompt for an unverified account, and resending posts to /auth/resend-verification', async () => {
     mockUseAuth.mockReturnValue({ user: { emailVerified: false } });
-    mockPost.mockResolvedValue({ data: { message: 'Confirmation email sent — check your inbox.' } });
+    mockPost.mockResolvedValue({ data: { message: 'Confirmation email sent. Check your inbox.' } });
 
     render(<VerifyEmailBanner />);
     expect(screen.getByRole('button', { name: /resend/i })).toBeInTheDocument();

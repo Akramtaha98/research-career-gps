@@ -23,7 +23,7 @@
   "orcidLogin": {
     "cta": "Continuer avec ORCID",
     "notConfigured": "Continuer avec ORCID (non configuré)",
-    "notConfiguredTitle": "Définissez VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI pour activer — voir docs/SETUP.md",
+    "notConfiguredTitle": "Configurez VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI pour l'activer. Voir docs/SETUP.md",
     "signingIn": "Connexion en cours...",
     "lookingUp": "Recherche de vos publications...",
     "failed": "Échec de la connexion avec ORCID",
@@ -44,7 +44,7 @@
     "signUp": "S'inscrire",
     "demoPrompt": "Juste en train d'explorer ?",
     "demoLink": "Voir le tableau de bord de démonstration",
-    "demoSuffix": "— aucune connexion requise.",
+    "demoSuffix": ", aucune connexion requise.",
     "errorFallback": "Échec de la connexion",
     "forgotPassword": "Mot de passe oublié ?"
   },
@@ -87,22 +87,22 @@
   },
   "socialLogin": {
     "notConfigured": "Continuer avec Google (non configuré)",
-    "notConfiguredTitle": "Définissez VITE_GOOGLE_CLIENT_ID / GOOGLE_CLIENT_ID pour activer — voir docs/SETUP.md",
+    "notConfiguredTitle": "Configurez VITE_GOOGLE_CLIENT_ID / GOOGLE_CLIENT_ID pour l'activer. Voir docs/SETUP.md",
     "errorFallback": "Échec de la connexion avec Google"
   },
   "search": {
     "title": "Trouver un chercheur",
-    "subtitle": "Recherchez par nom, ORCID ou ID pour récupérer des données de citations réelles — Semantic Scholar en source principale, OpenAlex en secours.",
+    "subtitle": "Recherchez par nom, ORCID ou ID pour obtenir de vraies données de citations, avec Semantic Scholar comme source principale et OpenAlex en secours.",
     "label": "Nom du chercheur, ORCID ou ID Semantic Scholar",
     "placeholder": "ex. Oren Etzioni ou 0000-0002-9082-0875",
-    "hint": "Une recherche par nom peut correspondre à plusieurs personnes — collez un ORCID iD pour une correspondance exacte, ou un ID d'auteur Semantic Scholar numérique directement.",
+    "hint": "Une recherche par nom peut correspondre à plusieurs personnes. Collez un iD ORCID pour une correspondance exacte, ou un ID numérique d'auteur Semantic Scholar directement.",
     "loginRequired": "Vous devrez vous connecter pour enregistrer la recherche d'un chercheur réel.",
     "searchBtn": "Rechercher",
     "searching": "Recherche en cours...",
     "fetching": "Récupération...",
     "demoBtn": "Utiliser des données de démonstration",
-    "matchesFound_one": "{{count}} résultat — choisissez le bon",
-    "matchesFound_other": "{{count}} résultats — choisissez le bon",
+    "matchesFound_one": "{{count}} résultat. Choisissez le bon.",
+    "matchesFound_other": "{{count}} résultats. Choisissez le bon.",
     "noMatches": "Aucun résultat trouvé",
     "akaLabel": "Également publié sous le nom {{name}}",
     "papers": "articles",
@@ -151,7 +151,7 @@
     "addDoiPlaceholder": "ex. 10.1038/nature14539 ou https://doi.org/10.1038/nature14539",
     "addDoiSubmit": "Ajouter",
     "addDoiSubmitting": "Vérification avec Crossref...",
-    "addDoiHint": "Vérifié auprès de Crossref (l'agence d'enregistrement des DOI) avant l'ajout — pour un article que OpenAlex/Semantic Scholar n'a pas encore indexé.",
+    "addDoiHint": "Vérifié auprès de Crossref (l'agence d'enregistrement des DOI) avant d'être ajouté, pour un article qui n'a pas encore été indexé par OpenAlex/Semantic Scholar.",
     "addDoiSuccess": "\"{{title}}\" ajouté.",
     "addDoiFailed": "Impossible d'ajouter cet article. Vérifiez le DOI et réessayez.",
     "addDoiCancel": "Annuler",
@@ -168,17 +168,17 @@
   "predictor": {
     "title": "Prédicteur d'indice H",
     "subtitle": "Projetez quand vous atteindrez votre indice H cible en fonction de la croissance des citations et du rythme de publication.",
-    "noPapersWarning": "Ce chercheur n'a pas encore d'articles suivis, cette projection repose donc uniquement sur les nouveaux articles que vous prévoyez de publier — elle ne reflétera aucun travail existant. Recherchez un chercheur avec des articles, ou utilisez des données de démonstration, pour une projection plus réaliste.",
+    "noPapersWarning": "Ce chercheur n'a pas encore d'articles suivis, donc cette projection repose uniquement sur les nouveaux articles que vous prévoyez de publier. Elle ne reflétera aucun travail existant. Recherchez un chercheur avec des articles, ou utilisez les données de démonstration, pour une projection plus réaliste.",
     "targetH": "Indice H cible (actuel : {{current}})",
     "targetTooLow": "La cible doit être supérieure à votre indice H actuel ({{current}}).",
     "monthlyRate": "Nouvelles citations moy. / article / mois",
     "papersPerYear": "Nouveaux articles / an",
     "targetVenue": "Publication cible pour les futurs articles",
     "optional": "(optionnel)",
-    "venueTooltip": "Définit un multiplicateur sur la vitesse à laquelle les NOUVEAUX articles que vous publierez à l'avenir accumulent des citations — Publication de premier plan (x3) et Publication solide (x2) accélèrent la projection, Publication émergente (x0,5) la ralentit. Cela ne change pas les citations des articles déjà publiés.",
+    "venueTooltip": "Définit un multiplicateur sur la vitesse à laquelle les NOUVEAUX articles que vous publierez désormais gagnent des citations. Revue de premier plan (3x) et Revue solide (2x) accélèrent la projection, Revue émergente (0,5x) la ralentit. Cela ne modifie pas les citations des articles déjà publiés.",
     "venuePlaceholder": "ex. NeurIPS, IEEE Transactions...",
-    "venueSuggest": "« {{venue}} » ressemble à une publication de niveau {{tier}} — appliquer ?",
-    "venueHint": "Une heuristique approximative, pas une véritable base de données de facteur d'impact — n'affecte que la vitesse à laquelle les nouveaux articles que vous publierez accumuleront des citations.",
+    "venueSuggest": "« {{venue}} » ressemble à une revue de niveau {{tier}}. Appliquer ?",
+    "venueHint": "Une heuristique approximative, pas une véritable base de données de facteur d'impact. Cela n'affecte que la vitesse à laquelle les nouveaux articles que vous publierez désormais accumulent des citations.",
     "save": "Enregistrer cette prédiction",
     "saving": "Enregistrement...",
     "saveLoginRequired": "Connectez-vous et recherchez un chercheur réel pour enregistrer des prédictions.",
@@ -195,17 +195,17 @@
     "digestOnMessage": "Vous êtes abonné(e) aux mises à jour hebdomadaires.",
     "digestOffMessage": "Vous vous êtes désabonné(e) des mises à jour hebdomadaires.",
     "digestFailed": "Impossible de mettre à jour votre préférence. Réessayez.",
-    "realCurveHint": "Appliqué par article selon une courbe de citations réaliste basée sur son année de publication : les nouveaux articles démarrent lentement, atteignent un pic vers les années 2-4, puis ralentissent."
+    "realCurveHint": "Appliqué par article à l'aide d'une courbe de citations réaliste basée sur son année de publication : les nouveaux articles démarrent lentement, atteignent leur pic vers les années 2-4, puis diminuent."
   },
   "actions": {
     "title": "Actions recommandées",
     "subtitle": "Recommandations générées automatiquement pour {{name}} sur la base des données de citations actuelles.",
     "emptyTitle": "Aucun article à analyser pour l'instant",
-    "emptyDesc": "Une fois que ce chercheur aura des articles suivis avec des citations, vous verrez ici des recommandations priorisées — articles proches du seuil, rythme de publication et stratégie de publication.",
+    "emptyDesc": "Une fois que ce chercheur aura des articles suivis avec des citations, vous verrez ici des recommandations prioritaires : articles proches du seuil, rythme de publication et stratégie de revues.",
     "collabTitle": "Conseiller en collaboration",
-    "collabSubtitle": "Vos co-auteurs les plus fréquents, classés selon leur propre indice h — un historique de collaboration réel, pas des suppositions.",
+    "collabSubtitle": "Vos co-auteurs les plus fréquents, classés selon leur propre indice H. Historique de collaboration réel, pas des suppositions.",
     "priorityTitle": "Articles prioritaires pour faire progresser votre indice H dès aujourd'hui",
-    "prioritySubtitle": "Votre indice H est actuellement de {{h}}. Concentrez d'abord vos efforts ici — ces articles sont les plus proches de le faire progresser.",
+    "prioritySubtitle": "Votre indice H est actuellement {{h}}. Concentrez d'abord vos efforts ici : ces articles sont les plus proches de le faire augmenter.",
     "priorityRowHint_one": "{{citations}} citation de plus fait passer votre indice H à {{next}}",
     "priorityRowHint_other": "{{citations}} citations de plus font passer votre indice H à {{next}}"
   },
@@ -268,7 +268,7 @@
   },
   "verify": {
     "title": "Vérifier des informations académiques",
-    "subtitle": "Saisissez un ORCID iD et ce que vous déclarez à votre sujet (indice H, nombre d'articles, citations...) — ceci vérifie d'abord auprès de Semantic Scholar, puis se rabat sur OpenAlex uniquement si Semantic Scholar n'a aucun enregistrement, et vous montre exactement où les chiffres concordent ou non.",
+    "subtitle": "Entrez un iD ORCID et ce que vous affirmez à votre sujet (indice H, nombre d'articles, citations...). Cela le vérifie d'abord auprès de Semantic Scholar, puis se rabat sur OpenAlex uniquement si Semantic Scholar n'a aucun enregistrement, et vous montre exactement où les chiffres concordent ou non.",
     "orcidLabel": "ORCID iD",
     "nameLabel": "Nom",
     "affiliationLabel": "Affiliation",
@@ -309,10 +309,10 @@
     "historyEmpty": "Aucune vérification précédente pour cet ORCID pour l'instant.",
     "historyFailed": "Impossible de charger l'historique des vérifications.",
     "ownerBadge": "Confirmé par le propriétaire",
-    "ownerNote": "Confirmé par le propriétaire de l'ORCID le {{date}} — affiché à la place des données brutes de Semantic Scholar/OpenAlex.",
-    "ownerSubmitSuccess": "Enregistré comme votre dossier confirmé par ORCID — il s'affiche désormais comme la valeur confirmée pour quiconque recherche cet ORCID.",
-    "ownerCorrectionHint": "Ces chiffres proviennent de Semantic Scholar/OpenAlex et peuvent être obsolètes. Si c'est votre ORCID, connectez-vous avec « Continuer avec ORCID » (correspondant à cet iD) et soumettez vos vrais chiffres ci-dessus — une fois confirmés, ils remplaceront ceux-ci comme votre dossier officiel.",
-    "comparisonSourceNote": "Compare ce que vous avez déclaré aux données brutes de Semantic Scholar/OpenAlex — indépendamment de tout dossier confirmé par le propriétaire de l'ORCID ci-dessus."
+    "ownerNote": "Confirmé par le titulaire de l'ORCID le {{date}}. Affiché à la place de l'instantané brut Semantic Scholar/OpenAlex.",
+    "ownerSubmitSuccess": "Enregistré comme votre dossier confirmé par ORCID. Cela s'affiche désormais comme la valeur confirmée pour quiconque recherche cet ORCID.",
+    "ownerCorrectionHint": "Ces chiffres proviennent de Semantic Scholar/OpenAlex et peuvent être obsolètes. Si c'est votre ORCID, connectez-vous avec « Continuer avec ORCID » (correspondant à cet iD) et soumettez vos vrais chiffres ci-dessus. Une fois confirmés, ils remplaceront ceux-ci comme votre dossier officiel.",
+    "comparisonSourceNote": "Compare ce que vous avez affirmé à l'instantané brut Semantic Scholar/OpenAlex, indépendamment de tout dossier confirmé par le titulaire de l'ORCID ci-dessus."
   },
   "theme": {
     "switchToLight": "Passer au mode clair",
@@ -329,17 +329,17 @@
     "messagePlaceholder": "Qu'avez-vous en tête ?",
     "submit": "Envoyer le message",
     "submitting": "Envoi...",
-    "sent": "Merci — votre message a été envoyé.",
+    "sent": "Merci. Votre message a été envoyé.",
     "submitFailed": "Échec de l'envoi. Réessayez."
   },
   "frontier": {
     "title": "Frontière de l'indice H",
-    "subtitle": "Voyez exactement quels articles sont les plus proches d'augmenter votre indice H, pas seulement le chiffre actuel.",
+    "subtitle": "Voyez exactement quels articles sont les plus proches de faire augmenter votre indice H, pas seulement le chiffre actuel.",
     "nextMilestone": "Prochain palier : h = {{next}}",
     "summarySingle_one": "Votre prochain palier est h = {{next}}. Votre candidat le plus proche, \"{{title}}\", n'a besoin que de {{count}} citation de plus pour y arriver.",
     "summarySingle_other": "Votre prochain palier est h = {{next}}. Votre candidat le plus proche, \"{{title}}\", a besoin de {{count}} citations de plus pour y arriver.",
-    "summaryMultiple_one": "Atteindre h = {{next}} nécessite {{count}} article de plus franchissant ce seuil de citations — voir ci-dessous.",
-    "summaryMultiple_other": "Atteindre h = {{next}} nécessite {{count}} articles de plus franchissant ce seuil de citations — voir ci-dessous.",
+    "summaryMultiple_one": "Atteindre h = {{next}} nécessite {{count}} article de plus pour franchir ce seuil de citations. Voir ci-dessous.",
+    "summaryMultiple_other": "Atteindre h = {{next}} nécessite {{count}} articles de plus pour franchir ce seuil de citations. Voir ci-dessous.",
     "newWorkNeeded_one": "Même après que vos articles actuels rattrapent le seuil, {{count}} nouvelle publication supplémentaire serait encore nécessaire pour atteindre h = {{next}}.",
     "newWorkNeeded_other": "Même après que vos articles actuels rattrapent le seuil, {{count}} nouvelles publications supplémentaires seraient encore nécessaires pour atteindre h = {{next}}.",
     "colPaper": "Article",
@@ -348,7 +348,7 @@
     "citationsNeededValue_one": "+{{count}} citation",
     "citationsNeededValue_other": "+{{count}} citations",
     "untitled": "Sans titre",
-    "disclaimer": "Basé sur vos {{h}} articles suivis et leur nombre de citations actuel — recalculé automatiquement à mesure que les citations et les articles évoluent."
+    "disclaimer": "Basé sur vos {{h}} articles suivis et leur nombre actuel de citations. Se recalcule automatiquement à mesure que les citations et les articles évoluent."
   },
   "timeline": {
     "title": "Chronologie de votre carrière de recherche",
@@ -361,22 +361,22 @@
     "demoEmptyDesc": "Les données de démonstration n'ont pas d'historique d'instantanés à afficher. Recherchez et suivez un chercheur réel pour commencer à construire votre propre chronologie.",
     "demoEmptyCta": "Rechercher un chercheur",
     "sinceLastVisitTitle": "Depuis votre dernière visite",
-    "sinceLastVisitEmpty": "Ceci est votre premier instantané enregistré — revenez après votre prochaine actualisation pour voir ce qui a changé.",
+    "sinceLastVisitEmpty": "Voici votre premier instantané enregistré. Revenez après votre prochaine actualisation pour voir ce qui a changé.",
     "sinceLastVisitRange": "Comparaison {{from}} → {{to}}",
     "citations": "Citations",
     "papersGainedCitations_one": "{{count}} article a gagné des citations",
     "papersGainedCitations_other": "{{count}} articles ont gagné des citations",
     "chartTitle": "H-index dans le temps",
-    "chartRecordedLabel": "Enregistré par Research GPS — uniquement depuis votre premier instantané suivi, pas tout votre historique de carrière.",
+    "chartRecordedLabel": "Enregistré par Research GPS, uniquement depuis votre premier instantané suivi, pas tout votre historique de carrière.",
     "notEnoughHistoryTitle": "Pas encore assez d'historique enregistré",
     "notEnoughHistoryDesc": "Un seul instantané pour l'instant. Revenez après avoir actualisé ce chercheur dans les semaines/mois à venir pour voir une tendance enregistrée ici.",
     "milestonesTitle": "Jalons",
     "milestones": {
-      "firstSnapshot": "Premier instantané enregistré — H-index {{hIndex}}, {{citations}} citations",
+      "firstSnapshot": "Premier instantané enregistré : indice H {{hIndex}}, {{citations}} citations",
       "hIndexIncrease": "Le H-index est passé de {{previous}} à {{hIndex}}",
       "citationMilestone": "A dépassé {{threshold}} citations au total"
     },
-    "disclaimer": "L'historique \"enregistré\" commence à partir du premier suivi de ce chercheur ici — il ne reconstruit pas le H-index d'avant cette date. Pour une reconstruction des années antérieures à partir des données de citations par année, voir \"Charger le H-index historique réel\" sur le tableau de bord."
+    "disclaimer": "L'historique « enregistré » commence à partir du moment où ce chercheur a été suivi ici pour la première fois. Il ne reconstruit pas l'indice H avant cette date. Pour une reconstruction des années antérieures à partir des données de citations par année, consultez « Charger l'historique réel de l'indice H » dans le tableau de bord."
   },
   "verifyEmail": {
     "verifying": "Confirmation de votre e-mail...",
@@ -391,7 +391,7 @@
     "message": "Veuillez confirmer votre adresse e-mail pour activer votre compte.",
     "resend": "Renvoyer l'e-mail de confirmation",
     "sending": "Envoi en cours...",
-    "sent": "E-mail de confirmation envoyé — vérifiez votre boîte de réception.",
+    "sent": "E-mail de confirmation envoyé. Vérifiez votre boîte de réception.",
     "failed": "Impossible d'envoyer l'e-mail de confirmation. Réessayez plus tard."
   },
   "feedback": {
@@ -420,7 +420,7 @@
   },
   "howItWorks": {
     "title": "Comment fonctionne Research GPS",
-    "subtitle": "Une visite de 2 minutes de tout le site — sans vidéo nécessaire.",
+    "subtitle": "Une visite de 2 minutes de tout le site. Sans vidéo nécessaire.",
     "steps": {
       "search": {
         "title": "1. Trouvez-vous (ou essayez la démo)",
@@ -428,11 +428,11 @@
       },
       "dashboard": {
         "title": "2. Consultez votre véritable indice H",
-        "desc": "Votre tableau de bord affiche votre indice H en direct, le total des citations et chaque article suivi — synchronisé automatiquement, avec des corrections si un article ne vous appartient pas réellement."
+        "desc": "Votre tableau de bord affiche votre indice H en direct, le total des citations et chaque article suivi, synchronisé automatiquement, avec des corrections si un article ne vous appartient pas réellement."
       },
       "frontier": {
         "title": "3. Sachez exactement ce qui vient ensuite",
-        "desc": "La Frontière de l'indice H vous indique précisément quels articles ont besoin de plus de citations — et combien — pour faire monter votre indice H d'un point."
+        "desc": "La Frontière de l'indice H vous indique précisément quels articles ont besoin de plus de citations, et combien, pour faire monter votre indice H d'un point."
       },
       "actions": {
         "title": "4. Obtenez des recommandations prioritaires",
@@ -440,7 +440,7 @@
       },
       "predictor": {
         "title": "5. Projetez votre futur indice H",
-        "desc": "Le Prédicteur simule quand vous atteindrez un indice H cible, à l'aide d'un modèle réaliste de vieillissement des citations — ajustez vos hypothèses et voyez le chemin."
+        "desc": "Le Prédicteur simule quand vous atteindrez un indice H cible, à l'aide d'un modèle réaliste de vieillissement des citations. Ajustez vos hypothèses et voyez le chemin."
       },
       "timeline": {
         "title": "6. Suivez votre progression dans le temps",
@@ -452,9 +452,9 @@
       }
     },
     "assistantTitle": "Une question ? Demandez simplement.",
-    "assistantDesc": "Le bouton boussole en bas à gauche ouvre un assistant de chat basé sur vos données réelles — posez des questions sur votre indice H, que faire ensuite, ou comment tout cela fonctionne.",
+    "assistantDesc": "Le bouton boussole en bas à gauche ouvre un assistant de chat basé sur vos données réelles. Posez des questions sur votre indice H, que faire ensuite, ou comment tout cela fonctionne.",
     "feedbackTitle": "Quelque chose de confus ou manquant ?",
-    "feedbackDesc": "Le bouton de message en bas à droite envoie vos commentaires directement — nous les lisons tous.",
-    "ctaSearch": "Commencer — recherchez votre profil"
+    "feedbackDesc": "Le bouton de message en bas à droite envoie vos commentaires directement. Nous les lisons tous.",
+    "ctaSearch": "Commencer : recherchez votre profil"
   }
 }

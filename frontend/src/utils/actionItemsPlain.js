@@ -48,7 +48,7 @@ export function generateActionItemsPlain({ papers }) {
     type: 'venue_strategy',
     priority: 'medium',
     title: 'Target higher-impact venues',
-    description: 'Papers in top-tier venues accumulate citations faster — prioritize your strongest work-in-progress for the highest-impact venue in your subfield.',
+    description: 'Papers in top-tier venues accumulate citations faster. Prioritize your strongest work-in-progress for the highest-impact venue in your subfield.',
   });
 
   const recentYears = papers.map((p) => p.year).filter(Boolean);

@@ -75,7 +75,7 @@ async function checkScopusProfile(url, claimed) {
     });
 
     if (!res.ok) {
-      result.note = `Scopus responded with status ${res.status} — couldn't confirm automatically.`;
+      result.note = `Scopus responded with status ${res.status}. Couldn't confirm automatically.`;
       return result;
     }
 
@@ -104,7 +104,7 @@ async function checkScopusProfile(url, claimed) {
     }
 
     if (/captcha|access denied|are you a robot|unusual traffic/i.test(text)) {
-      result.note = "Scopus challenged the request (likely a bot check) — couldn't confirm automatically.";
+      result.note = "Scopus challenged the request (likely a bot check). Couldn't confirm automatically.";
       return result;
     }
 
@@ -121,14 +121,14 @@ async function checkScopusProfile(url, claimed) {
 
     const foundAnything = Object.values(result.extracted).some((v) => v != null);
     result.note = foundAnything
-      ? 'Read what we could from the live Scopus page — see the comparison above.'
-      : "Reached the page but couldn't recognize its layout — often means the numbers are loaded by JavaScript after the page loads, which this check can't run. Couldn't confirm automatically.";
+      ? 'Read what we could from the live Scopus page. See the comparison above.'
+      : "Reached the page but couldn't recognize its layout. This often means the numbers are loaded by JavaScript after the page loads, which this check can't run. Couldn't confirm automatically.";
 
     return result;
   } catch (err) {
     result.note =
       err.name === 'AbortError'
-        ? "Scopus didn't respond in time — couldn't confirm automatically."
+        ? "Scopus didn't respond in time. Couldn't confirm automatically."
         : "Couldn't reach Scopus to check automatically.";
     return result;
   } finally {

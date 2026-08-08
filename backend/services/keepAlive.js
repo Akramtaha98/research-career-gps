@@ -93,7 +93,7 @@ async function selfPing() {
  */
 async function touchDatabase() {
   if (isDemoMode || !pool) {
-    return { ok: false, skipped: true, reason: 'demo mode — no database to keep alive' };
+    return { ok: false, skipped: true, reason: 'demo mode, no database to keep alive' };
   }
   try {
     await pool.query('SELECT 1');

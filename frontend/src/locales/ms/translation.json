@@ -23,7 +23,7 @@
   "orcidLogin": {
     "cta": "Teruskan dengan ORCID",
     "notConfigured": "Teruskan dengan ORCID (belum dikonfigurasi)",
-    "notConfiguredTitle": "Tetapkan VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI untuk mengaktifkan — lihat docs/SETUP.md",
+    "notConfiguredTitle": "Tetapkan VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI untuk mengaktifkannya. Lihat docs/SETUP.md",
     "signingIn": "Sedang log masuk...",
     "lookingUp": "Sedang mencari penerbitan anda...",
     "failed": "Log masuk ORCID gagal",
@@ -44,7 +44,7 @@
     "signUp": "Daftar",
     "demoPrompt": "Sekadar meninjau?",
     "demoLink": "Lihat papan pemuka demo",
-    "demoSuffix": "— tiada log masuk diperlukan.",
+    "demoSuffix": ", tiada log masuk diperlukan.",
     "errorFallback": "Log masuk gagal",
     "forgotPassword": "Lupa kata laluan?"
   },
@@ -87,22 +87,22 @@
   },
   "socialLogin": {
     "notConfigured": "Teruskan dengan Google (belum dikonfigurasi)",
-    "notConfiguredTitle": "Tetapkan VITE_GOOGLE_CLIENT_ID / GOOGLE_CLIENT_ID untuk mengaktifkan — lihat docs/SETUP.md",
+    "notConfiguredTitle": "Tetapkan VITE_GOOGLE_CLIENT_ID / GOOGLE_CLIENT_ID untuk mengaktifkannya. Lihat docs/SETUP.md",
     "errorFallback": "Log masuk Google gagal"
   },
   "search": {
     "title": "Cari penyelidik",
-    "subtitle": "Cari mengikut nama, ORCID atau ID untuk mendapatkan data petikan sebenar — Semantic Scholar sebagai sumber utama, OpenAlex sebagai sandaran.",
+    "subtitle": "Cari mengikut nama, ORCID, atau ID untuk mendapatkan data petikan sebenar, dengan Semantic Scholar sebagai sumber utama dan OpenAlex sebagai sandaran.",
     "label": "Nama penyelidik, ORCID atau ID Semantic Scholar",
     "placeholder": "cth. Oren Etzioni atau 0000-0002-9082-0875",
-    "hint": "Carian mengikut nama boleh sepadan dengan beberapa orang — tampal ORCID iD untuk padanan tepat, atau ID Pengarang Semantic Scholar berangka secara terus.",
+    "hint": "Carian nama boleh sepadan dengan beberapa orang. Tampal iD ORCID untuk padanan tepat, atau ID Pengarang Semantic Scholar berangka secara terus.",
     "loginRequired": "Anda perlu log masuk untuk menyimpan carian penyelidik sebenar.",
     "searchBtn": "Cari",
     "searching": "Sedang mencari...",
     "fetching": "Sedang mengambil data...",
     "demoBtn": "Guna data demo",
-    "matchesFound_one": "{{count}} padanan — pilih yang betul",
-    "matchesFound_other": "{{count}} padanan — pilih yang betul",
+    "matchesFound_one": "{{count}} padanan. Pilih yang betul.",
+    "matchesFound_other": "{{count}} padanan. Pilih yang betul.",
     "noMatches": "Tiada padanan ditemui",
     "akaLabel": "Turut diterbitkan sebagai {{name}}",
     "papers": "kertas kerja",
@@ -151,7 +151,7 @@
     "addDoiPlaceholder": "cth. 10.1038/nature14539 atau https://doi.org/10.1038/nature14539",
     "addDoiSubmit": "Tambah",
     "addDoiSubmitting": "Mengesahkan dengan Crossref...",
-    "addDoiHint": "Disahkan dengan Crossref (agensi pendaftaran DOI) sebelum ditambah — untuk kertas kerja yang belum diindeks oleh OpenAlex/Semantic Scholar.",
+    "addDoiHint": "Disahkan berdasarkan Crossref (agensi pendaftaran DOI) sebelum ditambah, untuk kertas kerja yang belum diindeks oleh OpenAlex/Semantic Scholar.",
     "addDoiSuccess": "\"{{title}}\" telah ditambah.",
     "addDoiFailed": "Tidak dapat menambah kertas kerja itu. Semak DOI dan cuba lagi.",
     "addDoiCancel": "Batal",
@@ -168,17 +168,17 @@
   "predictor": {
     "title": "Peramal Indeks-H",
     "subtitle": "Ramalkan bila anda akan mencapai indeks-H sasaran berdasarkan pertumbuhan petikan dan kadar penerbitan.",
-    "noPapersWarning": "Penyelidik ini belum mempunyai kertas kerja dijejaki, jadi unjuran ini semata-mata berdasarkan kertas kerja baharu yang anda rancang untuk diterbitkan — ia tidak akan mencerminkan sebarang hasil kerja sedia ada. Cari penyelidik yang mempunyai kertas kerja, atau guna data demo, untuk unjuran yang lebih realistik.",
+    "noPapersWarning": "Penyelidik ini belum mempunyai kertas kerja yang dijejaki, jadi unjuran ini berdasarkan semata-mata kertas kerja baharu yang anda rancang untuk diterbitkan. Ia tidak akan mencerminkan sebarang hasil kerja sedia ada. Cari penyelidik yang mempunyai kertas kerja, atau gunakan data demo, untuk unjuran yang lebih realistik.",
     "targetH": "Indeks-H sasaran (semasa: {{current}})",
     "targetTooLow": "Sasaran perlu lebih tinggi daripada indeks-H semasa anda ({{current}}).",
     "monthlyRate": "Purata petikan baharu / kertas kerja / bulan",
     "papersPerYear": "Kertas kerja baharu / tahun",
     "targetVenue": "Penerbitan sasaran untuk kertas kerja akan datang",
     "optional": "(pilihan)",
-    "venueTooltip": "Menetapkan pengganda tentang kelajuan kertas kerja BAHARU yang anda terbitkan pada masa hadapan memperoleh petikan — Penerbitan teratas (x3) dan Penerbitan kukuh (x2) mempercepatkan unjuran, Penerbitan baharu muncul (x0.5) memperlahankannya. Ini tidak mengubah petikan kertas kerja yang telah anda terbitkan.",
+    "venueTooltip": "Menetapkan pengganda pada kelajuan kertas kerja BAHARU yang anda terbitkan pada masa hadapan memperoleh petikan. Penerbitan terkemuka (3x) dan Penerbitan kukuh (2x) mempercepatkan unjuran, Penerbitan baharu muncul (0.5x) memperlahankannya. Ia tidak mengubah petikan pada kertas kerja yang telah anda terbitkan.",
     "venuePlaceholder": "cth. NeurIPS, IEEE Transactions...",
-    "venueSuggest": "\"{{venue}}\" kelihatan seperti penerbitan tahap {{tier}} — guna?",
-    "venueHint": "Anggaran kasar, bukan pangkalan data faktor impak sebenar — hanya mempengaruhi kelajuan kertas kerja baharu yang anda terbitkan pada masa hadapan mengumpul petikan.",
+    "venueSuggest": "\"{{venue}}\" kelihatan seperti penerbitan tahap {{tier}}. Guna pakai?",
+    "venueHint": "Heuristik anggaran, bukan pangkalan data faktor impak sebenar. Ia hanya menjejaskan kelajuan kertas kerja baharu yang anda terbitkan pada masa hadapan mengumpul petikan.",
     "save": "Simpan ramalan ini",
     "saving": "Sedang menyimpan...",
     "saveLoginRequired": "Log masuk dan cari penyelidik sebenar untuk menyimpan ramalan.",
@@ -195,17 +195,17 @@
     "digestOnMessage": "Anda telah melanggan kemas kini kemajuan mingguan.",
     "digestOffMessage": "Anda telah berhenti melanggan kemas kini kemajuan mingguan.",
     "digestFailed": "Gagal mengemas kini pilihan e-mel anda. Sila cuba lagi.",
-    "realCurveHint": "Digunakan bagi setiap kertas menggunakan lengkung petikan yang realistik berdasarkan tahun penerbitannya — kertas baharu bermula perlahan, memuncak sekitar tahun ke-2 hingga ke-4, kemudian beransur menurun."
+    "realCurveHint": "Digunakan bagi setiap kertas kerja menggunakan lengkung petikan realistik berdasarkan tahun penerbitannya: kertas kerja baharu bermula perlahan, mencapai kemuncak sekitar tahun 2-4, kemudian menurun."
   },
   "actions": {
     "title": "Item Tindakan",
     "subtitle": "Cadangan yang dijana secara automatik untuk {{name}} berdasarkan data petikan semasa.",
     "emptyTitle": "Belum ada kertas kerja untuk dianalisis",
-    "emptyDesc": "Sebaik sahaja penyelidik ini mempunyai kertas kerja dijejaki dengan petikan, anda akan melihat cadangan mengikut keutamaan di sini — kertas kerja hampir mencapai ambang, kadar penerbitan, dan strategi penerbitan.",
+    "emptyDesc": "Sebaik sahaja penyelidik ini mempunyai kertas kerja yang dijejaki dengan petikan, anda akan melihat cadangan mengikut keutamaan di sini: kertas kerja hampir mencapai tahap, kadar penerbitan, dan strategi penerbitan.",
     "collabTitle": "Penasihat Kolaborasi",
-    "collabSubtitle": "Rakan pengarang bersama anda yang paling kerap, disusun mengikut indeks-h mereka sendiri — sejarah kolaborasi sebenar, bukan tekaan.",
+    "collabSubtitle": "Rakan penulis bersama anda yang paling kerap, disusun mengikut indeks-H mereka sendiri. Sejarah kerjasama sebenar, bukan tekaan.",
     "priorityTitle": "Kertas kerja keutamaan untuk menaikkan indeks-H anda hari ini",
-    "prioritySubtitle": "Indeks-H anda kini {{h}}. Tumpukan usaha anda di sini dahulu — kertas kerja ini paling hampir untuk menaikkannya.",
+    "prioritySubtitle": "Indeks-H anda kini {{h}}. Tumpukan usaha anda di sini dahulu: kertas kerja ini paling hampir untuk menaikkannya.",
     "priorityRowHint_one": "{{citations}} lagi petikan menaikkan indeks-H anda kepada {{next}}",
     "priorityRowHint_other": "{{citations}} lagi petikan menaikkan indeks-H anda kepada {{next}}"
   },
@@ -268,7 +268,7 @@
   },
   "verify": {
     "title": "Sahkan maklumat akademik",
-    "subtitle": "Masukkan ORCID iD dan apa sahaja yang anda dakwa tentang diri anda (indeks-H, bilangan kertas kerja, petikan...) — ini menyemak dengan Semantic Scholar dahulu, dan hanya beralih ke OpenAlex jika Semantic Scholar tiada rekod, serta menunjukkan dengan tepat di mana nombor itu sepadan atau tidak.",
+    "subtitle": "Masukkan iD ORCID dan apa sahaja yang anda dakwa tentang diri anda (indeks-H, bilangan kertas kerja, petikan...). Ini menyemaknya terhadap Semantic Scholar dahulu, beralih kepada OpenAlex hanya jika Semantic Scholar tiada rekod, dan menunjukkan kepada anda dengan tepat di mana nombor itu sepadan atau tidak.",
     "orcidLabel": "ORCID iD",
     "nameLabel": "Nama",
     "affiliationLabel": "Gabungan/Institusi",
@@ -309,10 +309,10 @@
     "historyEmpty": "Belum ada pengesahan lepas untuk ORCID ini.",
     "historyFailed": "Tidak dapat memuatkan sejarah pengesahan.",
     "ownerBadge": "Disahkan oleh pemilik",
-    "ownerNote": "Disahkan oleh pemilik ORCID pada {{date}} — dipaparkan menggantikan data mentah Semantic Scholar/OpenAlex.",
-    "ownerSubmitSuccess": "Disimpan sebagai rekod disahkan-ORCID anda — kini dipaparkan sebagai nilai yang disahkan untuk sesiapa yang mencari ORCID ini.",
-    "ownerCorrectionHint": "Nombor ini datang daripada Semantic Scholar/OpenAlex dan mungkin sudah lapuk. Jika ini ORCID anda, log masuk dengan \"Teruskan dengan ORCID\" (sepadan dengan iD ini) dan hantar nombor sebenar anda di atas — setelah disahkan, ia akan menggantikan nombor ini sebagai rekod rasmi anda.",
-    "comparisonSourceNote": "Membandingkan apa yang anda dakwa dengan data mentah Semantic Scholar/OpenAlex — tanpa mengira sebarang rekod yang disahkan oleh pemilik ORCID di atas."
+    "ownerNote": "Disahkan oleh pemilik ORCID pada {{date}}. Dipaparkan menggantikan snapshot mentah Semantic Scholar/OpenAlex.",
+    "ownerSubmitSuccess": "Disimpan sebagai rekod disahkan-ORCID anda. Ini kini dipaparkan sebagai nilai yang disahkan bagi sesiapa sahaja yang mencari ORCID ini.",
+    "ownerCorrectionHint": "Nombor ini berasal daripada Semantic Scholar/OpenAlex dan mungkin lapuk. Jika ini ORCID anda, log masuk dengan \"Teruskan dengan ORCID\" (sepadan dengan iD ini) dan hantar nombor sebenar anda di atas. Setelah disahkan, ia akan menggantikan ini sebagai rekod rasmi anda.",
+    "comparisonSourceNote": "Membandingkan apa yang anda dakwa dengan snapshot mentah Semantic Scholar/OpenAlex, tanpa mengira sebarang rekod disahkan-pemilik-ORCID di atas."
   },
   "theme": {
     "switchToLight": "Tukar ke mod cerah",
@@ -329,17 +329,17 @@
     "messagePlaceholder": "Apa yang anda fikirkan?",
     "submit": "Hantar mesej",
     "submitting": "Menghantar...",
-    "sent": "Terima kasih — mesej anda telah dihantar.",
+    "sent": "Terima kasih. Mesej anda telah dihantar.",
     "submitFailed": "Gagal menghantar. Cuba lagi."
   },
   "frontier": {
     "title": "Sempadan Indeks-H",
-    "subtitle": "Lihat dengan tepat kertas kerja mana yang paling hampir menaikkan indeks-H anda — bukan sekadar nombor semasa.",
+    "subtitle": "Lihat dengan tepat kertas kerja mana yang paling hampir untuk menaikkan indeks-H anda, bukan sekadar nombor semasa.",
     "nextMilestone": "Pencapaian seterusnya: h = {{next}}",
     "summarySingle_one": "Pencapaian seterusnya anda ialah h = {{next}}. Calon paling hampir anda, \"{{title}}\", hanya perlukan {{count}} lagi petikan untuk mencapainya.",
     "summarySingle_other": "Pencapaian seterusnya anda ialah h = {{next}}. Calon paling hampir anda, \"{{title}}\", memerlukan {{count}} lagi petikan untuk mencapainya.",
-    "summaryMultiple_one": "Untuk mencapai h = {{next}}, {{count}} lagi kertas kerja perlu melepasi ambang petikan itu — lihat di bawah.",
-    "summaryMultiple_other": "Untuk mencapai h = {{next}}, {{count}} lagi kertas kerja perlu melepasi ambang petikan itu — lihat di bawah.",
+    "summaryMultiple_one": "Mencapai h = {{next}} memerlukan {{count}} lagi kertas kerja untuk melepasi tahap petikan itu. Lihat di bawah.",
+    "summaryMultiple_other": "Mencapai h = {{next}} memerlukan {{count}} lagi kertas kerja untuk melepasi tahap petikan itu. Lihat di bawah.",
     "newWorkNeeded_one": "Walaupun selepas kertas kerja sedia ada anda mencapai ambang itu, {{count}} lagi penerbitan baharu masih diperlukan untuk mencapai h = {{next}}.",
     "newWorkNeeded_other": "Walaupun selepas kertas kerja sedia ada anda mencapai ambang itu, {{count}} lagi penerbitan baharu masih diperlukan untuk mencapai h = {{next}}.",
     "colPaper": "Kertas kerja",
@@ -348,7 +348,7 @@
     "citationsNeededValue_one": "+{{count}} petikan",
     "citationsNeededValue_other": "+{{count}} petikan",
     "untitled": "Tiada tajuk",
-    "disclaimer": "Berdasarkan {{h}} kertas kerja yang dijejaki dan bilangan petikan semasa — dikira semula secara automatik apabila petikan dan kertas kerja dikemas kini."
+    "disclaimer": "Berdasarkan {{h}} kertas kerja anda yang dijejaki dan bilangan petikan semasa mereka. Dikira semula secara automatik apabila petikan dan kertas kerja dikemas kini."
   },
   "timeline": {
     "title": "Garis Masa Kerjaya Penyelidikan Anda",
@@ -361,22 +361,22 @@
     "demoEmptyDesc": "Data demo tiada sejarah tangkapan untuk dipaparkan. Cari dan jejaki penyelidik sebenar untuk mula membina garis masa anda sendiri.",
     "demoEmptyCta": "Cari penyelidik",
     "sinceLastVisitTitle": "Sejak lawatan terakhir anda",
-    "sinceLastVisitEmpty": "Ini adalah tangkapan pertama anda yang direkodkan — kembali selepas kemas kini seterusnya untuk melihat apa yang berubah.",
+    "sinceLastVisitEmpty": "Ini snapshot pertama anda yang direkodkan. Kembali selepas kemas kini seterusnya anda untuk melihat apa yang telah berubah.",
     "sinceLastVisitRange": "Membandingkan {{from}} → {{to}}",
     "citations": "Petikan",
     "papersGainedCitations_one": "{{count}} kertas kerja mendapat petikan",
     "papersGainedCitations_other": "{{count}} kertas kerja mendapat petikan",
     "chartTitle": "Indeks-H mengikut masa",
-    "chartRecordedLabel": "Direkodkan oleh Research GPS — hanya dari tangkapan pertama anda yang dijejaki, bukan keseluruhan sejarah kerjaya anda.",
+    "chartRecordedLabel": "Direkodkan oleh Research GPS, hanya dari snapshot pertama anda yang dijejaki dan seterusnya, bukan keseluruhan sejarah kerjaya anda.",
     "notEnoughHistoryTitle": "Sejarah direkodkan belum mencukupi",
     "notEnoughHistoryDesc": "Hanya satu tangkapan setakat ini. Kembali selepas mengemas kini penyelidik ini dalam beberapa minggu/bulan akan datang untuk melihat trend direkodkan di sini.",
     "milestonesTitle": "Pencapaian",
     "milestones": {
-      "firstSnapshot": "Tangkapan pertama direkodkan — Indeks-H {{hIndex}}, {{citations}} petikan",
+      "firstSnapshot": "Snapshot pertama direkodkan: Indeks-H {{hIndex}}, {{citations}} petikan",
       "hIndexIncrease": "Indeks-H meningkat daripada {{previous}} kepada {{hIndex}}",
       "citationMilestone": "Melepasi jumlah {{threshold}} petikan"
     },
-    "disclaimer": "Sejarah \"direkodkan\" bermula dari bila-bila masa penyelidik ini mula-mula dijejaki di sini — ia tidak membina semula Indeks-H sebelum tarikh itu. Untuk pembinaan semula tahun-tahun lebih awal daripada data petikan mengikut tahun, lihat \"Muatkan Indeks-H sejarah sebenar\" pada Papan Pemuka."
+    "disclaimer": "Sejarah \"direkodkan\" bermula dari bila-bila masa penyelidik ini mula-mula dijejaki di sini. Ia tidak membina semula indeks-H sebelum tarikh itu. Untuk pembinaan semula tahun-tahun lebih awal daripada data petikan mengikut tahun, lihat \"Muatkan sejarah indeks-H sebenar\" pada Papan Pemuka."
   },
   "verifyEmail": {
     "verifying": "Mengesahkan e-mel anda...",
@@ -391,7 +391,7 @@
     "message": "Sila sahkan alamat e-mel anda untuk mengaktifkan akaun anda.",
     "resend": "Hantar semula e-mel pengesahan",
     "sending": "Menghantar...",
-    "sent": "E-mel pengesahan telah dihantar — semak peti masuk anda.",
+    "sent": "E-mel pengesahan dihantar. Semak peti masuk anda.",
     "failed": "Gagal menghantar e-mel pengesahan. Cuba lagi kemudian."
   },
   "feedback": {
@@ -420,7 +420,7 @@
   },
   "howItWorks": {
     "title": "Bagaimana Research GPS berfungsi",
-    "subtitle": "Lawatan 2 minit merentasi seluruh laman — tanpa perlu video.",
+    "subtitle": "Lawatan 2 minit merentasi seluruh laman. Tanpa perlu video.",
     "steps": {
       "search": {
         "title": "1. Cari diri anda (atau cuba demo)",
@@ -428,11 +428,11 @@
       },
       "dashboard": {
         "title": "2. Lihat indeks-H sebenar anda",
-        "desc": "Papan Pemuka anda memaparkan indeks-H terkini, jumlah petikan, dan setiap kertas kerja yang dijejaki — disegerakkan secara automatik, dengan pembetulan jika sesuatu kertas kerja bukan milik anda."
+        "desc": "Papan Pemuka anda memaparkan indeks-H terkini, jumlah petikan, dan setiap kertas kerja yang dijejaki, disegerakkan secara automatik, dengan pembetulan jika sesuatu kertas kerja bukan milik anda."
       },
       "frontier": {
         "title": "3. Ketahui dengan tepat apa yang seterusnya",
-        "desc": "Sempadan Indeks-H memberitahu anda dengan tepat kertas kerja mana yang memerlukan lebih banyak petikan — dan berapa banyak — untuk menaikkan indeks-H anda sebanyak satu."
+        "desc": "Sempadan Indeks-H memberitahu anda dengan tepat kertas kerja mana yang memerlukan lebih banyak petikan, dan berapa banyak, untuk menaikkan indeks-H anda sebanyak satu."
       },
       "actions": {
         "title": "4. Dapatkan cadangan mengikut keutamaan",
@@ -440,7 +440,7 @@
       },
       "predictor": {
         "title": "5. Unjurkan indeks-H masa depan anda",
-        "desc": "Peramal mensimulasikan bila anda akan mencapai sasaran indeks-H, menggunakan model penuaan petikan yang realistik — laraskan andaian anda dan lihat lintasannya."
+        "desc": "Peramal mensimulasikan bila anda akan mencapai sasaran indeks-H, menggunakan model penuaan petikan yang realistik. Laraskan andaian anda dan lihat lintasannya."
       },
       "timeline": {
         "title": "6. Jejaki kemajuan anda dari semasa ke semasa",
@@ -452,9 +452,9 @@
       }
     },
     "assistantTitle": "Ada soalan? Tanya sahaja.",
-    "assistantDesc": "Butang kompas di sudut kiri bawah membuka pembantu sembang yang berasaskan data sebenar anda — tanya tentang indeks-H anda, apa perlu dilakukan seterusnya, atau bagaimana semua ini berfungsi.",
+    "assistantDesc": "Butang kompas di sudut kiri bawah membuka pembantu sembang yang berasaskan data sebenar anda. Tanya tentang indeks-H anda, apa perlu dilakukan seterusnya, atau bagaimana semua ini berfungsi.",
     "feedbackTitle": "Ada sesuatu yang mengelirukan atau tertinggal?",
-    "feedbackDesc": "Butang mesej di sudut kanan bawah menghantar maklum balas terus kepada kami — kami membaca setiap satu.",
-    "ctaSearch": "Mula — cari profil anda"
+    "feedbackDesc": "Butang mesej di sudut kanan bawah menghantar maklum balas terus kepada kami. Kami membaca setiap satu.",
+    "ctaSearch": "Mula: cari profil anda"
   }
 }

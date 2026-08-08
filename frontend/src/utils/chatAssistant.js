@@ -77,7 +77,7 @@ function firstName(name) {
 function explainHIndex() {
   return {
     text:
-      "Your H-index is H if you have H papers that each have at least H citations. It rewards a body of consistently-cited work over one lucky hit — one paper with 500 citations doesn't help your H-index nearly as much as ten papers with 20+ citations each.",
+      "Your H-index is H if you have H papers that each have at least H citations. It rewards a body of consistently-cited work over one lucky hit: one paper with 500 citations doesn't help your H-index nearly as much as ten papers with 20+ citations each.",
     suggestions: ["What's my H-index?", 'What should I do to grow it?'],
   };
 }
@@ -99,17 +99,17 @@ function frontierAnswer(ctx) {
   const { nextThreshold, papersNeeded, papersNeededFromNewWork, candidates } = ctx.frontier;
   if (papersNeeded === 0) {
     return {
-      text: `Good news — you're already positioned right at H-index ${ctx.hIndex}. Add virtually any citation to a qualifying paper and you'll tip over to ${nextThreshold}.`,
+      text: `Good news: you're already positioned right at H-index ${ctx.hIndex}. Add virtually any citation to a qualifying paper and you'll tip over to ${nextThreshold}.`,
       suggestions: ['What should I do to grow it faster?'],
     };
   }
   let text = `To go from ${ctx.hIndex} to ${nextThreshold}, ${papersNeeded} more paper${papersNeeded === 1 ? '' : 's'} need${papersNeeded === 1 ? 's' : ''} to reach ${nextThreshold}+ citations.`;
   if (candidates.length > 0) {
     const closest = candidates[0];
-    text += ` Your closest candidate is "${closest.title}" — just ${closest.citationsNeeded} more citation${closest.citationsNeeded === 1 ? '' : 's'} away.`;
+    text += ` Your closest candidate is "${closest.title}", just ${closest.citationsNeeded} more citation${closest.citationsNeeded === 1 ? '' : 's'} away.`;
   }
   if (papersNeededFromNewWork > 0) {
-    text += ` ${papersNeededFromNewWork} of those will have to come from new papers you haven't published yet — your existing papers alone can't cover the gap.`;
+    text += ` ${papersNeededFromNewWork} of those will have to come from new papers you haven't published yet. Your existing papers alone can't cover the gap.`;
   }
   return { text, suggestions: ['What should I do to grow it faster?', 'When will I hit my next milestone?'] };
 }
@@ -119,11 +119,11 @@ function actionAdvice(ctx) {
   const top = ctx.actionItems.filter((i) => i.priority !== 'info').slice(0, 3);
   if (top.length === 0) {
     return {
-      text: "You're in solid shape — I don't see any urgent gaps in your current paper set. Keep publishing consistently and citations will keep compounding.",
+      text: "You're in solid shape. I don't see any urgent gaps in your current paper set. Keep publishing consistently and citations will keep compounding.",
       suggestions: ['What do I need to hit my next H-index?'],
     };
   }
-  const lines = top.map((item, i) => `${i + 1}. ${item.title} — ${item.description}`);
+  const lines = top.map((item, i) => `${i + 1}. ${item.title}: ${item.description}`);
   return {
     text: `Here's what would move the needle most, in order:\n\n${lines.join('\n\n')}`,
     suggestions: ['What do I need to hit my next H-index?', 'When will I hit my next milestone?'],
@@ -154,7 +154,7 @@ function predictionAnswer(ctx, message) {
   });
   if (!projection.reached) {
     return {
-      text: `Using typical assumptions (0.5 citations/paper/month, 2 new papers/year), I don't see you reaching H-index ${targetH} within 20 years — you'd likely need a faster publication pace or higher-impact venues. Try the Predictor page to tune the assumptions to your real situation.`,
+      text: `Using typical assumptions (0.5 citations/paper/month, 2 new papers/year), I don't see you reaching H-index ${targetH} within 20 years. You'd likely need a faster publication pace or higher-impact venues. Try the Predictor page to tune the assumptions to your real situation.`,
       suggestions: ['What should I do to grow it faster?'],
     };
   }
@@ -168,7 +168,7 @@ function predictionAnswer(ctx, message) {
 function addPaperAnswer() {
   return {
     text:
-      "If a paper of yours is missing, open Dashboard → \"Add paper by DOI\" and paste its DOI — I'll verify it against Crossref before adding it, so it can't be faked. If a paper that ISN'T yours got mixed in (common with shared names), use the \"not mine\" / \"duplicate\" controls next to it in the papers table.",
+      "If a paper of yours is missing, open Dashboard → \"Add paper by DOI\" and paste its DOI. I'll verify it against Crossref before adding it, so it can't be faked. If a paper that ISN'T yours got mixed in (common with shared names), use the \"not mine\" / \"duplicate\" controls next to it in the papers table.",
     suggestions: ["What's my H-index?", 'How do I get started?'],
   };
 }
@@ -176,7 +176,7 @@ function addPaperAnswer() {
 function collaboratorsAnswer() {
   return {
     text:
-      "Collaboration suggestions (ranked by your most frequent, highest-impact co-authors) are a Pro feature — check the Actions page. It's grounded in your real Semantic Scholar co-authorship graph, not guesses.",
+      "Collaboration suggestions (ranked by your most frequent, highest-impact co-authors) are a Pro feature. Check the Actions page. It's grounded in your real Semantic Scholar co-authorship graph, not guesses.",
     suggestions: ['What should I do to grow it faster?'],
   };
 }
@@ -184,7 +184,7 @@ function collaboratorsAnswer() {
 function howItWorksAnswer() {
   return {
     text:
-      "Quick tour: Search finds you by name → Dashboard shows your live H-index, citations, and paper list → the H-index Frontier tells you exactly what's needed for your next point → Actions gives prioritized recommendations → Predictor projects when you'll hit a target H-index. There's also a full step-by-step guide — look for \"How it works\" in the navigation.",
+      "Quick tour: Search finds you by name → Dashboard shows your live H-index, citations, and paper list → the H-index Frontier tells you exactly what's needed for your next point → Actions gives prioritized recommendations → Predictor projects when you'll hit a target H-index. There's also a full step-by-step guide: look for \"How it works\" in the navigation.",
     suggestions: ["What's my H-index?", 'What should I do to grow it faster?'],
   };
 }
@@ -195,7 +195,7 @@ function thanksAnswer() {
 
 function needResearcher() {
   return {
-    text: "I don't have a researcher loaded yet — search for yourself (or try the demo) from the Search page, then come back and I can talk through your actual numbers.",
+    text: "I don't have a researcher loaded yet. Search for yourself (or try the demo) from the Search page, then come back and I can talk through your actual numbers.",
     suggestions: NO_RESEARCHER_SUGGESTIONS,
   };
 }
@@ -203,7 +203,7 @@ function needResearcher() {
 function fallback(ctx) {
   return {
     text:
-      "I'm not totally sure I followed that — I'm built to answer questions about your H-index, what's holding it back, and how to grow it faster, using your real tracked data (not general chit-chat). Here's what I can help with:",
+      "I'm not totally sure I followed that. I'm built to answer questions about your H-index, what's holding it back, and how to grow it faster, using your real tracked data (not general chit-chat). Here's what I can help with:",
     suggestions: ctx.hasResearcher ? GREETING_SUGGESTIONS : NO_RESEARCHER_SUGGESTIONS,
   };
 }

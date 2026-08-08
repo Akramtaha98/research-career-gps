@@ -23,7 +23,7 @@
   "orcidLogin": {
     "cta": "Weiter mit ORCID",
     "notConfigured": "Weiter mit ORCID (nicht konfiguriert)",
-    "notConfiguredTitle": "VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI setzen, um dies zu aktivieren — siehe docs/SETUP.md",
+    "notConfiguredTitle": "Setze VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI, um es zu aktivieren. Siehe docs/SETUP.md",
     "signingIn": "Anmeldung läuft...",
     "lookingUp": "Deine Publikationen werden gesucht...",
     "failed": "ORCID-Anmeldung fehlgeschlagen",
@@ -44,7 +44,7 @@
     "signUp": "Registrieren",
     "demoPrompt": "Nur am Erkunden?",
     "demoLink": "Demo-Dashboard ansehen",
-    "demoSuffix": "— keine Anmeldung nötig.",
+    "demoSuffix": ", keine Anmeldung nötig.",
     "errorFallback": "Anmeldung fehlgeschlagen",
     "forgotPassword": "Passwort vergessen?"
   },
@@ -87,22 +87,22 @@
   },
   "socialLogin": {
     "notConfigured": "Mit Google fortfahren (nicht konfiguriert)",
-    "notConfiguredTitle": "Setze VITE_GOOGLE_CLIENT_ID / GOOGLE_CLIENT_ID zur Aktivierung — siehe docs/SETUP.md",
+    "notConfiguredTitle": "Setze VITE_GOOGLE_CLIENT_ID / GOOGLE_CLIENT_ID, um es zu aktivieren. Siehe docs/SETUP.md",
     "errorFallback": "Google-Anmeldung fehlgeschlagen"
   },
   "search": {
     "title": "Forscher finden",
-    "subtitle": "Suche nach Namen, ORCID oder ID, um echte Zitationsdaten abzurufen — Semantic Scholar als primäre Quelle, OpenAlex als Fallback.",
+    "subtitle": "Suche nach Name, ORCID oder ID, um echte Zitationsdaten abzurufen, mit Semantic Scholar als primärer Quelle und OpenAlex als Rückfalloption.",
     "label": "Name des Forschers, ORCID oder Semantic-Scholar-ID",
     "placeholder": "z. B. Oren Etzioni oder 0000-0002-9082-0875",
-    "hint": "Eine Namenssuche kann mehrere Personen treffen — füge eine ORCID iD für eine exakte Übereinstimmung ein, oder direkt eine numerische Semantic-Scholar-Autoren-ID.",
+    "hint": "Eine Namenssuche kann mehreren Personen entsprechen. Füge eine ORCID-iD für eine exakte Übereinstimmung ein, oder direkt eine numerische Semantic-Scholar-Autoren-ID.",
     "loginRequired": "Du musst dich anmelden, um die Suche nach einem echten Forscher zu speichern.",
     "searchBtn": "Suchen",
     "searching": "Suche läuft...",
     "fetching": "Daten werden abgerufen...",
     "demoBtn": "Demodaten verwenden",
-    "matchesFound_one": "{{count}} Treffer — wähle den richtigen aus",
-    "matchesFound_other": "{{count}} Treffer — wähle den richtigen aus",
+    "matchesFound_one": "{{count}} Treffer. Wähle den richtigen aus.",
+    "matchesFound_other": "{{count}} Treffer. Wähle den richtigen aus.",
     "noMatches": "Keine Treffer gefunden",
     "akaLabel": "Auch veröffentlicht als {{name}}",
     "papers": "Publikationen",
@@ -151,7 +151,7 @@
     "addDoiPlaceholder": "z. B. 10.1038/nature14539 oder https://doi.org/10.1038/nature14539",
     "addDoiSubmit": "Hinzufügen",
     "addDoiSubmitting": "Wird mit Crossref überprüft...",
-    "addDoiHint": "Wird vor dem Hinzufügen gegen Crossref (die DOI-Registrierungsstelle) geprüft — für eine Arbeit, die OpenAlex/Semantic Scholar noch nicht erfasst hat.",
+    "addDoiHint": "Vor dem Hinzufügen bei Crossref (der DOI-Registrierungsstelle) verifiziert, für eine Publikation, die noch nicht von OpenAlex/Semantic Scholar indexiert wurde.",
     "addDoiSuccess": "\"{{title}}\" hinzugefügt.",
     "addDoiFailed": "Diese Arbeit konnte nicht hinzugefügt werden. Prüfe die DOI und versuche es erneut.",
     "addDoiCancel": "Abbrechen",
@@ -168,17 +168,17 @@
   "predictor": {
     "title": "H-Index-Prognose",
     "subtitle": "Prognostiziere, wann du deinen Ziel-H-Index basierend auf Zitationswachstum und Publikationsrate erreichst.",
-    "noPapersWarning": "Dieser Forscher hat noch keine erfassten Publikationen, daher basiert diese Prognose ausschließlich auf neuen Publikationen, die du planst — sie spiegelt kein bestehendes Werk wider. Suche einen Forscher mit Publikationen oder nutze Demodaten für eine realistischere Prognose.",
+    "noPapersWarning": "Dieser Forscher hat noch keine erfassten Publikationen, daher basiert diese Projektion ausschließlich auf neuen Publikationen, die du planst. Sie spiegelt kein bestehendes Werk wider. Suche einen Forscher mit Publikationen oder nutze die Demo-Daten für eine realistischere Projektion.",
     "targetH": "Ziel-H-Index (aktuell: {{current}})",
     "targetTooLow": "Das Ziel sollte höher sein als dein aktueller H-Index ({{current}}).",
     "monthlyRate": "Ø neue Zitationen / Publikation / Monat",
     "papersPerYear": "Neue Publikationen / Jahr",
     "targetVenue": "Zielpublikationsort für zukünftige Arbeiten",
     "optional": "(optional)",
-    "venueTooltip": "Legt einen Multiplikator dafür fest, wie schnell NEUE Publikationen, die du künftig veröffentlichst, Zitationen erhalten — Top-Publikationsort (x3) und Starker Publikationsort (x2) beschleunigen die Prognose, Aufstrebender Publikationsort (x0,5) verlangsamt sie. Dies ändert nichts an den Zitationen bereits veröffentlichter Arbeiten.",
+    "venueTooltip": "Legt einen Multiplikator dafür fest, wie schnell NEUE Publikationen, die du künftig veröffentlichst, Zitate erhalten. Top-Venue (3x) und Starke Venue (2x) beschleunigen die Projektion, Aufstrebende Venue (0,5x) verlangsamt sie. Zitate bereits veröffentlichter Publikationen werden dadurch nicht verändert.",
     "venuePlaceholder": "z. B. NeurIPS, IEEE Transactions...",
-    "venueSuggest": "„{{venue}}“ sieht nach einem Publikationsort der Stufe {{tier}} aus — anwenden?",
-    "venueHint": "Eine grobe Heuristik, keine echte Impact-Factor-Datenbank — beeinflusst nur, wie schnell künftig veröffentlichte neue Publikationen Zitationen sammeln.",
+    "venueSuggest": "„{{venue}}\" wirkt wie eine {{tier}}-Venue. Übernehmen?",
+    "venueHint": "Eine grobe Heuristik, keine echte Impact-Factor-Datenbank. Sie beeinflusst nur, wie schnell künftig veröffentlichte neue Publikationen Zitate sammeln.",
     "save": "Diese Prognose speichern",
     "saving": "Wird gespeichert...",
     "saveLoginRequired": "Melde dich an und suche einen echten Forscher, um Prognosen zu speichern.",
@@ -195,17 +195,17 @@
     "digestOnMessage": "Sie erhalten jetzt wöchentliche Fortschrittsupdates.",
     "digestOffMessage": "Sie haben die wöchentlichen Fortschrittsupdates abbestellt.",
     "digestFailed": "Ihre E-Mail-Einstellung konnte nicht aktualisiert werden. Bitte erneut versuchen.",
-    "realCurveHint": "Wird pro Artikel anhand einer realistischen Zitationskurve basierend auf dem Erscheinungsjahr angewendet — neue Artikel starten langsam, erreichen ihren Höhepunkt um Jahr 2-4 und klingen danach ab."
+    "realCurveHint": "Wird pro Publikation anhand einer realistischen Zitationskurve basierend auf dem Erscheinungsjahr angewendet: neue Publikationen starten langsam, erreichen ihren Höhepunkt etwa in Jahr 2-4 und flachen danach ab."
   },
   "actions": {
     "title": "Aufgaben",
     "subtitle": "Automatisch generierte Empfehlungen für {{name}} basierend auf aktuellen Zitationsdaten.",
     "emptyTitle": "Noch keine Publikationen zum Analysieren",
-    "emptyDesc": "Sobald dieser Forscher erfasste Publikationen mit Zitationen hat, siehst du hier priorisierte Empfehlungen — knapp verpasste Publikationen, Publikationsrhythmus und Strategie für Publikationsorte.",
+    "emptyDesc": "Sobald dieser Forscher erfasste Publikationen mit Zitaten hat, siehst du hier priorisierte Empfehlungen: Publikationen knapp unter der Schwelle, Publikationsrhythmus und Venue-Strategie.",
     "collabTitle": "Kollaborationsberater",
-    "collabSubtitle": "Deine häufigsten Koautoren, sortiert nach ihrem eigenen H-Index — echte Kollaborationshistorie, keine Vermutungen.",
+    "collabSubtitle": "Deine häufigsten Koautoren, sortiert nach ihrem eigenen H-Index. Echte Kooperationshistorie, keine Vermutungen.",
     "priorityTitle": "Prioritätspublikationen, um deinen H-Index heute zu steigern",
-    "prioritySubtitle": "Dein H-Index liegt aktuell bei {{h}}. Konzentriere deinen Aufwand zuerst hierauf — diese Publikationen sind am nächsten daran, ihn zu erhöhen.",
+    "prioritySubtitle": "Dein H-Index liegt aktuell bei {{h}}. Konzentriere deinen Aufwand zuerst hier: Diese Publikationen sind ihm am nächsten, ihn zu erhöhen.",
     "priorityRowHint_one": "{{citations}} weitere Zitation hebt deinen H-Index auf {{next}}",
     "priorityRowHint_other": "{{citations}} weitere Zitationen heben deinen H-Index auf {{next}}"
   },
@@ -268,7 +268,7 @@
   },
   "verify": {
     "title": "Akademische Angaben verifizieren",
-    "subtitle": "Gib eine ORCID iD ein sowie das, was du über dich angibst (H-Index, Anzahl Publikationen, Zitationen...) — das wird zuerst gegen Semantic Scholar geprüft, nur bei fehlendem Eintrag dort wird auf OpenAlex zurückgegriffen, und du siehst genau, wo die Zahlen übereinstimmen oder nicht.",
+    "subtitle": "Gib eine ORCID-iD und alles ein, was du über dich behauptest (H-Index, Publikationsanzahl, Zitate...). Dies wird zunächst gegen Semantic Scholar geprüft und greift nur auf OpenAlex zurück, wenn Semantic Scholar keinen Eintrag hat, und zeigt dir genau, wo die Zahlen übereinstimmen oder nicht.",
     "orcidLabel": "ORCID iD",
     "nameLabel": "Name",
     "affiliationLabel": "Zugehörigkeit",
@@ -309,10 +309,10 @@
     "historyEmpty": "Für diese ORCID gibt es noch keine früheren Verifizierungen.",
     "historyFailed": "Verifizierungsverlauf konnte nicht geladen werden.",
     "ownerBadge": "Vom Inhaber bestätigt",
-    "ownerNote": "Am {{date}} vom ORCID-Inhaber bestätigt — wird anstelle der rohen Semantic-Scholar/OpenAlex-Daten angezeigt.",
-    "ownerSubmitSuccess": "Als dein ORCID-bestätigter Datensatz gespeichert — wird nun als bestätigter Wert für jeden angezeigt, der diese ORCID nachschlägt.",
-    "ownerCorrectionHint": "Diese Zahlen stammen von Semantic Scholar/OpenAlex und können veraltet sein. Falls dies deine ORCID ist, melde dich mit „Mit ORCID fortfahren“ (passend zu dieser iD) an und reiche oben deine echten Zahlen ein — nach Bestätigung ersetzen sie diese als dein offizieller Datensatz.",
-    "comparisonSourceNote": "Vergleicht deine Angabe mit den rohen Semantic-Scholar/OpenAlex-Daten — unabhängig von einem oben bestätigten ORCID-Inhaber-Datensatz."
+    "ownerNote": "Vom ORCID-Inhaber am {{date}} bestätigt. Wird anstelle des rohen Semantic-Scholar-/OpenAlex-Snapshots angezeigt.",
+    "ownerSubmitSuccess": "Als dein ORCID-bestätigter Datensatz gespeichert. Dies wird nun als bestätigter Wert für jeden angezeigt, der diese ORCID nachschlägt.",
+    "ownerCorrectionHint": "Diese Zahlen stammen von Semantic Scholar/OpenAlex und können veraltet sein. Falls dies deine ORCID ist, melde dich mit „Weiter mit ORCID\" an (passend zu dieser iD) und reiche oben deine echten Zahlen ein. Nach Bestätigung ersetzen sie diese als deinen offiziellen Datensatz.",
+    "comparisonSourceNote": "Vergleicht deine Angaben mit dem rohen Semantic-Scholar-/OpenAlex-Snapshot, unabhängig von einem oben bestätigten ORCID-Inhaber-Datensatz."
   },
   "theme": {
     "switchToLight": "Zum hellen Modus wechseln",
@@ -329,17 +329,17 @@
     "messagePlaceholder": "Was möchtest du uns mitteilen?",
     "submit": "Nachricht senden",
     "submitting": "Wird gesendet...",
-    "sent": "Danke — deine Nachricht wurde gesendet.",
+    "sent": "Danke. Deine Nachricht wurde gesendet.",
     "submitFailed": "Senden fehlgeschlagen. Bitte erneut versuchen."
   },
   "frontier": {
     "title": "H-Index-Grenze",
-    "subtitle": "Sieh genau, welche Arbeiten deinem H-Index am nächsten sind, nicht nur die aktuelle Zahl.",
+    "subtitle": "Sieh genau, welche Publikationen deinem H-Index am nächsten sind, ihn zu erhöhen, nicht nur die aktuelle Zahl.",
     "nextMilestone": "Nächster Meilenstein: h = {{next}}",
     "summarySingle_one": "Dein nächster Meilenstein ist h = {{next}}. Dein aussichtsreichster Kandidat, \"{{title}}\", braucht nur noch {{count}} weiteres Zitat.",
     "summarySingle_other": "Dein nächster Meilenstein ist h = {{next}}. Dein aussichtsreichster Kandidat, \"{{title}}\", braucht noch {{count}} weitere Zitate.",
-    "summaryMultiple_one": "Um h = {{next}} zu erreichen, muss {{count}} weitere Arbeit diese Zitationsschwelle überschreiten — siehe unten.",
-    "summaryMultiple_other": "Um h = {{next}} zu erreichen, müssen {{count}} weitere Arbeiten diese Zitationsschwelle überschreiten — siehe unten.",
+    "summaryMultiple_one": "Um h = {{next}} zu erreichen, braucht es {{count}} weitere Publikation, um diese Zitationsschwelle zu überschreiten. Siehe unten.",
+    "summaryMultiple_other": "Um h = {{next}} zu erreichen, braucht es {{count}} weitere Publikationen, um diese Zitationsschwelle zu überschreiten. Siehe unten.",
     "newWorkNeeded_one": "Selbst wenn deine bestehenden Arbeiten aufholen, wäre {{count}} zusätzliche neue Veröffentlichung nötig, um h = {{next}} zu erreichen.",
     "newWorkNeeded_other": "Selbst wenn deine bestehenden Arbeiten aufholen, wären {{count}} zusätzliche neue Veröffentlichungen nötig, um h = {{next}} zu erreichen.",
     "colPaper": "Arbeit",
@@ -348,7 +348,7 @@
     "citationsNeededValue_one": "+{{count}} Zitat",
     "citationsNeededValue_other": "+{{count}} Zitate",
     "untitled": "Ohne Titel",
-    "disclaimer": "Basierend auf deinen {{h}} erfassten Arbeiten und ihrer aktuellen Zitatzahl — wird automatisch neu berechnet, sobald sich Zitate oder Arbeiten ändern."
+    "disclaimer": "Basierend auf deinen {{h}} erfassten Publikationen und ihrer aktuellen Zitatanzahl. Wird automatisch neu berechnet, sobald sich Zitate und Publikationen aktualisieren."
   },
   "timeline": {
     "title": "Zeitachse deiner Forschungskarriere",
@@ -361,22 +361,22 @@
     "demoEmptyDesc": "Demodaten haben keinen Schnappschuss-Verlauf zum Anzeigen. Suche und erfasse einen echten Forscher, um deine eigene Zeitachse aufzubauen.",
     "demoEmptyCta": "Nach einem Forscher suchen",
     "sinceLastVisitTitle": "Seit deinem letzten Besuch",
-    "sinceLastVisitEmpty": "Dies ist dein erster erfasster Schnappschuss — komm nach deiner nächsten Aktualisierung wieder, um zu sehen, was sich geändert hat.",
+    "sinceLastVisitEmpty": "Dies ist dein erster erfasster Schnappschuss. Komm nach deiner nächsten Aktualisierung zurück, um zu sehen, was sich geändert hat.",
     "sinceLastVisitRange": "Vergleich {{from}} → {{to}}",
     "citations": "Zitate",
     "papersGainedCitations_one": "{{count}} Arbeit hat Zitate hinzugewonnen",
     "papersGainedCitations_other": "{{count}} Arbeiten haben Zitate hinzugewonnen",
     "chartTitle": "H-Index im Zeitverlauf",
-    "chartRecordedLabel": "Von Research GPS erfasst — nur ab deinem ersten erfassten Schnappschuss, nicht deiner gesamten Karrieregeschichte.",
+    "chartRecordedLabel": "Von Research GPS erfasst, nur ab deinem ersten erfassten Schnappschuss, nicht deiner gesamten Karrierehistorie.",
     "notEnoughHistoryTitle": "Noch nicht genug erfasster Verlauf",
     "notEnoughHistoryDesc": "Bisher nur ein Schnappschuss. Komm nach weiteren Aktualisierungen dieses Forschers in den kommenden Wochen/Monaten wieder, um hier einen erfassten Trend zu sehen.",
     "milestonesTitle": "Meilensteine",
     "milestones": {
-      "firstSnapshot": "Erster erfasster Schnappschuss — H-Index {{hIndex}}, {{citations}} Zitate",
+      "firstSnapshot": "Erster erfasster Schnappschuss: H-Index {{hIndex}}, {{citations}} Zitate",
       "hIndexIncrease": "H-Index stieg von {{previous}} auf {{hIndex}}",
       "citationMilestone": "Hat {{threshold}} Zitate insgesamt überschritten"
     },
-    "disclaimer": "Der \"erfasste\" Verlauf beginnt erst, sobald dieser Forscher hier erstmals erfasst wurde — er rekonstruiert den H-Index nicht rückwirkend vor diesem Datum. Für eine Rekonstruktion früherer Jahre aus Zitationsdaten pro Jahr siehe \"Echten historischen H-Index laden\" im Dashboard."
+    "disclaimer": "Die „erfasste\" Historie beginnt, sobald dieser Forscher hier erstmals erfasst wurde. Sie rekonstruiert den H-Index nicht vor diesem Datum. Für eine Rekonstruktion früherer Jahre aus Zitationsdaten pro Jahr siehe „Echten H-Index-Verlauf laden\" im Dashboard."
   },
   "verifyEmail": {
     "verifying": "E-Mail wird bestätigt...",
@@ -391,7 +391,7 @@
     "message": "Bitte bestätigen Sie Ihre E-Mail-Adresse, um Ihr Konto zu aktivieren.",
     "resend": "Bestätigungs-E-Mail erneut senden",
     "sending": "Wird gesendet...",
-    "sent": "Bestätigungs-E-Mail gesendet — bitte Posteingang prüfen.",
+    "sent": "Bestätigungs-E-Mail gesendet. Prüfe dein Postfach.",
     "failed": "Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte später erneut versuchen."
   },
   "feedback": {
@@ -420,7 +420,7 @@
   },
   "howItWorks": {
     "title": "So funktioniert Research GPS",
-    "subtitle": "Eine 2-minütige Tour durch die ganze Seite — kein Video nötig.",
+    "subtitle": "Eine 2-minütige Tour durch die ganze Seite. Kein Video nötig.",
     "steps": {
       "search": {
         "title": "1. Finde dich selbst (oder probiere die Demo)",
@@ -428,11 +428,11 @@
       },
       "dashboard": {
         "title": "2. Sieh deinen echten H-Index",
-        "desc": "Dein Dashboard zeigt deinen aktuellen H-Index, Gesamtzitate und jede erfasste Publikation — automatisch synchronisiert, mit Korrekturmöglichkeit, falls eine Publikation nicht wirklich deine ist."
+        "desc": "Dein Dashboard zeigt deinen aktuellen H-Index, Gesamtzitate und jede erfasste Publikation, automatisch synchronisiert, mit Korrekturmöglichkeit, falls eine Publikation nicht wirklich deine ist."
       },
       "frontier": {
         "title": "3. Wisse genau, was als Nächstes kommt",
-        "desc": "Die H-Index-Grenze zeigt dir genau, welche Publikationen mehr Zitate brauchen — und wie viele —, um deinen H-Index um eins zu steigern."
+        "desc": "Die H-Index-Grenze zeigt dir genau, welche Publikationen mehr Zitate brauchen, und wie viele, um deinen H-Index um eins zu steigern."
       },
       "actions": {
         "title": "4. Erhalte priorisierte Empfehlungen",
@@ -440,7 +440,7 @@
       },
       "predictor": {
         "title": "5. Projiziere deinen zukünftigen H-Index",
-        "desc": "Der Predictor simuliert, wann du einen Ziel-H-Index erreichst, mit einem realistischen Zitations-Alterungsmodell — passe deine Annahmen an und sieh den Weg."
+        "desc": "Der Predictor simuliert, wann du einen Ziel-H-Index erreichst, mit einem realistischen Zitations-Alterungsmodell. Passe deine Annahmen an und sieh den Weg."
       },
       "timeline": {
         "title": "6. Verfolge deinen Fortschritt über die Zeit",
@@ -452,9 +452,9 @@
       }
     },
     "assistantTitle": "Hast du eine Frage? Frag einfach.",
-    "assistantDesc": "Der Kompass-Button unten links öffnet einen Chat-Assistenten, der auf deinen echten Daten basiert — frag nach deinem H-Index, was als Nächstes zu tun ist, oder wie alles funktioniert.",
+    "assistantDesc": "Der Kompass-Button unten links öffnet einen Chat-Assistenten, der auf deinen echten Daten basiert. Frag nach deinem H-Index, was als Nächstes zu tun ist, oder wie alles funktioniert.",
     "feedbackTitle": "Etwas verwirrend oder fehlt etwas?",
-    "feedbackDesc": "Der Nachrichten-Button unten rechts sendet Feedback direkt an uns — wir lesen jedes einzelne.",
-    "ctaSearch": "Los geht's — suche nach dir selbst"
+    "feedbackDesc": "Der Nachrichten-Button unten rechts sendet Feedback direkt an uns. Wir lesen jedes einzelne.",
+    "ctaSearch": "Los geht's: suche nach dir selbst"
   }
 }

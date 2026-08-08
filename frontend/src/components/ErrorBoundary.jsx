@@ -62,7 +62,7 @@ export default class ErrorBoundary extends Component {
             Something went wrong
           </h1>
           <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0 }}>
-            This page hit an unexpected error. Your data is safe — try reloading, or head back to the dashboard.
+            This page hit an unexpected error. Your data is safe. Try reloading, or head back to the dashboard.
           </p>
           <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', marginTop: '1.5rem' }}>
             <button

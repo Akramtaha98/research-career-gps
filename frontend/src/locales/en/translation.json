@@ -23,7 +23,7 @@
   "orcidLogin": {
     "cta": "Continue with ORCID",
     "notConfigured": "Continue with ORCID (not configured)",
-    "notConfiguredTitle": "Set VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI to enable — see docs/SETUP.md",
+    "notConfiguredTitle": "Set VITE_ORCID_CLIENT_ID / VITE_ORCID_REDIRECT_URI to enable. See docs/SETUP.md",
     "signingIn": "Signing you in...",
     "lookingUp": "Looking up your publications...",
     "failed": "ORCID sign-in failed",
@@ -44,7 +44,7 @@
     "signUp": "Sign up",
     "demoPrompt": "Just exploring?",
     "demoLink": "View demo dashboard",
-    "demoSuffix": "— no login needed.",
+    "demoSuffix": ", no login needed.",
     "errorFallback": "Login failed",
     "forgotPassword": "Forgot password?"
   },
@@ -87,22 +87,22 @@
   },
   "socialLogin": {
     "notConfigured": "Continue with Google (not configured)",
-    "notConfiguredTitle": "Set VITE_GOOGLE_CLIENT_ID / GOOGLE_CLIENT_ID to enable — see docs/SETUP.md",
+    "notConfiguredTitle": "Set VITE_GOOGLE_CLIENT_ID / GOOGLE_CLIENT_ID to enable. See docs/SETUP.md",
     "errorFallback": "Google sign-in failed"
   },
   "search": {
     "title": "Find a researcher",
-    "subtitle": "Search by name, ORCID, or ID to pull real citation data — Semantic Scholar primary, OpenAlex as fallback.",
+    "subtitle": "Search by name, ORCID, or ID to pull real citation data, with Semantic Scholar as the primary source and OpenAlex as a fallback.",
     "label": "Researcher name, ORCID, or Semantic Scholar ID",
     "placeholder": "e.g. Oren Etzioni or 0000-0002-9082-0875",
-    "hint": "A name search can match multiple people — paste an ORCID iD for an exact match, or a numeric Semantic Scholar Author ID directly.",
+    "hint": "A name search can match multiple people. Paste an ORCID iD for an exact match, or a numeric Semantic Scholar Author ID directly.",
     "loginRequired": "You'll need to log in to save a real researcher lookup.",
     "searchBtn": "Search",
     "searching": "Searching...",
     "fetching": "Fetching...",
     "demoBtn": "Use demo data",
-    "matchesFound_one": "{{count}} match — pick the right one",
-    "matchesFound_other": "{{count}} matches — pick the right one",
+    "matchesFound_one": "{{count}} match. Pick the right one.",
+    "matchesFound_other": "{{count}} matches. Pick the right one.",
     "noMatches": "No matches found",
     "akaLabel": "Also published as {{name}}",
     "papers": "papers",
@@ -151,7 +151,7 @@
     "addDoiPlaceholder": "e.g. 10.1038/nature14539 or https://doi.org/10.1038/nature14539",
     "addDoiSubmit": "Add",
     "addDoiSubmitting": "Verifying with Crossref...",
-    "addDoiHint": "Verified against Crossref (the DOI registration agency) before it's added — for a paper that hasn't been indexed by OpenAlex/Semantic Scholar yet.",
+    "addDoiHint": "Verified against Crossref (the DOI registration agency) before it's added, for a paper that hasn't been indexed by OpenAlex/Semantic Scholar yet.",
     "addDoiSuccess": "Added \"{{title}}\".",
     "addDoiFailed": "Couldn't add that paper. Check the DOI and try again.",
     "addDoiCancel": "Cancel",
@@ -168,17 +168,17 @@
   "predictor": {
     "title": "H-index Predictor",
     "subtitle": "Project when you'll hit your target H-index based on citation growth and publication rate.",
-    "noPapersWarning": "This researcher has no tracked papers yet, so this projection is based purely on new papers you plan to publish — it won't reflect any existing body of work. Look up a researcher with papers, or use demo data, for a more realistic projection.",
+    "noPapersWarning": "This researcher has no tracked papers yet, so this projection is based purely on new papers you plan to publish. It won't reflect any existing body of work. Look up a researcher with papers, or use demo data, for a more realistic projection.",
     "targetH": "Target H-index (current: {{current}})",
     "targetTooLow": "Target should be higher than your current H-index ({{current}}).",
     "monthlyRate": "Avg. new citations / paper / month",
     "papersPerYear": "New papers / year",
     "targetVenue": "Target venue for future papers",
     "optional": "(optional)",
-    "venueTooltip": "Sets a multiplier on how fast NEW papers you publish going forward earn citations — Top venue (3x) and Strong venue (2x) speed up the projection, Emerging venue (0.5x) slows it down. It does not change citations on papers you've already published.",
+    "venueTooltip": "Sets a multiplier on how fast NEW papers you publish going forward earn citations. Top venue (3x) and Strong venue (2x) speed up the projection, Emerging venue (0.5x) slows it down. It does not change citations on papers you've already published.",
     "venuePlaceholder": "e.g. NeurIPS, IEEE Transactions...",
-    "venueSuggest": "\"{{venue}}\" looks like a {{tier}} venue — apply?",
-    "venueHint": "A rough heuristic, not a real impact-factor database — only affects how fast new papers you publish going forward accumulate citations.",
+    "venueSuggest": "\"{{venue}}\" looks like a {{tier}} venue. Apply?",
+    "venueHint": "A rough heuristic, not a real impact-factor database. It only affects how fast new papers you publish going forward accumulate citations.",
     "save": "Save this prediction",
     "saving": "Saving...",
     "saveLoginRequired": "Log in and look up a real researcher to save predictions.",
@@ -195,17 +195,17 @@
     "digestOnMessage": "You're subscribed to weekly progress emails.",
     "digestOffMessage": "You've unsubscribed from weekly progress emails.",
     "digestFailed": "Couldn't update your email preference. Please try again.",
-    "realCurveHint": "Applied per paper using a realistic citation curve based on its publish year — new papers start slow, peak around year 2-4, then taper off."
+    "realCurveHint": "Applied per paper using a realistic citation curve based on its publish year: new papers start slow, peak around year 2-4, then taper off."
   },
   "actions": {
     "title": "Action Items",
     "subtitle": "Auto-generated recommendations for {{name}} based on current citation data.",
     "emptyTitle": "No papers to analyze yet",
-    "emptyDesc": "Once this researcher has tracked papers with citations, you'll see prioritized recommendations here — near-miss papers, publication cadence, and venue strategy.",
+    "emptyDesc": "Once this researcher has tracked papers with citations, you'll see prioritized recommendations here: near-miss papers, publication cadence, and venue strategy.",
     "collabTitle": "Collaboration advisor",
-    "collabSubtitle": "Your most frequent co-authors, ranked by their own h-index — real collaboration history, not guesses.",
+    "collabSubtitle": "Your most frequent co-authors, ranked by their own h-index. Real collaboration history, not guesses.",
     "priorityTitle": "Priority papers to push your H-index today",
-    "prioritySubtitle": "Your H-index is currently {{h}}. Focus your effort here first — these papers are closest to raising it.",
+    "prioritySubtitle": "Your H-index is currently {{h}}. Focus your effort here first: these papers are closest to raising it.",
     "priorityRowHint_one": "{{citations}} more citation raises your H-index to {{next}}",
     "priorityRowHint_other": "{{citations}} more citations raises your H-index to {{next}}"
   },
@@ -268,7 +268,7 @@
   },
   "verify": {
     "title": "Verify academic information",
-    "subtitle": "Enter an ORCID iD and whatever you claim about yourself (H-index, paper count, citations...) — this checks it against Semantic Scholar first, falling back to OpenAlex only if Semantic Scholar has no record, and shows you exactly where the numbers agree or don't.",
+    "subtitle": "Enter an ORCID iD and whatever you claim about yourself (H-index, paper count, citations...). This checks it against Semantic Scholar first, falling back to OpenAlex only if Semantic Scholar has no record, and shows you exactly where the numbers agree or don't.",
     "orcidLabel": "ORCID iD",
     "nameLabel": "Name",
     "affiliationLabel": "Affiliation",
@@ -309,10 +309,10 @@
     "historyEmpty": "No past verification runs for this ORCID yet.",
     "historyFailed": "Couldn't load verification history.",
     "ownerBadge": "Owner-confirmed",
-    "ownerNote": "Confirmed by the ORCID owner on {{date}} — shown instead of the raw Semantic Scholar/OpenAlex snapshot.",
-    "ownerSubmitSuccess": "Saved as your ORCID-confirmed record — this now shows as the confirmed value for anyone who looks up this ORCID.",
-    "ownerCorrectionHint": "These numbers come from Semantic Scholar/OpenAlex and may be out of date. If this is your ORCID, sign in with \"Continue with ORCID\" (matching this iD) and submit your real numbers above — once confirmed, they'll replace these as your official record.",
-    "comparisonSourceNote": "Compares what you claimed against the raw Semantic Scholar/OpenAlex snapshot — independent of any ORCID-owner-confirmed record above."
+    "ownerNote": "Confirmed by the ORCID owner on {{date}}. Shown instead of the raw Semantic Scholar/OpenAlex snapshot.",
+    "ownerSubmitSuccess": "Saved as your ORCID-confirmed record. This now shows as the confirmed value for anyone who looks up this ORCID.",
+    "ownerCorrectionHint": "These numbers come from Semantic Scholar/OpenAlex and may be out of date. If this is your ORCID, sign in with \"Continue with ORCID\" (matching this iD) and submit your real numbers above. Once confirmed, they'll replace these as your official record.",
+    "comparisonSourceNote": "Compares what you claimed against the raw Semantic Scholar/OpenAlex snapshot, independent of any ORCID-owner-confirmed record above."
   },
   "theme": {
     "switchToLight": "Switch to light mode",
@@ -329,17 +329,17 @@
     "messagePlaceholder": "What's on your mind?",
     "submit": "Send message",
     "submitting": "Sending...",
-    "sent": "Thanks — your message has been sent.",
+    "sent": "Thanks. Your message has been sent.",
     "submitFailed": "Couldn't send. Try again."
   },
   "frontier": {
     "title": "H-index Frontier",
-    "subtitle": "See exactly which papers are closest to raising your h-index — not just the current number.",
+    "subtitle": "See exactly which papers are closest to raising your h-index, not just the current number.",
     "nextMilestone": "Next milestone: h = {{next}}",
     "summarySingle_one": "Your next milestone is h = {{next}}. Your closest candidate, \"{{title}}\", needs just {{count}} more citation to get there.",
     "summarySingle_other": "Your next milestone is h = {{next}}. Your closest candidate, \"{{title}}\", needs {{count}} more citations to get there.",
-    "summaryMultiple_one": "Reaching h = {{next}} requires {{count}} more paper to cross its citation threshold — see below.",
-    "summaryMultiple_other": "Reaching h = {{next}} requires {{count}} more papers to cross that citation threshold — see below.",
+    "summaryMultiple_one": "Reaching h = {{next}} requires {{count}} more paper to cross its citation threshold. See below.",
+    "summaryMultiple_other": "Reaching h = {{next}} requires {{count}} more papers to cross that citation threshold. See below.",
     "newWorkNeeded_one": "Even after your existing papers catch up, {{count}} additional new publication would still be needed to reach h = {{next}}.",
     "newWorkNeeded_other": "Even after your existing papers catch up, {{count}} additional new publications would still be needed to reach h = {{next}}.",
     "colPaper": "Paper",
@@ -348,7 +348,7 @@
     "citationsNeededValue_one": "+{{count}} citation",
     "citationsNeededValue_other": "+{{count}} citations",
     "untitled": "Untitled",
-    "disclaimer": "Based on your {{h}} tracked papers and their current citation counts — recalculates automatically as citations and papers update."
+    "disclaimer": "Based on your {{h}} tracked papers and their current citation counts. Recalculates automatically as citations and papers update."
   },
   "timeline": {
     "title": "Research Career Timeline",
@@ -361,22 +361,22 @@
     "demoEmptyDesc": "Demo data doesn't have snapshot history to show. Look up and track a real researcher to start building your own Timeline.",
     "demoEmptyCta": "Search for a researcher",
     "sinceLastVisitTitle": "Since your last visit",
-    "sinceLastVisitEmpty": "This is your first recorded snapshot — come back after your next refresh to see what's changed.",
+    "sinceLastVisitEmpty": "This is your first recorded snapshot. Come back after your next refresh to see what's changed.",
     "sinceLastVisitRange": "Comparing {{from}} → {{to}}",
     "citations": "Citations",
     "papersGainedCitations_one": "{{count}} paper gained citations",
     "papersGainedCitations_other": "{{count}} papers gained citations",
     "chartTitle": "H-index over time",
-    "chartRecordedLabel": "Recorded by Research GPS — only from your first tracked snapshot onward, not your full career history.",
+    "chartRecordedLabel": "Recorded by Research GPS, only from your first tracked snapshot onward, not your full career history.",
     "notEnoughHistoryTitle": "Not enough recorded history yet",
     "notEnoughHistoryDesc": "Only one snapshot so far. Come back after refreshing this researcher over the coming weeks/months to see a recorded trend here.",
     "milestonesTitle": "Milestones",
     "milestones": {
-      "firstSnapshot": "First recorded snapshot — H-index {{hIndex}}, {{citations}} citations",
+      "firstSnapshot": "First recorded snapshot: H-index {{hIndex}}, {{citations}} citations",
       "hIndexIncrease": "H-index increased from {{previous}} to {{hIndex}}",
       "citationMilestone": "Passed {{threshold}} total citations"
     },
-    "disclaimer": "\"Recorded\" history starts from whenever this researcher was first tracked here — it does not reconstruct H-index from before that date. For a reconstruction of earlier years from citation-by-year data, see the Dashboard's \"Load real historical H-index\"."
+    "disclaimer": "\"Recorded\" history starts from whenever this researcher was first tracked here. It does not reconstruct H-index from before that date. For a reconstruction of earlier years from citation-by-year data, see the Dashboard's \"Load real historical H-index\"."
   },
   "verifyEmail": {
     "verifying": "Confirming your email...",
@@ -391,7 +391,7 @@
     "message": "Please confirm your email address to activate your account.",
     "resend": "Resend confirmation email",
     "sending": "Sending...",
-    "sent": "Confirmation email sent — check your inbox.",
+    "sent": "Confirmation email sent. Check your inbox.",
     "failed": "Couldn't send confirmation email. Try again later."
   },
   "feedback": {
@@ -420,7 +420,7 @@
   },
   "howItWorks": {
     "title": "How Research GPS works",
-    "subtitle": "A 2-minute tour of everything on this site — no video required.",
+    "subtitle": "A 2-minute tour of everything on this site. No video required.",
     "steps": {
       "search": {
         "title": "1. Find yourself (or try the demo)",
@@ -428,11 +428,11 @@
       },
       "dashboard": {
         "title": "2. See your real H-index",
-        "desc": "Your Dashboard shows your live H-index, total citations, and every tracked paper — auto-synced, with corrections if a paper isn't actually yours."
+        "desc": "Your Dashboard shows your live H-index, total citations, and every tracked paper, auto-synced, with corrections if a paper isn't actually yours."
       },
       "frontier": {
         "title": "3. Know exactly what's next",
-        "desc": "The H-index Frontier tells you precisely which papers need more citations — and how many — to push your H-index up by one."
+        "desc": "The H-index Frontier tells you precisely which papers need more citations, and how many, to push your H-index up by one."
       },
       "actions": {
         "title": "4. Get prioritized recommendations",
@@ -440,7 +440,7 @@
       },
       "predictor": {
         "title": "5. Project your future H-index",
-        "desc": "Predictor simulates when you'll hit a target H-index, using a realistic citation-aging model — tune your assumptions and see the path."
+        "desc": "Predictor simulates when you'll hit a target H-index, using a realistic citation-aging model. Tune your assumptions and see the path."
       },
       "timeline": {
         "title": "6. Track your progress over time",
@@ -452,9 +452,9 @@
       }
     },
     "assistantTitle": "Have a question? Just ask.",
-    "assistantDesc": "The compass button in the bottom-left corner opens a chat assistant grounded in your real data — ask about your H-index, what to do next, or how any of this works.",
+    "assistantDesc": "The compass button in the bottom-left corner opens a chat assistant grounded in your real data. Ask about your H-index, what to do next, or how any of this works.",
     "feedbackTitle": "Something confusing or missing?",
-    "feedbackDesc": "The message button in the bottom-right corner sends feedback straight to us — we read every one.",
-    "ctaSearch": "Get started — search for yourself"
+    "feedbackDesc": "The message button in the bottom-right corner sends feedback straight to us. We read every one.",
+    "ctaSearch": "Get started: search for yourself"
   }
 }

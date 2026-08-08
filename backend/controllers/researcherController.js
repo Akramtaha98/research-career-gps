@@ -67,7 +67,7 @@ function validateHIndexAgainstPaperCount(hIndex, paperCount) {
   if (paperCount != null && hIndex > paperCount) {
     return {
       ok: false,
-      message: `hIndex (${hIndex}) cannot be greater than paperCount (${paperCount}) — an H-index can never exceed the total number of papers.`,
+      message: `hIndex (${hIndex}) cannot be greater than paperCount (${paperCount}). An H-index can never exceed the total number of papers.`,
     };
   }
   return { ok: true };

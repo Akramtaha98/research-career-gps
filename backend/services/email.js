@@ -133,11 +133,11 @@ async function sendViaResend({ to, subject, html, replyTo }) {
  */
 async function sendPasswordResetEmail({ to, resetUrl }) {
   const html = renderEmailShell({
-    preheader: 'Reset your Research GPS password — this link expires in 1 hour.',
+    preheader: 'Reset your Research GPS password. This link expires in 1 hour.',
     heading: 'Reset your password',
     bodyHtml: `
       <p style="margin:0 0 12px;">We received a request to reset the password for your ${escapeHtml(APP_NAME)} account.</p>
-      <p style="margin:0;">This link expires in <strong>1 hour</strong>. If you didn't request this, you can safely ignore this email — your password won't change.</p>
+      <p style="margin:0;">This link expires in <strong>1 hour</strong>. If you didn't request this, you can safely ignore this email. Your password won't change.</p>
     `,
     cta: { label: 'Reset password', url: resetUrl },
   });
@@ -157,7 +157,7 @@ async function sendVerificationEmail({ to, name, verifyUrl }) {
     preheader: `Confirm ${name ? name + "'s" : 'your'} ${APP_NAME} account to get started.`,
     heading: `Welcome to ${APP_NAME}${name ? `, ${escapeHtml(name)}` : ''} 👋`,
     bodyHtml: `
-      <p style="margin:0 0 12px;">One last step — confirm your email address to activate your account.</p>
+      <p style="margin:0 0 12px;">One last step: confirm your email address to activate your account.</p>
       <p style="margin:0;">This link expires in <strong>24 hours</strong>. If you didn't create this account, you can safely ignore this email.</p>
     `,
     cta: { label: 'Confirm my email', url: verifyUrl },
@@ -237,7 +237,7 @@ async function sendProgressDigestEmail({
   `;
 
   const html = renderEmailShell({
-    preheader: `${researcherName}: H-index ${currentH}/${targetH} — ${progressPct}% toward your goal.`,
+    preheader: `${researcherName}: H-index ${currentH}/${targetH}, ${progressPct}% toward your goal.`,
     heading: 'Your weekly progress',
     bodyHtml,
     cta: { label: 'Open my dashboard', url: dashboardUrl },

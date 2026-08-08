@@ -57,7 +57,7 @@ function generateActionItems({ papers }) {
       type: 'output_cadence',
       priority: 'high',
       title: 'Increase publication cadence',
-      description: `You've published ${recentCount} paper(s) in the last 2 years. Sustained H-index growth needs both new papers and citation accumulation on existing ones — aim for at least 2-3 submissions per year.`,
+      description: `You've published ${recentCount} paper(s) in the last 2 years. Sustained H-index growth needs both new papers and citation accumulation on existing ones. Aim for at least 2-3 submissions per year.`,
     });
   }
 
