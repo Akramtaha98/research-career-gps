@@ -89,10 +89,31 @@ export default function Search() {
     // available height (min-h) instead of the old fixed py-16 leaving a
     // large dead grey gap below the card on anything taller than a laptop
     // screen.
-    <div className="relative w-full overflow-hidden">
+    <div className="relative w-full overflow-hidden bg-white dark:bg-slate-950">
+      {/*
+        Base wash + dot-grid texture, both full-bleed. The gradient alone
+        (previous version) was flat pastel — fine, but not what reads as
+        "modern SaaS" today; a faint dot grid underneath is the detail that
+        does that, as long as it fades out before it reaches the readable
+        column so it never fights with text. Explicit dark: variants on
+        every layer here because none of this is `.card`/`.bg-white` (the
+        only classes index.css's dark-mode block retargets automatically) —
+        without them this whole hero would stay a light pastel wash even
+        with the app's dark toggle on, which is worse than no theming at all.
+      */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-b from-brand-50/70 via-white to-sky-50/50"
+        className="absolute inset-0 bg-gradient-to-b from-brand-50/80 via-white to-sky-50/60 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 opacity-[0.4] dark:opacity-[0.25] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_35%,black,transparent)]"
+        style={{
+          backgroundImage:
+            'radial-gradient(currentColor 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+          color: 'rgb(124 58 237 / 0.18)',
+        }}
       />
       {/*
         Purely decorative, low-opacity gradient blobs drifting slowly behind
@@ -105,15 +126,15 @@ export default function Search() {
       */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-40 left-[-8%] w-[26rem] h-[26rem] rounded-full bg-brand-400/20 blur-[110px] animate-blob-drift"
+        className="pointer-events-none absolute -top-40 left-[-8%] w-[26rem] h-[26rem] rounded-full bg-brand-400/20 dark:bg-brand-500/25 blur-[110px] animate-blob-drift"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-1/4 right-[-10%] w-[24rem] h-[24rem] rounded-full bg-sky-400/20 blur-[110px] animate-blob-drift-slow"
+        className="pointer-events-none absolute top-1/4 right-[-10%] w-[24rem] h-[24rem] rounded-full bg-sky-400/20 dark:bg-sky-500/25 blur-[110px] animate-blob-drift-slow"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-[-15%] left-1/4 w-[22rem] h-[22rem] rounded-full bg-indigo-300/15 blur-[110px] animate-blob-drift"
+        className="pointer-events-none absolute bottom-[-15%] left-1/4 w-[22rem] h-[22rem] rounded-full bg-indigo-300/15 dark:bg-indigo-500/20 blur-[110px] animate-blob-drift"
       />
 
       <div className="relative z-10 min-h-[calc(100vh-4.5rem)] flex flex-col items-center justify-center px-4 py-16 sm:py-20">
